@@ -16,6 +16,7 @@ Esta seção reúne anotações, procedimentos e troubleshooting relacionados ao
 ## Conteúdo
 
 * [Configurando Volumes Nutanix](volumes.md)
+* [Questionário Volumes Nutanix](questionario-volumes.md)
 
 ---
 
