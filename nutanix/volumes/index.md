@@ -337,4 +337,104 @@ Outras limitações apresentadas:
 9. Não, essa configuração não é suportada.
 10. De forma thin.
 
-> 💡 Esta versão foi organizada para estudo mais prático, com foco em compreensão rápida e revisão objetiva.
+---
+
+# Nutanix Volumes — Perguntas e Respostas
+
+Material de revisão sobre armazenamento, iSCSI e Grupos de Volumes.
+
+## 1. Alta disponibilidade e integração com o WSFC
+
+Pergunta: Um administrador deseja implantar uma aplicação que exige alta disponibilidade e gerenciamento eficiente de dados. A aplicação será executada em um cluster de servidores físicos e precisa ser integrada a uma configuração existente do Windows Server Failover Clustering (WSFC). Qual solução de armazenamento deve ser usada para dar suporte a essa aplicação?
+
+Alternativas:
+
+- Usar armazenamento de arquivos e acessá-lo via NFS, pois ele oferece simplicidade para o compartilhamento de arquivos.
+- Usar o Nutanix Volumes e acessá-lo via Fibre Channel (FC), pois ele é mais confiável que o iSCSI.
+- Usar armazenamento de objetos e acessá-lo via HTTP, pois ele é ideal para dados não estruturados.
+- Usar o Nutanix Volumes e acessá-lo via iSCSI para garantir desempenho adequado e integração com o WSFC.
+
+Resposta correta:
+
+- Usar o Nutanix Volumes e acessá-lo via iSCSI para garantir desempenho adequado e integração com o WSFC.
+
+Explicação: O Nutanix Volumes fornece armazenamento em bloco via iSCSI, adequado para servidores físicos e para integração com Windows Server Failover Clustering.
+
+## 2. Formato correto de IQN
+
+Pergunta: Identifique o formato correto do iSCSI Qualified Name (IQN).
+
+Alternativas:
+
+- iqn.yyyy-mm:uniquename
+- iqn.yyyy.naming-authority:uniquename
+- iqn.yyyy-mm.naming-authority:uniquename
+- iqn.mm-yyyy:uniquename.naming-authority
+
+Resposta correta:
+
+- iqn.yyyy-mm.naming-authority:uniquename
+
+Explicação: Exemplo: iqn.2026-07.com.nutanix:storage01
+
+## 3. Tipos de armazenamento e tipos de dados
+
+Pergunta: Relacione os tipos de armazenamento a seguir com os tipos de dados que eles armazenam.
+
+Alternativas:
+
+- Armazenamento de arquivos
+- Armazenamento em blocos
+- Armazenamento de objetos
+
+Resposta correta:
+
+- Armazenamento de arquivos → Dados estruturados e semiestruturados
+- Armazenamento em blocos → Dados estruturados
+- Armazenamento de objetos → Dados não estruturados e semiestruturados
+
+Explicação: A associação considera o uso típico de cada modelo: blocos para cargas estruturadas, objetos para dados não estruturados e arquivos para conteúdos estruturados ou semiestruturados.
+
+## 4. Grupos de Volumes e hipervisores
+
+Pergunta: Verdadeiro ou falso: os Grupos de Volumes (VGs) podem ser utilizados para conectividade iSCSI somente em hipervisores baseados em AHV.
+
+Alternativas:
+
+- Verdadeiro. Os VGs podem ser usados para conectividade iSCSI em clusters AHV, mas somente se a versão do AOS for 6.8 ou superior.
+- Falso. Os VGs podem ser usados para conectividade iSCSI somente em hipervisores baseados em AHV ou ESXi.
+- Verdadeiro. Os VGs podem ser usados para conectividade iSCSI somente em hipervisores baseados em AHV.
+- Falso. Os VGs oferecem conectividade iSCSI em qualquer cluster Nutanix, independentemente de o hipervisor ser ESXi, Hyper-V ou AHV.
+
+Resposta correta:
+
+- Falso. Os VGs oferecem conectividade iSCSI em qualquer cluster Nutanix, independentemente de o hipervisor ser ESXi, Hyper-V ou AHV.
+
+Explicação: Os Volume Groups podem ser apresentados por iSCSI independentemente de o cluster usar AHV, ESXi ou Hyper-V.
+
+## 5. Casos de uso do Nutanix Volumes
+
+Pergunta: Escolha dois casos de uso do Nutanix Volumes. (Escolha duas opções.)
+
+Alternativas:
+
+- Sincronização de IAM
+- Ambientes que não são bare-metal
+- Inicialização via iSCSI
+- Replicação de CVM
+- iSCSI para Microsoft Exchange Server
+
+Resposta correta:
+
+- Inicialização via iSCSI
+- iSCSI para Microsoft Exchange Server
+
+Explicação: Esses são casos de uso de armazenamento em bloco disponibilizado por iSCSI.
+
+---
+
+## Material de estudo — Nutanix Unified Storage
+
+O Nutanix Unified Storage reúne blocos, arquivos e objetos em uma única plataforma, reduzindo silos e simplificando o gerenciamento do ambiente.
+
+> 💡 Esta seção foi adicionada para complementar o estudo com exercícios práticos e revisão objetiva.
