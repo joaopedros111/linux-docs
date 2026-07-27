@@ -81,7 +81,9 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="nutanix-volumes">Nutanix Volumes</h1>
+      <h1 id="nutanix-volumes--visão-geral-implantação-e-configuração">Nutanix Volumes — Visão Geral, Implantação e Configuração</h1>
+
+<p>Material de estudo sobre armazenamento em blocos, iSCSI, Volume Groups, alta disponibilidade, segurança e administração do Nutanix Volumes.</p>
 
 <h2 id="índice">Índice</h2>
 
@@ -89,20 +91,27 @@
   <li><a href="#visão-geral">Visão geral</a></li>
   <li><a href="#tipos-de-armazenamento">Tipos de armazenamento</a></li>
   <li><a href="#nutanix-unified-storage">Nutanix Unified Storage</a></li>
-  <li><a href="#o-que-é-o-nutanix-volumes">O que é o Nutanix Volumes</a></li>
   <li><a href="#principais-benefícios">Principais benefícios</a></li>
   <li><a href="#arquitetura">Arquitetura</a></li>
-  <li><a href="#volume-groups">Volume Groups</a></li>
+  <li><a href="#volume-groups-e-vdisks">Volume Groups e vDisks</a></li>
   <li><a href="#volume-groups-compartilhados">Volume Groups compartilhados</a></li>
   <li><a href="#formato-iqn">Formato IQN</a></li>
+  <li><a href="#implantação-do-nutanix-volumes">Implantação do Nutanix Volumes</a></li>
+  <li><a href="#ip-de-serviços-de-dados-iscsi">IP de Serviços de Dados iSCSI</a></li>
   <li><a href="#conectividade-iscsi">Conectividade iSCSI</a></li>
-  <li><a href="#alta-disponibilidade">Alta disponibilidade</a></li>
-  <li><a href="#casos-de-uso">Casos de uso</a></li>
+  <li><a href="#redirecionamento-e-alta-disponibilidade">Redirecionamento e alta disponibilidade</a></li>
+  <li><a href="#balanceamento-de-vdisks">Balanceamento de vDisks</a></li>
+  <li><a href="#listas-de-permissões">Listas de permissões</a></li>
+  <li><a href="#segurança-com-chap-e-ipsec">Segurança com CHAP e IPsec</a></li>
+  <li><a href="#apresentação-a-máquinas-virtuais">Apresentação a máquinas virtuais</a></li>
+  <li><a href="#apresentação-a-servidores-físicos">Apresentação a servidores físicos</a></li>
   <li><a href="#inicialização-por-iscsi">Inicialização por iSCSI</a></li>
-  <li><a href="#gerenciamento">Gerenciamento</a></li>
-  <li><a href="#sistemas-operacionais-compatíveis">Sistemas operacionais compatíveis</a></li>
-  <li><a href="#placas-de-rede-citadas">Placas de rede citadas</a></li>
+  <li><a href="#alteração-do-ip-de-serviços-de-dados">Alteração do IP de Serviços de Dados</a></li>
+  <li><a href="#gerenciamento-e-monitoramento">Gerenciamento e monitoramento</a></li>
+  <li><a href="#casos-de-uso">Casos de uso</a></li>
+  <li><a href="#sistemas-operacionais-e-adaptadores-citados">Sistemas operacionais e adaptadores citados</a></li>
   <li><a href="#requisitos-e-limitações">Requisitos e limitações</a></li>
+  <li><a href="#prism-central-proxy-e-allowlist">Prism Central, proxy e allowlist</a></li>
   <li><a href="#pontos-para-memorizar">Pontos para memorizar</a></li>
   <li><a href="#perguntas-de-revisão">Perguntas de revisão</a></li>
 </ol>
@@ -111,18 +120,19 @@
 
 <h2 id="visão-geral">Visão geral</h2>
 
-<p>O <strong>Nutanix Volumes</strong> é uma solução de armazenamento em blocos definida por software.</p>
+<p>O <strong>Nutanix Volumes</strong> é uma solução corporativa de armazenamento em blocos definida por software.</p>
 
-<p>Ele permite fornecer discos para:</p>
+<p>Ela fornece discos para:</p>
 
 <ul>
   <li>Máquinas virtuais;</li>
   <li>Servidores físicos;</li>
-  <li>Aplicações externas ao cluster Nutanix;</li>
-  <li>Bancos de dados e aplicações que necessitam de LUNs dedicadas.</li>
+  <li>Hosts externos ao cluster Nutanix;</li>
+  <li>Bancos de dados;</li>
+  <li>Aplicações que necessitam de LUNs ou discos dedicados.</li>
 </ul>
 
-<p>A conexão normalmente é realizada pelo protocolo <strong>iSCSI</strong>. Em máquinas virtuais executadas no hipervisor AHV, também é possível conectar grupos de volumes diretamente à VM.</p>
+<p>A conexão com clientes externos normalmente utiliza o protocolo <strong>iSCSI</strong>. Em máquinas virtuais executadas no AHV, também é possível conectar Volume Groups diretamente à VM.</p>
 
 <hr />
 
@@ -132,7 +142,7 @@
 
 <ul>
   <li>Fornecido pelo <strong>Nutanix Volumes</strong>;</li>
-  <li>Apresentado como LUN;</li>
+  <li>Apresentado ao cliente como LUN ou dispositivo SCSI;</li>
   <li>Permite acesso granular no nível de bloco;</li>
   <li>Indicado para bancos de dados e aplicações que precisam de discos dedicados.</li>
 </ul>
@@ -142,7 +152,7 @@
 <ul>
   <li>Fornecido pelo <strong>Nutanix Files</strong>;</li>
   <li>Utiliza protocolos como NFS e SMB;</li>
-  <li>Os dados são organizados em arquivos e diretórios.</li>
+  <li>Organiza os dados em arquivos e diretórios.</li>
 </ul>
 
 <h3 id="armazenamento-de-objetos">Armazenamento de objetos</h3>
@@ -151,14 +161,14 @@
   <li>Fornecido pelo <strong>Nutanix Objects</strong>;</li>
   <li>Indicado para dados não estruturados;</li>
   <li>Acessado por APIs REST compatíveis com S3;</li>
-  <li>Possui estrutura plana, sem diretórios tradicionais.</li>
+  <li>Utiliza uma estrutura plana, sem diretórios tradicionais.</li>
 </ul>
 
 <hr />
 
 <h2 id="nutanix-unified-storage">Nutanix Unified Storage</h2>
 
-<p>O <strong>Nutanix Unified Storage</strong> consolida armazenamento de blocos, arquivos e objetos em uma única plataforma.</p>
+<p>O <strong>Nutanix Unified Storage</strong>, ou NUS, consolida armazenamento de blocos, arquivos e objetos em uma única plataforma.</p>
 
 <p>Principais benefícios:</p>
 
@@ -183,70 +193,56 @@
 
 <hr />
 
-<h2 id="o-que-é-o-nutanix-volumes">O que é o Nutanix Volumes</h2>
-
-<p>O Nutanix Volumes é uma solução corporativa de armazenamento em blocos.</p>
-
-<p>Ele permite conectar recursos de armazenamento diretamente a:</p>
-
-<ul>
-  <li>Máquinas virtuais;</li>
-  <li>Servidores físicos;</li>
-  <li>Hosts externos ao cluster;</li>
-  <li>Aplicações que precisam de acesso direto a discos.</li>
-</ul>
-
-<p>Cada Controller VM, ou <strong>CVM</strong>, pode apresentar volumes por iSCSI. Isso permite que as aplicações utilizem os recursos de todo o cluster para ampliar desempenho e disponibilidade.</p>
-
-<hr />
-
 <h2 id="principais-benefícios">Principais benefícios</h2>
 
 <ul>
   <li>Gerenciamento centralizado pelo Prism;</li>
   <li>Escalabilidade horizontal, ou scale-out;</li>
-  <li>Crescimento linear de capacidade e desempenho;</li>
+  <li>Crescimento de capacidade e desempenho com a adição de nós;</li>
   <li>Alta disponibilidade automática;</li>
   <li>Uso da infraestrutura de rede existente;</li>
   <li>Suporte a servidores físicos e virtuais;</li>
-  <li>Provisionamento thin;</li>
+  <li>Provisionamento thin por padrão;</li>
   <li>Suporte a compactação;</li>
   <li>Suporte a desduplicação;</li>
   <li>Suporte a erasure coding;</li>
-  <li>Integração entre cargas bare metal e virtualizadas.</li>
+  <li>Integração entre cargas bare metal e virtualizadas;</li>
+  <li>Expansão de discos sem necessidade de desligamento.</li>
 </ul>
 
 <hr />
 
 <h2 id="arquitetura">Arquitetura</h2>
 
-<p>Cada nó do cluster Nutanix possui uma <strong>Controller VM</strong>, chamada CVM.</p>
+<p>Cada nó de um cluster Nutanix possui uma <strong>Controller VM</strong>, chamada <strong>CVM</strong>.</p>
 
-<p>As CVMs fornecem os serviços de armazenamento e podem apresentar volumes por iSCSI.</p>
-
-<p>Com isso:</p>
+<p>As CVMs fornecem os serviços de armazenamento e podem apresentar volumes por iSCSI. Dessa forma:</p>
 
 <ul>
   <li>A aplicação pode utilizar recursos de todo o cluster;</li>
-  <li>O desempenho pode crescer junto com a quantidade de nós;</li>
-  <li>Falhas podem ser tratadas sem interrupção;</li>
-  <li>Atualizações podem ser realizadas de forma não disruptiva.</li>
+  <li>O desempenho pode crescer com a quantidade de nós;</li>
+  <li>Falhas podem ser tratadas automaticamente;</li>
+  <li>Atualizações podem ocorrer de forma não disruptiva.</li>
 </ul>
 
-<p>A descoberta dos volumes utiliza um endereço virtual chamado:</p>
+<p>Cada vDisk é hospedado por apenas uma CVM por vez. O acesso primário ao disco ocorre pela CVM responsável por ele.</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iSCSI Data Services IP
-</code></pre></div></div>
+<p>Por esse motivo, a distribuição dos vDisks entre as CVMs pode afetar:</p>
 
-<p>Esse endereço deve ser configurado no Prism Element.</p>
+<ul>
+  <li>Consumo de rede;</li>
+  <li>Utilização das CVMs;</li>
+  <li>Balanceamento de carga;</li>
+  <li>Desempenho geral do armazenamento.</li>
+</ul>
 
 <hr />
 
-<h2 id="volume-groups">Volume Groups</h2>
+<h2 id="volume-groups-e-vdisks">Volume Groups e vDisks</h2>
 
-<p>O armazenamento é organizado por meio de <strong>Volume Groups</strong>, ou VGs.</p>
+<p>O armazenamento é organizado por meio de <strong>Volume Groups</strong>, ou <strong>VGs</strong>.</p>
 
-<p>Um VG é uma coleção de um ou mais discos virtuais chamados <strong>vDisks</strong>.</p>
+<p>Um Volume Group é uma coleção de um ou mais discos virtuais chamados <strong>vDisks</strong>.</p>
 
 <p>Os VGs podem ser apresentados para:</p>
 
@@ -267,7 +263,7 @@
   <li>Outras políticas de armazenamento.</li>
 </ul>
 
-<p>Por padrão, os discos são provisionados de forma thin.</p>
+<p>Por padrão, os discos são provisionados de forma <strong>thin</strong>.</p>
 
 <h3 id="expansão">Expansão</h3>
 
@@ -276,11 +272,11 @@
 <p>É possível:</p>
 
 <ul>
-  <li>Adicionar novos discos ao VG;</li>
+  <li>Adicionar novos vDisks ao VG;</li>
   <li>Aumentar o tamanho dos discos existentes.</li>
 </ul>
 
-<p>Os VGs oferecem conectividade iSCSI em clusters Nutanix com:</p>
+<p>Os Volume Groups oferecem conectividade iSCSI em clusters Nutanix com:</p>
 
 <ul>
   <li>AHV;</li>
@@ -292,27 +288,25 @@
 
 <h2 id="volume-groups-compartilhados">Volume Groups compartilhados</h2>
 
-<p>Vários hosts externos podem acessar discos do mesmo VG.</p>
+<p>Vários hosts externos podem acessar discos do mesmo Volume Group.</p>
 
 <p>Esse cenário é comum em:</p>
 
 <ul>
-  <li>Windows Server Failover Cluster;</li>
+  <li>Windows Server Failover Cluster, WSFC;</li>
   <li>Ambientes com sistemas de arquivos clusterizados;</li>
   <li>Aplicações que utilizam armazenamento compartilhado.</li>
 </ul>
 
-<p>Antes de compartilhar discos entre vários hosts, é necessário garantir que exista uma tecnologia de cluster apropriada.</p>
-
 <blockquote>
-  <p>Compartilhar um disco comum entre vários hosts sem tecnologia de cluster pode causar corrupção de dados.</p>
+  <p>Compartilhar um disco comum entre vários hosts sem uma tecnologia de cluster apropriada pode causar corrupção de dados.</p>
 </blockquote>
 
 <hr />
 
 <h2 id="formato-iqn">Formato IQN</h2>
 
-<p>O <strong>iSCSI Qualified Name</strong>, ou IQN, identifica iniciadores e destinos iSCSI.</p>
+<p>O <strong>iSCSI Qualified Name</strong>, ou <strong>IQN</strong>, identifica iniciadores e destinos iSCSI.</p>
 
 <p>Formato:</p>
 
@@ -322,6 +316,11 @@
 <p>Exemplo:</p>
 
 <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iqn.2024-06.com.nutanix.iscsi:servidor01
+</code></pre></div></div>
+
+<p>Outro exemplo de iniciador Windows:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iqn.1991-05.com.microsoft:winiqntest01
 </code></pre></div></div>
 
 <p>Partes do IQN:</p>
@@ -334,6 +333,80 @@
 </ul>
 
 <p>A autoridade responsável deve garantir que cada IQN seja único.</p>
+
+<hr />
+
+<h2 id="implantação-do-nutanix-volumes">Implantação do Nutanix Volumes</h2>
+
+<p>Fluxo geral de implantação:</p>
+
+<ol>
+  <li>Obter o IQN exclusivo do iniciador iSCSI do cliente.</li>
+  <li>Obter o nome do iniciador em clientes Windows, Linux ou AIX.</li>
+  <li>Alterar o nome do iniciador no AIX, quando necessário.</li>
+  <li>Criar o <strong>IP de Serviços de Dados iSCSI</strong> para o cluster.</li>
+  <li>Criar um <strong>Volume Group</strong>.</li>
+  <li>Adicionar um ou mais <strong>vDisks</strong> ao Volume Group.</li>
+  <li>Criar uma lista de permissões para o VG.</li>
+  <li>Informar os IQNs autorizados na configuração do Volume Group.</li>
+  <li>Criar um segredo, caso a autenticação CHAP seja utilizada.</li>
+  <li>Executar a descoberta do destino iSCSI no cliente.</li>
+  <li>Estabelecer a sessão iSCSI.</li>
+  <li>Opcionalmente, configurar CHAP ou CHAP mútuo.</li>
+</ol>
+
+<blockquote>
+  <p>O IP de Serviços de Dados iSCSI não pode ser igual ao IP virtual do cluster.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="ip-de-serviços-de-dados-iscsi">IP de Serviços de Dados iSCSI</h2>
+
+<p>A descoberta dos volumes utiliza um endereço virtual chamado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iSCSI Data Services IP
+</code></pre></div></div>
+
+<p>Esse endereço deve ser configurado no <strong>Prism Element</strong>.</p>
+
+<p>Ele funciona como:</p>
+
+<ul>
+  <li>Portal de descoberta;</li>
+  <li>Ponto inicial de conexão;</li>
+  <li>Endereço de acesso ao cluster para clientes iSCSI;</li>
+  <li>Ponto de entrada para o redirecionamento às CVMs apropriadas.</li>
+</ul>
+
+<p>Apenas uma CVM possui o IP de Serviços de Dados por vez. Caso essa CVM fique indisponível, o endereço é transferido para outra CVM.</p>
+
+<h3 id="regras-importantes">Regras importantes</h3>
+
+<ul>
+  <li>O endereço deve estar na mesma sub-rede das interfaces <code class="language-plaintext highlighter-rouge">eth0</code> das CVMs;</li>
+  <li>Não deve ser igual ao IP virtual do cluster;</li>
+  <li>A Nutanix não recomenda criar sessões diretamente para os IPs das CVMs;</li>
+  <li>O endereço pode ser compartilhado com outros serviços Nutanix, incluindo Nutanix Files.</li>
+</ul>
+
+<h3 id="configuração-no-prism-element">Configuração no Prism Element</h3>
+
+<p>Acesse:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Settings &gt; Cluster Details
+</code></pre></div></div>
+
+<p>Na página de detalhes do cluster, informe ou atualize:</p>
+
+<ul>
+  <li>Nome do cluster;</li>
+  <li>FQDN;</li>
+  <li>IP virtual;</li>
+  <li>IP de Serviços de Dados iSCSI.</li>
+</ul>
+
+<p>Depois, clique em <strong>Save</strong>.</p>
 
 <hr />
 
@@ -352,65 +425,250 @@ TCP 3205
 <p>Essas portas devem estar acessíveis para:</p>
 
 <ul>
-  <li>iSCSI Data Services IP;</li>
+  <li>IP de Serviços de Dados iSCSI;</li>
   <li>Endereço IP de cada CVM.</li>
 </ul>
 
-<p>Os servidores também devem ser incluídos na lista de permissões do Prism.</p>
+<p>Os IQNs dos servidores também devem ser adicionados à lista de permissões do Volume Group.</p>
 
 <hr />
 
-<h2 id="alta-disponibilidade">Alta disponibilidade</h2>
+<h2 id="redirecionamento-e-alta-disponibilidade">Redirecionamento e alta disponibilidade</h2>
 
-<p>O Nutanix Volumes gerencia automaticamente a alta disponibilidade.</p>
-
-<p>O redirecionamento iSCSI ajuda a:</p>
+<p>O Nutanix Volumes utiliza <strong>redirecionamento de destino iSCSI</strong> para controlar:</p>
 
 <ul>
-  <li>Distribuir conexões entre as CVMs;</li>
-  <li>Manter o acesso durante falhas;</li>
-  <li>Evitar interrupções durante atualizações;</li>
-  <li>Simplificar o balanceamento de carga.</li>
+  <li>Gerenciamento dos caminhos;</li>
+  <li>Distribuição das conexões;</li>
+  <li>Balanceamento dos vDisks;</li>
+  <li>Resiliência das sessões;</li>
+  <li>Continuidade durante falhas e atualizações.</li>
 </ul>
 
-<p>Segundo o material, isso reduz a necessidade de ferramentas no cliente, como MPIO, em determinados cenários.</p>
+<p>O método de redirecionamento usado na conectividade externa não depende do <strong>MPIO</strong> para balanceamento ou resiliência dos caminhos.</p>
+
+<p>Fluxo simplificado:</p>
+
+<ol>
+  <li>O cliente se conecta ao IP de Serviços de Dados.</li>
+  <li>O cluster identifica a CVM responsável pelo vDisk.</li>
+  <li>A sessão é redirecionada para o destino virtual apropriado.</li>
+  <li>Em caso de falha, o cluster redireciona a conexão para outra CVM.</li>
+</ol>
+
+<p>Se uma CVM ativa ficar offline, as conexões podem ser redirecionadas e restabelecidas por outra CVM, preservando o acesso ao armazenamento.</p>
 
 <hr />
 
-<h2 id="casos-de-uso">Casos de uso</h2>
+<h2 id="balanceamento-de-vdisks">Balanceamento de vDisks</h2>
 
-<p>O Nutanix Volumes pode ser utilizado em:</p>
+<p>O balanceamento de vDisks permite que máquinas virtuais com uso intenso de entrada e saída aproveitem a capacidade de várias CVMs.</p>
+
+<p>Quando o balanceamento está habilitado:</p>
 
 <ul>
-  <li>Bancos de dados Oracle;</li>
-  <li>Oracle RAC;</li>
-  <li>Microsoft SQL Server;</li>
-  <li>IBM DB2;</li>
-  <li>Servidores bare metal;</li>
-  <li>Máquinas virtuais fora do cluster;</li>
-  <li>Clusters de servidores;</li>
-  <li>Aplicações que precisam de baixa latência;</li>
-  <li>Sistemas que exigem discos dedicados;</li>
-  <li>Inicialização de sistemas operacionais por iSCSI.</li>
+  <li>A VM convidada se comunica diretamente com cada CVM que hospeda um vDisk;</li>
+  <li>Cada vDisk continua sendo atendido por uma única CVM;</li>
+  <li>Vários vDisks podem distribuir a carga entre diferentes CVMs.</li>
+</ul>
+
+<p>Para aproveitar várias CVMs, recomenda-se:</p>
+
+<ol>
+  <li>Criar mais de um vDisk para o sistema de arquivos.</li>
+  <li>Utilizar volumes distribuídos ou com striping no sistema operacional.</li>
+  <li>Distribuir a carga de entrada e saída entre os discos.</li>
+</ol>
+
+<h3 id="comportamento-padrão">Comportamento padrão</h3>
+
+<ul>
+  <li>Desabilitado por padrão em VGs conectados diretamente às VMs;</li>
+  <li>Habilitado por padrão em VGs conectados às VMs pelo IP de Serviços de Dados;</li>
+  <li>Um clone criado pela interface web não mantém o balanceamento habilitado por padrão;</li>
+  <li>É possível conectar no máximo <strong>10 Volume Groups balanceados</strong> por VM convidada;</li>
+  <li>Para VMs Linux, o timeout do dispositivo SCSI deve ser configurado para <strong>60 segundos</strong>.</li>
+</ul>
+
+<h3 id="criar-um-volume-group-com-balanceamento">Criar um Volume Group com balanceamento</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutanix@cvm<span class="nv">$ </span>acli vg.create vg_name <span class="nv">load_balance_vm_attachments</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<h3 id="habilitar-em-um-volume-group-existente">Habilitar em um Volume Group existente</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutanix@cvm<span class="nv">$ </span>acli vg.update vg_name <span class="nv">load_balance_vm_attachments</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<h3 id="verificar-a-configuração">Verificar a configuração</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutanix@cvm<span class="nv">$ </span>acli vg.get vg_name
+</code></pre></div></div>
+
+<blockquote>
+  <p>Antes de habilitar o balanceamento em um Volume Group existente, desconecte todas as VMs associadas a ele.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="listas-de-permissões">Listas de permissões</h2>
+
+<p>Uma lista de permissões, ou <strong>allowlist</strong>, define quais clientes podem acessar determinado recurso.</p>
+
+<h3 id="allowlist-de-volume-group">Allowlist de Volume Group</h3>
+
+<p>A lista de permissões de um Volume Group autoriza clientes externos ou hosts que não residem no cluster.</p>
+
+<p>Procedimento:</p>
+
+<ol>
+  <li>Configurar o iniciador iSCSI no cliente;</li>
+  <li>Obter o IQN do cliente;</li>
+  <li>Informar o IQN no campo de clientes do Volume Group.</li>
+</ol>
+
+<p>Nesse tipo de lista, utiliza-se o <strong>IQN do cliente</strong>, e não o endereço IP.</p>
+
+<blockquote>
+  <p>O AOS não oferece suporte a endereços IP em listas de permissões de Volume Groups.</p>
+</blockquote>
+
+<h3 id="allowlist-de-sistema-de-arquivos">Allowlist de sistema de arquivos</h3>
+
+<p>Pode ser utilizada na criação de um contêiner para permitir acesso de determinados endereços.</p>
+
+<p>Uma allowlist configurada no nível do contêiner substitui a allowlist global para aquele contêiner.</p>
+
+<hr />
+
+<h2 id="segurança-com-chap-e-ipsec">Segurança com CHAP e IPsec</h2>
+
+<h3 id="chap">CHAP</h3>
+
+<p>O <strong>Challenge-Handshake Authentication Protocol</strong>, ou <strong>CHAP</strong>, adiciona autenticação às conexões iSCSI.</p>
+
+<p>O cliente e o destino utilizam uma senha compartilhada, chamada de <strong>segredo</strong>.</p>
+
+<p>O Nutanix Volumes oferece suporte a:</p>
+
+<ul>
+  <li>CHAP unidirecional;</li>
+  <li>CHAP mútuo.</li>
+</ul>
+
+<h4 id="chap-unidirecional">CHAP unidirecional</h4>
+
+<p>No CHAP unidirecional, o destino autentica o iniciador durante a conexão.</p>
+
+<p>A Nutanix recomenda o uso de CHAP unidirecional como proteção básica para conexões iSCSI.</p>
+
+<p>Para clientes Linux com CentOS 8 ou superior, são citados os algoritmos:</p>
+
+<ul>
+  <li>MD5;</li>
+  <li>SHA-1;</li>
+  <li>SHA-256.</li>
+</ul>
+
+<p>Recomenda-se utilizar SHA-1 ou SHA-256 em vez de MD5, especialmente em ambientes sujeitos a requisitos FIPS.</p>
+
+<h3 id="ipsec">IPsec</h3>
+
+<p>Caso o firewall do Windows Server já utilize IPsec, o canal iSCSI também pode ser protegido por esse protocolo.</p>
+
+<p>A configuração pode incluir:</p>
+
+<ul>
+  <li>Endereço de destino;</li>
+  <li>Endereço externo do túnel;</li>
+  <li>Adaptador local;</li>
+  <li>IP do iniciador.</li>
+</ul>
+
+<p>Os endereços do modo túnel podem ser configurados na guia <strong>Configuration</strong> do console do iniciador iSCSI.</p>
+
+<hr />
+
+<h2 id="apresentação-a-máquinas-virtuais">Apresentação a máquinas virtuais</h2>
+
+<p>O Nutanix Volumes pode fornecer armazenamento a máquinas virtuais por meio de:</p>
+
+<ul>
+  <li>Conexão direta do Volume Group à VM, em AHV;</li>
+  <li>Conexão iSCSI usando o IP de Serviços de Dados.</li>
+</ul>
+
+<p>O IP de Serviços de Dados:</p>
+
+<ul>
+  <li>Ajuda a balancear solicitações;</li>
+  <li>Permite otimização de caminhos;</li>
+  <li>Evita gargalos;</li>
+  <li>Reduz a necessidade de configurar multipath, como Microsoft MPIO, nos cenários descritos.</li>
+</ul>
+
+<hr />
+
+<h2 id="apresentação-a-servidores-físicos">Apresentação a servidores físicos</h2>
+
+<p>O Nutanix Volumes pode apresentar LUNs a servidores físicos por iSCSI.</p>
+
+<p>O host pode utilizar os discos para:</p>
+
+<ul>
+  <li>Dados de aplicações;</li>
+  <li>Bancos de dados;</li>
+  <li>Sistemas de arquivos clusterizados;</li>
+  <li>Inicialização do sistema operacional.</li>
+</ul>
+
+<p>A configuração pode envolver adaptadores como:</p>
+
+<ul>
+  <li>Placa de rede Intel;</li>
+  <li>HBA QLogic;</li>
+  <li>Adaptador IBM PCIe.</li>
 </ul>
 
 <hr />
 
 <h2 id="inicialização-por-iscsi">Inicialização por iSCSI</h2>
 
-<p>O Nutanix Volumes permite que servidores físicos inicializem um sistema operacional diretamente a partir de uma LUN iSCSI.</p>
+<p>O Nutanix Volumes permite que servidores físicos inicializem o sistema operacional diretamente de uma LUN iSCSI.</p>
 
 <p>Nesse cenário:</p>
 
 <ul>
-  <li>O sistema operacional não precisa estar em um disco local;</li>
+  <li>O sistema operacional não precisa estar em disco local;</li>
   <li>O servidor utiliza uma LUN fornecida pelo cluster Nutanix;</li>
-  <li>A placa de rede, o HBA e o sistema operacional precisam ser homologados.</li>
+  <li>A placa de rede, o HBA e o sistema operacional devem ser compatíveis e homologados.</li>
 </ul>
 
 <hr />
 
-<h2 id="gerenciamento">Gerenciamento</h2>
+<h2 id="alteração-do-ip-de-serviços-de-dados">Alteração do IP de Serviços de Dados</h2>
+
+<p>A Nutanix recomenda configurar o IP de Serviços de Dados apenas uma vez por cluster. Entretanto, ele pode ser alterado pelo Prism Element.</p>
+
+<p>Após a alteração, os clientes precisam ser reconfigurados para utilizar o novo IP.</p>
+
+<p>Ações necessárias:</p>
+
+<ol>
+  <li>Encerrar ou desconectar as sessões iSCSI ou Nutanix Files existentes.</li>
+  <li>Remover o endereço antigo, quando necessário.</li>
+  <li>Configurar o novo endereço nos clientes.</li>
+  <li>Executar novamente a descoberta do destino.</li>
+  <li>Restabelecer as sessões.</li>
+</ol>
+
+<blockquote>
+  <p>A alteração pode causar indisponibilidade ou problemas em recursos como Volumes, NCM Self-Service, Nutanix Disaster Recovery, Nutanix Kubernetes Engine, Objects e Files.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="gerenciamento-e-monitoramento">Gerenciamento e monitoramento</h2>
 
 <p>Os Volume Groups podem ser gerenciados por:</p>
 
@@ -438,7 +696,29 @@ TCP 3205
 
 <hr />
 
-<h2 id="sistemas-operacionais-compatíveis">Sistemas operacionais compatíveis</h2>
+<h2 id="casos-de-uso">Casos de uso</h2>
+
+<p>O Nutanix Volumes pode ser utilizado em:</p>
+
+<ul>
+  <li>Oracle Database;</li>
+  <li>Oracle RAC;</li>
+  <li>Microsoft SQL Server;</li>
+  <li>IBM DB2;</li>
+  <li>Servidores bare metal;</li>
+  <li>Máquinas virtuais externas ao cluster;</li>
+  <li>Clusters de servidores;</li>
+  <li>Windows Server Failover Cluster;</li>
+  <li>Aplicações que precisam de baixa latência;</li>
+  <li>Sistemas que exigem discos dedicados;</li>
+  <li>Inicialização de sistemas operacionais por iSCSI.</li>
+</ul>
+
+<hr />
+
+<h2 id="sistemas-operacionais-e-adaptadores-citados">Sistemas operacionais e adaptadores citados</h2>
+
+<h3 id="sistemas-operacionais">Sistemas operacionais</h3>
 
 <p>O material cita suporte para:</p>
 
@@ -452,11 +732,9 @@ TCP 3205
   <li>IBM AIX.</li>
 </ul>
 
-<hr />
+<h3 id="adaptadores-de-rede-e-hba">Adaptadores de rede e HBA</h3>
 
-<h2 id="placas-de-rede-citadas">Placas de rede citadas</h2>
-
-<p>O material cita as seguintes placas:</p>
+<p>São citados:</p>
 
 <ul>
   <li>Intel 10 GbE Network Adapter X520 / I350;</li>
@@ -473,10 +751,13 @@ TCP 3205
 <h3 id="requisitos">Requisitos</h3>
 
 <ul>
-  <li>Configurar o iSCSI Data Services IP no Prism Element;</li>
+  <li>Configurar o IP de Serviços de Dados iSCSI no Prism Element;</li>
+  <li>Garantir que ele esteja na mesma sub-rede das interfaces <code class="language-plaintext highlighter-rouge">eth0</code> das CVMs;</li>
   <li>Liberar as portas TCP 3260 e 3205;</li>
-  <li>Permitir comunicação com os endereços IP das CVMs;</li>
-  <li>Adicionar os iniciadores à lista de permissões do Prism.</li>
+  <li>Permitir comunicação com os IPs das CVMs;</li>
+  <li>Obter os IQNs dos iniciadores;</li>
+  <li>Adicionar os IQNs à allowlist do Volume Group;</li>
+  <li>Configurar CHAP, quando necessário.</li>
 </ul>
 
 <h3 id="limitações">Limitações</h3>
@@ -499,19 +780,81 @@ TCP 3205
 
 <hr />
 
+<h2 id="prism-central-proxy-e-allowlist">Prism Central, proxy e allowlist</h2>
+
+<p>A comunicação do Prism pode ser encaminhada por um servidor proxy. Para evitar falhas entre o Prism Element e o Prism Central, determinados destinos podem ser adicionados à lista de permissões do proxy.</p>
+
+<p>Isso permite:</p>
+
+<ul>
+  <li>Ignorar o proxy HTTP entre Prism Element e Prism Central;</li>
+  <li>Permitir tráfego direto entre os componentes;</li>
+  <li>Registrar clusters no Prism Central mesmo quando utilizam proxy HTTP.</li>
+</ul>
+
+<h3 id="comandos-ncli">Comandos nCLI</h3>
+
+<p>Adicionar entrada:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http-proxy add-to-whitelist
+</code></pre></div></div>
+
+<p>Remover entrada:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http-proxy delete-from-whitelist
+</code></pre></div></div>
+
+<h3 id="regras-importantes-1">Regras importantes</h3>
+
+<ul>
+  <li>Apenas uma entrada pode ser adicionada ou removida por vez;</li>
+  <li>Cada entrada pode ter no máximo 253 caracteres;</li>
+  <li>São suportadas até 1.000 entradas;</li>
+  <li>Ao remover, deve-se informar o destino, e não o tipo de destino;</li>
+  <li>Os comandos não aceitam máscara IPv4 em notação de prefixo ou com <code class="language-plaintext highlighter-rouge">*</code>;</li>
+  <li>Sub-redes podem ser informadas com máscara completa;</li>
+  <li><code class="language-plaintext highlighter-rouge">contoso.com</code> e <code class="language-plaintext highlighter-rouge">www.contoso.com</code> são tratados como destinos diferentes;</li>
+  <li>Recomenda-se utilizar FQDNs.</li>
+</ul>
+
+<p>Exemplos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.0.0/255.0.0.0
+192.168.1.0/255.255.255.0
+</code></pre></div></div>
+
+<h3 id="porta-9440">Porta 9440</h3>
+
+<p>A porta SSL <strong>9440</strong> deve estar aberta nos dois sentidos entre a VM do Prism Central e os clusters registrados.</p>
+
+<ul>
+  <li>Quando a porta 9440 está aberta, normalmente não é necessário adicionar o Prism Central e os clusters à allowlist do proxy;</li>
+  <li>Quando a porta 9440 está fechada, é necessário adicionar os destinos à lista de permissões.</li>
+</ul>
+
+<hr />
+
 <h2 id="pontos-para-memorizar">Pontos para memorizar</h2>
 
 <ol>
   <li>Nutanix Volumes fornece armazenamento em blocos.</li>
-  <li>A conexão principal é feita por iSCSI.</li>
+  <li>A conexão principal com hosts externos utiliza iSCSI.</li>
   <li>O armazenamento é organizado em Volume Groups.</li>
   <li>Cada Volume Group possui um ou mais vDisks.</li>
-  <li>O iSCSI Data Services IP deve ser configurado.</li>
+  <li>Cada vDisk é hospedado por uma CVM por vez.</li>
+  <li>O IP de Serviços de Dados iSCSI é o portal de descoberta.</li>
+  <li>O IP de Serviços de Dados não pode ser igual ao IP virtual do cluster.</li>
   <li>As portas necessárias são TCP 3260 e 3205.</li>
-  <li>Os hosts precisam ser permitidos no Prism.</li>
+  <li>A allowlist de Volume Group utiliza o IQN, e não o IP do cliente.</li>
   <li>Os volumes são thin provisioned por padrão.</li>
+  <li>O redirecionamento iSCSI fornece balanceamento e resiliência.</li>
+  <li>Uma CVM indisponível não deve interromper permanentemente o acesso, pois o serviço é redirecionado.</li>
   <li>Vários hosts só devem compartilhar discos quando houver tecnologia de cluster.</li>
-  <li>Não é suportado criar datastore iSCSI para ESXi ou Hyper-V usando Nutanix Volumes.</li>
+  <li>CHAP pode ser usado para proteger as conexões iSCSI.</li>
+  <li>Não é suportado criar datastore iSCSI para ESXi ou Hyper-V com Nutanix Volumes.</li>
+  <li>Ao alterar o IP de Serviços de Dados, os clientes devem ser reconfigurados.</li>
+  <li>O balanceamento de vDisks pode distribuir a carga entre várias CVMs.</li>
+  <li>No máximo 10 Volume Groups balanceados podem ser conectados a uma VM convidada.</li>
 </ol>
 
 <hr />
@@ -536,35 +879,68 @@ TCP 3205
 
 <h3 id="5-qual-endereço-deve-ser-configurado-para-descoberta-iscsi">5. Qual endereço deve ser configurado para descoberta iSCSI?</h3>
 
-<p>O iSCSI Data Services IP.</p>
+<p>O IP de Serviços de Dados iSCSI.</p>
 
-<h3 id="6-quais-portas-precisam-ser-liberadas">6. Quais portas precisam ser liberadas?</h3>
+<h3 id="6-o-ip-de-serviços-de-dados-pode-ser-igual-ao-ip-virtual-do-cluster">6. O IP de Serviços de Dados pode ser igual ao IP virtual do cluster?</h3>
+
+<p>Não.</p>
+
+<h3 id="7-quais-portas-precisam-ser-liberadas">7. Quais portas precisam ser liberadas?</h3>
 
 <p>TCP 3260 e TCP 3205.</p>
 
-<h3 id="7-é-possível-aumentar-um-volume-sem-desligar-o-ambiente">7. É possível aumentar um volume sem desligar o ambiente?</h3>
+<h3 id="8-qual-identificação-é-usada-na-allowlist-de-volume-group">8. Qual identificação é usada na allowlist de Volume Group?</h3>
+
+<p>O IQN do iniciador iSCSI.</p>
+
+<h3 id="9-é-possível-aumentar-um-volume-sem-desligar-o-ambiente">9. É possível aumentar um volume sem desligar o ambiente?</h3>
 
 <p>Sim. É possível adicionar discos e expandir discos existentes online.</p>
 
-<h3 id="8-vários-hosts-podem-acessar-o-mesmo-volume-group">8. Vários hosts podem acessar o mesmo Volume Group?</h3>
+<h3 id="10-vários-hosts-podem-acessar-o-mesmo-volume-group">10. Vários hosts podem acessar o mesmo Volume Group?</h3>
 
 <p>Sim, desde que exista uma tecnologia de cluster ou sistema de arquivos apropriado.</p>
 
-<h3 id="9-nutanix-volumes-pode-ser-usado-como-datastore-iscsi-para-esxi">9. Nutanix Volumes pode ser usado como datastore iSCSI para ESXi?</h3>
+<h3 id="11-o-que-ocorre-quando-a-cvm-que-possui-o-ip-de-serviços-de-dados-fica-indisponível">11. O que ocorre quando a CVM que possui o IP de Serviços de Dados fica indisponível?</h3>
+
+<p>O endereço é transferido para outra CVM, mantendo a disponibilidade do serviço.</p>
+
+<h3 id="12-o-nutanix-volumes-depende-de-mpio-para-o-redirecionamento-externo">12. O Nutanix Volumes depende de MPIO para o redirecionamento externo?</h3>
+
+<p>Não. O redirecionamento iSCSI gerencia os caminhos e a resiliência nos cenários descritos.</p>
+
+<h3 id="13-como-proteger-uma-conexão-iscsi">13. Como proteger uma conexão iSCSI?</h3>
+
+<p>Configurando CHAP unidirecional, CHAP mútuo ou IPsec, conforme o ambiente.</p>
+
+<h3 id="14-como-habilitar-o-balanceamento-em-um-volume-group-existente">14. Como habilitar o balanceamento em um Volume Group existente?</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutanix@cvm<span class="nv">$ </span>acli vg.update vg_name <span class="nv">load_balance_vm_attachments</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<h3 id="15-o-que-deve-ser-feito-antes-de-habilitar-o-balanceamento-em-um-vg-existente">15. O que deve ser feito antes de habilitar o balanceamento em um VG existente?</h3>
+
+<p>Desconectar todas as VMs associadas ao Volume Group.</p>
+
+<h3 id="16-quantos-volume-groups-balanceados-podem-ser-conectados-a-uma-vm">16. Quantos Volume Groups balanceados podem ser conectados a uma VM?</h3>
+
+<p>No máximo 10.</p>
+
+<h3 id="17-qual-timeout-scsi-deve-ser-configurado-em-vms-linux">17. Qual timeout SCSI deve ser configurado em VMs Linux?</h3>
+
+<p>60 segundos.</p>
+
+<h3 id="18-o-nutanix-volumes-pode-ser-usado-como-datastore-iscsi-para-esxi">18. O Nutanix Volumes pode ser usado como datastore iSCSI para ESXi?</h3>
 
 <p>Não. Essa configuração não é suportada.</p>
 
-<h3 id="10-como-os-discos-são-provisionados-por-padrão">10. Como os discos são provisionados por padrão?</h3>
+<h3 id="19-o-que-deve-ser-feito-após-alterar-o-ip-de-serviços-de-dados">19. O que deve ser feito após alterar o IP de Serviços de Dados?</h3>
 
-<p>De forma thin.</p>
+<p>Reconfigurar os clientes, executar novamente a descoberta e restabelecer as sessões.</p>
 
-<h3 id="11-onde-os-volume-groups-podem-ser-gerenciados">11. Onde os Volume Groups podem ser gerenciados?</h3>
+<h3 id="20-onde-os-volume-groups-podem-ser-gerenciados">20. Onde os Volume Groups podem ser gerenciados?</h3>
 
 <p>No Prism Central, Prism Element, aCLI, nCLI ou PowerShell.</p>
-
-<h3 id="12-é-possível-inicializar-um-servidor-físico-por-iscsi">12. É possível inicializar um servidor físico por iSCSI?</h3>
-
-<p>Sim, desde que o hardware e o sistema operacional sejam compatíveis.</p>
 
     </main>
     <footer class="site-footer">
