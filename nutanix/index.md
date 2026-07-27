@@ -13,42 +13,11 @@ Esta seção reúne anotações, procedimentos e troubleshooting relacionados ao
 
 ---
 
-## Temas da seção
+## Conteúdo
 
-* Prism Element
-* Prism Central
-* máquinas virtuais
-* snapshots
-* storage
-* redes
-* clusters
-* troubleshooting de infraestrutura
+* [Nutanix Volumes](volumes.md)
+* [Nutanix Volumes — Implantação](volumes-implantacao.md)
 
 ---
 
-## Checklist de operação
-
-* Verificar saúde do cluster.
-* Validar alertas ativos.
-* Conferir uso de CPU, memória e storage.
-* Monitorar snapshots e políticas de retenção.
-* Documentar alterações em VMs críticas.
-* Validar conectividade antes de intervenções.
-
----
-
-## Boas práticas
-
-* Evite alterações sem janela ou registro.
-* Documente VMs críticas e dependências.
-* Acompanhe alertas do cluster antes e depois de mudanças.
-* Monitore capacidade de storage.
-* Valide backups antes de operações sensíveis.
-
----
-
-## Tópicos da seção
-
-* [Resumo para estudo — Nutanix Volumes](volumes/)
-
-> 💡 A página de resumo foi organizada em uma rota própria dentro da seção de Nutanix para funcionar corretamente no GitHub Pages.
+> 💡 Esta seção reúne os principais tópicos de estudo sobre Nutanix em formato simples e organizado.
