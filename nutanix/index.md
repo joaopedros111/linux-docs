@@ -49,6 +49,6 @@ Esta seção reúne anotações, procedimentos e troubleshooting relacionados ao
 
 ## Tópicos da seção
 
-* [Resumo para estudo — Nutanix Volumes](volumes.html)
+* [Resumo para estudo — Nutanix Volumes](volumes/)
 
-> 💡 A página de resumo foi movida para uma seção própria dentro de Nutanix para ficar mais organizada.
+> 💡 A página de resumo foi organizada em uma rota própria dentro da seção de Nutanix para funcionar corretamente no GitHub Pages.
