@@ -16,7 +16,7 @@ Esta seção reúne anotações, procedimentos e troubleshooting relacionados ao
 ## Conteúdo
 
 * [Nutanix Volumes](volumes.md)
-* [Nutanix Volumes Perguntas e Respostas] (nutanix-volumes-perguntas-respostas.md)
+* [Nutanix Volumes Perguntas e Respostas](nutanix-volumes-perguntas-respostas.md)
 * [Nutanix Volumes — Implantação](volumes-implantacao.md)
 * [Nutanix Volumes - Implantação](nutanix-volumes-implantacao-pergutas-respostas)
 
