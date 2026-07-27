@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Nutanix-volumes-perguntas-respostas · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/nutanix-volumes-perguntas-respostas/">
+  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nutanix-volumes-perguntas-respostas · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Nutanix-volumes-perguntas-respostas · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="nutanix-volumes--perguntas-e-respostas">Nutanix Volumes — Perguntas e Respostas</h1>
+
+<blockquote>
+  <p>Material de revisão sobre armazenamento, iSCSI e Grupos de Volumes.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-alta-disponibilidade-e-integração-com-o-wsfc">1. Alta disponibilidade e integração com o WSFC</h2>
+
+<h3 id="pergunta">Pergunta</h3>
+
+<p>Um administrador deseja implantar uma aplicação que exige alta disponibilidade e gerenciamento eficiente de dados. A aplicação será executada em um cluster de servidores físicos e precisa ser integrada a uma configuração existente do <strong>Windows Server Failover Clustering (WSFC)</strong>.</p>
+
+<p>Qual solução de armazenamento deve ser usada para dar suporte a essa aplicação?</p>
+
+<h3 id="alternativas">Alternativas</h3>
+
+<ul>
+  <li>Usar armazenamento de arquivos e acessá-lo via <strong>NFS</strong>, pois ele oferece simplicidade para o compartilhamento de arquivos.</li>
+  <li>Usar o <strong>Nutanix Volumes</strong> e acessá-lo via <strong>Fibre Channel (FC)</strong>, pois ele é mais confiável que o iSCSI.</li>
+  <li>Usar armazenamento de objetos e acessá-lo via <strong>HTTP</strong>, pois ele é ideal para dados não estruturados.</li>
+  <li>Usar o <strong>Nutanix Volumes</strong> e acessá-lo via <strong>iSCSI</strong> para garantir desempenho adequado e integração com o WSFC.</li>
+</ul>
+
+<h3 id="resposta-correta">Resposta correta</h3>
+
+<p>✅ <strong>Usar o Nutanix Volumes e acessá-lo via iSCSI para garantir desempenho adequado e integração com o WSFC.</strong></p>
+
+<h3 id="explicação">Explicação</h3>
+
+<p>O <strong>Nutanix Volumes</strong> fornece armazenamento em bloco via <strong>iSCSI</strong>, adequado para servidores físicos e para integração com o <strong>Windows Server Failover Clustering</strong>.</p>
+
+<hr />
+
+<h2 id="2-formato-correto-de-iqn">2. Formato correto de IQN</h2>
+
+<h3 id="pergunta-1">Pergunta</h3>
+
+<p>Identifique o formato correto do <strong>iSCSI Qualified Name (IQN)</strong>.</p>
+
+<h3 id="alternativas-1">Alternativas</h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">iqn.yyyy-mm:uniquename</code></li>
+  <li><code class="language-plaintext highlighter-rouge">iqn.yyyy.naming-authority:uniquename</code></li>
+  <li><code class="language-plaintext highlighter-rouge">iqn.yyyy-mm.naming-authority:uniquename</code></li>
+  <li><code class="language-plaintext highlighter-rouge">iqn.mm-yyyy:uniquename.naming-authority</code></li>
+</ul>
+
+<h3 id="resposta-correta-1">Resposta correta</h3>
+
+<p>✅ <code class="language-plaintext highlighter-rouge">iqn.yyyy-mm.naming-authority:uniquename</code></p>
+
+<h3 id="exemplo">Exemplo</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iqn.2026-07.com.nutanix:storage01
+</code></pre></div></div>
+
+<h3 id="explicação-1">Explicação</h3>
+
+<p>O formato do IQN contém:</p>
+
+<ul>
+  <li>o prefixo <code class="language-plaintext highlighter-rouge">iqn</code>;</li>
+  <li>o ano e o mês de registro;</li>
+  <li>a autoridade de nomenclatura;</li>
+  <li>um identificador exclusivo.</li>
+</ul>
+
+<hr />
+
+<h2 id="3-tipos-de-armazenamento-e-tipos-de-dados">3. Tipos de armazenamento e tipos de dados</h2>
+
+<h3 id="pergunta-2">Pergunta</h3>
+
+<p>Relacione os tipos de armazenamento com os tipos de dados que normalmente armazenam.</p>
+
+<h3 id="resposta-correta-2">Resposta correta</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tipo de armazenamento</th>
+      <th>Tipo de dado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Armazenamento de arquivos</td>
+      <td>Dados estruturados e semiestruturados</td>
+    </tr>
+    <tr>
+      <td>Armazenamento em blocos</td>
+      <td>Dados estruturados</td>
+    </tr>
+    <tr>
+      <td>Armazenamento de objetos</td>
+      <td>Dados não estruturados e semiestruturados</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="explicação-2">Explicação</h3>
+
+<p>A associação considera o uso típico de cada modelo:</p>
+
+<ul>
+  <li><strong>Blocos:</strong> cargas estruturadas, como bancos de dados e discos de máquinas virtuais.</li>
+  <li><strong>Objetos:</strong> arquivos e conteúdos não estruturados ou semiestruturados.</li>
+  <li><strong>Arquivos:</strong> dados organizados em diretórios e compartilhamentos.</li>
+</ul>
+
+<hr />
+
+<h2 id="4-grupos-de-volumes-e-hipervisores">4. Grupos de Volumes e hipervisores</h2>
+
+<h3 id="pergunta-3">Pergunta</h3>
+
+<p><strong>Verdadeiro ou falso:</strong> os Grupos de Volumes (<strong>VGs</strong>) podem ser utilizados para conectividade iSCSI somente em hipervisores baseados em AHV.</p>
+
+<h3 id="alternativas-2">Alternativas</h3>
+
+<ul>
+  <li>Verdadeiro. Os VGs podem ser usados para conectividade iSCSI em clusters AHV, mas somente se a versão do AOS for 6.8 ou superior.</li>
+  <li>Falso. Os VGs podem ser usados para conectividade iSCSI somente em hipervisores baseados em AHV ou ESXi.</li>
+  <li>Verdadeiro. Os VGs podem ser usados para conectividade iSCSI somente em hipervisores baseados em AHV.</li>
+  <li>Falso. Os VGs oferecem conectividade iSCSI em qualquer cluster Nutanix, independentemente de o hipervisor ser ESXi, Hyper-V ou AHV.</li>
+</ul>
+
+<h3 id="resposta-correta-3">Resposta correta</h3>
+
+<p>✅ <strong>Falso. Os VGs oferecem conectividade iSCSI em qualquer cluster Nutanix, independentemente de o hipervisor ser ESXi, Hyper-V ou AHV.</strong></p>
+
+<h3 id="explicação-3">Explicação</h3>
+
+<p>Os <strong>Volume Groups</strong> podem ser apresentados por <strong>iSCSI</strong> independentemente de o cluster usar:</p>
+
+<ul>
+  <li>AHV;</li>
+  <li>VMware ESXi;</li>
+  <li>Microsoft Hyper-V.</li>
+</ul>
+
+<hr />
+
+<h2 id="5-casos-de-uso-do-nutanix-volumes">5. Casos de uso do Nutanix Volumes</h2>
+
+<h3 id="pergunta-4">Pergunta</h3>
+
+<p>Escolha dois casos de uso do <strong>Nutanix Volumes</strong>.</p>
+
+<h3 id="alternativas-3">Alternativas</h3>
+
+<ul>
+  <li>Sincronização de IAM</li>
+  <li>Ambientes que não são bare-metal</li>
+  <li>Inicialização via iSCSI</li>
+  <li>Replicação de CVM</li>
+  <li>iSCSI para Microsoft Exchange Server</li>
+</ul>
+
+<h3 id="respostas-corretas">Respostas corretas</h3>
+
+<p>✅ <strong>Inicialização via iSCSI</strong></p>
+
+<p>✅ <strong>iSCSI para Microsoft Exchange Server</strong></p>
+
+<h3 id="explicação-4">Explicação</h3>
+
+<p>Esses são casos de uso de armazenamento em bloco disponibilizado por meio de <strong>iSCSI</strong>.</p>
+
+<p>O Nutanix Volumes pode fornecer LUNs para servidores físicos ou virtuais, incluindo cenários de inicialização do sistema operacional e aplicações que exigem armazenamento em bloco compartilhado.</p>
+
+<hr />
+
+<h2 id="resumo-rápido">Resumo rápido</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tema</th>
+      <th>Resposta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>WSFC</td>
+      <td>Nutanix Volumes via iSCSI</td>
+    </tr>
+    <tr>
+      <td>Formato IQN</td>
+      <td><code class="language-plaintext highlighter-rouge">iqn.yyyy-mm.naming-authority:uniquename</code></td>
+    </tr>
+    <tr>
+      <td>Armazenamento em blocos</td>
+      <td>Dados estruturados</td>
+    </tr>
+    <tr>
+      <td>VGs e hipervisores</td>
+      <td>Compatível com AHV, ESXi e Hyper-V</td>
+    </tr>
+    <tr>
+      <td>Casos de uso</td>
+      <td>Boot via iSCSI e Microsoft Exchange Server</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="referência">Referência</h2>
+
+<p><strong>Material de estudo — Nutanix Unified Storage</strong></p>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
