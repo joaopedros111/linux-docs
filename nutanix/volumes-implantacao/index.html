@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix Volumes · Ninja Linux">
+  <meta property="og:title" content="Nutanix Volumes Implantação · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/volumes/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/volumes-implantacao/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix Volumes · Ninja Linux">
+  <meta name="twitter:title" content="Nutanix Volumes Implantação · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix Volumes · Ninja Linux</title>
+  <title>Nutanix Volumes Implantação · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,46 +81,42 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix-volumes">🥜 Nutanix Volumes</h1>
+      <h1 id="-nutanix-volumes--implantação">🥜 Nutanix Volumes — Implantação</h1>
 
 <h2 id="introdução">Introdução</h2>
 
-<p>O Nutanix Volumes é uma solução de armazenamento em blocos definida por software, usada para fornecer discos para máquinas virtuais, servidores físicos e aplicações externas ao cluster Nutanix.</p>
-
-<p>A conexão é normalmente feita por iSCSI e pode ser usada em cenários de alta disponibilidade, bancos de dados e inicialização de sistemas operacionais.</p>
+<p>Esta página reúne os passos principais para implantar e configurar o Nutanix Volumes em um ambiente Nutanix.</p>
 
 <hr />
 
-<h2 id="conceitos-principais">Conceitos principais</h2>
+<h2 id="etapas-principais">Etapas principais</h2>
 
-<ul>
-  <li>Armazenamento em bloco</li>
-  <li>Volume Groups</li>
-  <li>vDisks</li>
-  <li>iSCSI Data Services IP</li>
-  <li>IQN</li>
-  <li>LUNs</li>
-  <li>thin provisioning</li>
-</ul>
+<ol>
+  <li>Obter o IQN do iniciador do cliente.</li>
+  <li>Adicionar esse IQN à lista de permissões do Volume Group.</li>
+  <li>Criar o IP de Serviços de Dados iSCSI no cluster.</li>
+  <li>Criar um Volume Group com um ou mais vDisks.</li>
+  <li>Configurar a lista de permissões para o acesso dos hosts.</li>
+  <li>Executar a descoberta do destino iSCSI a partir dos clientes.</li>
+  <li>Opcionalmente, configurar CHAP e CHAP mútuo.</li>
+</ol>
 
 <hr />
 
-<h2 id="pontos-de-estudo">Pontos de estudo</h2>
+<h2 id="pontos-importantes">Pontos importantes</h2>
 
 <ul>
-  <li>O Nutanix Volumes oferece armazenamento em bloco para ambientes físicos e virtuais.</li>
-  <li>O acesso é feito por iSCSI e o armazenamento é organizado em Volume Groups.</li>
-  <li>Os vDisks herdam características do Storage Container onde foram criados.</li>
-  <li>O iSCSI Data Services IP deve ser configurado no Prism Element.</li>
-  <li>As portas TCP 3260 e 3205 devem estar abertas.</li>
-  <li>Os hosts precisam estar autorizados no Prism.</li>
-  <li>O provisionamento é feito por padrão em modo thin.</li>
+  <li>O IP de Serviços de Dados iSCSI não pode ser igual ao IP virtual do cluster.</li>
+  <li>O Nutanix Volumes usa redirecionamento iSCSI para balanceamento e resiliência.</li>
+  <li>O balanceamento de vDisks pode melhorar o desempenho em cenários com alta E/S.</li>
+  <li>O CHAP pode ser usado para autenticação adicional.</li>
+  <li>O IPsec pode complementar a segurança do canal iSCSI.</li>
 </ul>
 
 <hr />
 
 <blockquote>
-  <p>💡 Este material reúne os conceitos fundamentais do Nutanix Volumes para estudo e referência rápida.</p>
+  <p>💡 Esta página é um guia prático para a implantação do Nutanix Volumes.</p>
 </blockquote>
 
     </main>
