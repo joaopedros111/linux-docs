@@ -6,6 +6,22 @@ permalink: /nutanix/volumes/
 
 # 🥜 Resumo para estudo — Nutanix Volumes
 
+## Índice rápido
+
+- [Resumo para estudo — Nutanix Volumes](#resumo-para-estudo--nutanix-volumes)
+- [Nutanix Volumes — Implantação](#nutanix-volumes--implantação)
+- [Exercícios de revisão](#exercícios-de-revisão)
+
+## Pontos-chave para estudar
+
+- O Nutanix Volumes entrega armazenamento em bloco por iSCSI.
+- Os Volume Groups agrupam um ou mais vDisks.
+- O iSCSI Data Services IP é essencial para descoberta e acesso.
+- As portas TCP 3260 e 3205 precisam estar abertas.
+- O uso de CHAP, listas de permissões e balanceamento de vDisks é parte da configuração.
+
+---
+
 ## 1. O que é o Nutanix Volumes
 O Nutanix Volumes é uma solução de armazenamento em blocos definida por software.
 
@@ -58,7 +74,46 @@ O licenciamento do Nutanix Unified Storage e do Data Lens é baseado na capacida
 
 ---
 
-## 4. Por que usar o Nutanix Volumes
+## Nutanix Volumes — Implantação
+
+### Visão geral
+
+O Nutanix Volumes fornece armazenamento em bloco por meio do protocolo iSCSI. Ele pode ser utilizado por máquinas virtuais e servidores físicos, incluindo cenários de inicialização do sistema operacional por iSCSI.
+
+### Implantação do Nutanix Volumes
+
+O fluxo inicial para habilitar e implementar o Nutanix Volumes envolve as seguintes etapas:
+
+1. Obter o iSCSI Qualified Name (IQN) exclusivo do iniciador do cliente.
+2. Adicionar esse IQN à lista de permissões do grupo de volumes.
+3. Obter o nome do iniciador iSCSI do cliente Windows.
+4. Obter o nome do iniciador iSCSI do cliente Linux.
+5. Alterar o nome do iniciador no AIX, quando necessário.
+6. Criar um endereço IP de Serviços de Dados iSCSI para o cluster Nutanix.
+7. Provisionar o armazenamento criando um Volume Group (VG) composto por um ou mais vDisks.
+8. Criar uma lista de permissões para autorizar o acesso dos clientes ao Volume Group.
+9. Informar os IQNs dos iniciadores dos clientes na configuração do Volume Group.
+10. Criar um segredo para o Volume Group, caso a autenticação CHAP seja utilizada.
+11. Executar a descoberta do destino iSCSI do cluster Nutanix a partir dos clientes.
+12. Opcionalmente, configurar autenticação CHAP ou CHAP mútuo nos iniciadores e no cluster Nutanix.
+
+> O IP de Serviços de Dados iSCSI não pode ser igual ao IP virtual do cluster.
+
+### Configuração do Nutanix Volumes
+
+Um cluster Nutanix pode utilizar todas as Controller VMs (CVMs) ao apresentar armazenamento baseado em Volume Groups aos hosts.
+
+Cada vDisk é hospedado por apenas uma CVM por vez, e todo o acesso primário a esse disco ocorre por meio da CVM responsável. Por isso, a distribuição dos discos entre as CVMs pode afetar:
+
+- o consumo de rede;
+- o balanceamento de utilização das CVMs;
+- o desempenho geral do armazenamento.
+
+O Nutanix Volumes utiliza redirecionamento iSCSI para controlar o gerenciamento dos caminhos, o balanceamento de carga dos discos e a resiliência das conexões.
+
+---
+
+## 5. Por que usar o Nutanix Volumes
 O Nutanix Volumes é útil quando uma aplicação precisa de armazenamento em blocos por iSCSI.
 
 Principais vantagens:
@@ -677,7 +732,9 @@ Os principais componentes são:
 
 ---
 
-# Nutanix Volumes — Perguntas e Respostas
+# Exercícios de revisão
+
+## Nutanix Volumes — Perguntas e Respostas
 
 Material de revisão sobre armazenamento, iSCSI e Grupos de Volumes.
 
