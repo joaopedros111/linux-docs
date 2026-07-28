@@ -39,10 +39,10 @@ O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infr
 ### ⚙️ DevOps
 
 - CI/CD
-- Git
 - Jenkins
 - Azure DevOps
 - Harbor
+- Git (integrado à seção DevOps)
 
 ### 🌐 Redes e Segurança
 
