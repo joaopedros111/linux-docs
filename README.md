@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="images/banner-ninja-linux.png" alt="Ninja Linux">
-</p>
-
 # 🥷 Ninja Linux
 
 Portal de documentação e estudos sobre Linux, DevOps, Kubernetes, redes, segurança e infraestrutura.
