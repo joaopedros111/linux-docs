@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="AHV, AOS e CVM · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/04-ahv-aos-e-cvm/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="AHV, AOS e CVM · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>AHV, AOS e CVM · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,142 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="ahv-aos-e-cvm">AHV, AOS e CVM</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="ahv">AHV</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>O <strong>AHV</strong> é o hipervisor nativo da Nutanix.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<p>Ele é responsável por executar e administrar máquinas virtuais.</p>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hardware físico
+      ↓
+AHV
+      ↓
+Máquinas virtuais
+</code></pre></div></div>
 
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Entre suas responsabilidades estão:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>CPU virtual;</li>
+  <li>Memória virtual;</li>
+  <li>Interfaces de rede virtuais;</li>
+  <li>Inicialização e desligamento de VMs;</li>
+  <li>Migração de VMs;</li>
+  <li>Alta disponibilidade;</li>
+  <li>Conexão dos discos virtuais ao armazenamento.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="aos">AOS</h2>
+
+<p>O <strong>AOS</strong> fornece os principais serviços distribuídos de armazenamento e dados da plataforma Nutanix.</p>
+
+<p>Entre suas funções estão:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Gerenciamento de dados e metadados;</li>
+  <li>Replicação;</li>
+  <li>Proteção contra falhas;</li>
+  <li>Distribuição de dados;</li>
+  <li>Eficiência de armazenamento;</li>
+  <li>Reconstrução após falhas;</li>
+  <li>Integração com o hipervisor.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="cvm">CVM</h2>
+
+<p>A <strong>Controller Virtual Machine</strong>, ou CVM, é uma máquina virtual especial presente nos nós do cluster.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Nó físico
+├── AHV
+│   ├── VM de aplicação
+│   ├── VM de banco de dados
+│   └── CVM
+└── Discos locais
+</code></pre></div></div>
+
+<p>A CVM executa serviços essenciais do AOS.</p>
+
+<h2 id="comunicação-entre-cvms">Comunicação entre CVMs</h2>
+
+<p>As CVMs trabalham de forma distribuída:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CVM 1 ←→ CVM 2 ←→ CVM 3
+</code></pre></div></div>
+
+<p>Isso permite que o cluster distribua:</p>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Operações de entrada e saída;</li>
+  <li>Metadados;</li>
+  <li>Replicação;</li>
+  <li>Reconstrução;</li>
+  <li>Monitoramento.</li>
 </ul>
 
-<hr />
+<h2 id="não-confunda">Não confunda</h2>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<table>
+  <thead>
+    <tr>
+      <th>Componente</th>
+      <th>Função</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AHV</td>
+      <td>Virtualização</td>
+    </tr>
+    <tr>
+      <td>AOS</td>
+      <td>Armazenamento e serviços de dados</td>
+    </tr>
+    <tr>
+      <td>CVM</td>
+      <td>VM especial que executa serviços Nutanix</td>
+    </tr>
+    <tr>
+      <td>Prism</td>
+      <td>Gerenciamento</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="cuidados-com-a-cvm">Cuidados com a CVM</h2>
+
+<p>A CVM não deve ser tratada como uma VM comum.</p>
+
+<p>Evite:</p>
+
+<ul>
+  <li>Desligá-la sem procedimento;</li>
+  <li>Alterar seus recursos arbitrariamente;</li>
+  <li>Modificar sua configuração manualmente;</li>
+  <li>Executar comandos destrutivos sem validação;</li>
+  <li>Usá-la para aplicações comuns.</li>
+</ul>
+
+<h2 id="fluxo-simplificado">Fluxo simplificado</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM
+ ↓
+AHV
+ ↓
+CVM
+ ↓
+AOS
+ ↓
+Discos do cluster
+</code></pre></div></div>
+
+<h2 id="resumo">Resumo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AHV = executa VMs
+AOS = fornece armazenamento distribuído
+CVM = executa os serviços Nutanix no nó
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

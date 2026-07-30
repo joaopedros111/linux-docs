@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Configurando Volumes Nutanix · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/volumes/configurando-volumes-nutanix/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Configurando Volumes Nutanix · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Configurando Volumes Nutanix · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,74 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="configurando-volumes-nutanix">Configurando Volumes Nutanix</h1>
 
 <h2 id="introdução">Introdução</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>Este guia reúne os principais conceitos e passos para configurar o Nutanix Volumes.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<h2 id="o-que-é-nutanix-volumes">O que é Nutanix Volumes?</h2>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
+<p>O <strong>Nutanix Volumes</strong> é uma solução de armazenamento em blocos fornecida por software, apresentada aos clientes por meio do protocolo <strong>iSCSI</strong>.</p>
 
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Ele pode atender:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Máquinas virtuais;</li>
+  <li>Servidores físicos;</li>
+  <li>Hosts externos ao cluster.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="conceitos-principais">Conceitos principais</h2>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li><strong>Volume Group (VG)</strong>: conjunto de um ou mais discos virtuais.</li>
+  <li><strong>vDisk</strong>: disco virtual apresentado ao host.</li>
+  <li><strong>IQN</strong>: identificador iSCSI do iniciador ou destino.</li>
+  <li><strong>iSCSI Data Services IP</strong>: endereço virtual usado para descoberta.</li>
+  <li><strong>Thin provisioning</strong>: alocação de espaço conforme o consumo.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="passos-de-configuração">Passos de configuração</h2>
+
+<ol>
+  <li>Obter o IQN do iniciador iSCSI do cliente.</li>
+  <li>Criar o IP de Serviços de Dados iSCSI no Prism.</li>
+  <li>Criar um Volume Group.</li>
+  <li>Adicionar vDisks ao Volume Group.</li>
+  <li>Configurar lista de permissões para o VG.</li>
+  <li>Autorizar os IQNs dos clientes no VG.</li>
+  <li>Criar segredo se for usar CHAP.</li>
+  <li>Executar a descoberta do destino iSCSI no cliente.</li>
+  <li>Estabelecer a sessão iSCSI.</li>
+</ol>
+
+<h2 id="requisitos-importantes">Requisitos importantes</h2>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>As portas TCP 3260 e 3205 devem estar abertas.</li>
+  <li>O iSCSI Data Services IP não pode ser igual ao IP virtual do cluster.</li>
+  <li>O target deve ser descoberto pelo IP de Serviços de Dados.</li>
+  <li>Evite conectar diretamente aos IPs das CVMs.</li>
 </ul>
 
-<hr />
+<h2 id="boas-práticas">Boas práticas</h2>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<ul>
+  <li>Mantenha a lista de permissões atualizada.</li>
+  <li>Utilize CHAP quando necessário.</li>
+  <li>Monitore a utilização de vDisks e o balanceamento.</li>
+  <li>Verifique alertas no Prism após alterações.</li>
+</ul>
+
+<h2 id="resumo">Resumo</h2>
+
+<ul>
+  <li>Nutanix Volumes é storage em bloco por iSCSI.</li>
+  <li>Volume Groups agrupam vDisks.</li>
+  <li>O iSCSI Data Services IP é o ponto de descoberta.</li>
+  <li>Use permissões e segurança para proteger o acesso.</li>
+</ul>
 
     </main>
     <footer class="site-footer">

@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Resiliência, RF2, RF3 e localidade · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/06-resiliencia-rf2-rf3-e-localidade/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Resiliência, RF2, RF3 e localidade · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Resiliência, RF2, RF3 e localidade · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,119 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="resiliência-rf2-rf3-e-localidade">Resiliência, RF2, RF3 e localidade</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="resiliência-de-dados">Resiliência de dados</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>O cluster Nutanix protege os dados mantendo cópias ou utilizando outros mecanismos de resiliência, conforme a configuração.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
-
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
-
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Dois termos comuns são:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>RF2;</li>
+  <li>RF3.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="rf2">RF2</h2>
+
+<p>No <strong>RF2</strong>, os dados são mantidos com duas cópias.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Bloco de dados
+├── Cópia A
+└── Cópia B
+</code></pre></div></div>
+
+<p>O objetivo é permitir tolerância a uma falha compatível com o desenho do cluster e sua política de proteção.</p>
+
+<h2 id="rf3">RF3</h2>
+
+<p>No <strong>RF3</strong>, os dados são mantidos com três cópias.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Bloco de dados
+├── Cópia A
+├── Cópia B
+└── Cópia C
+</code></pre></div></div>
+
+<p>RF3 oferece um nível maior de proteção, porém consome mais capacidade.</p>
+
+<h2 id="capacidade">Capacidade</h2>
+
+<p>Uma conta simplificada ajuda a entender o impacto:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10 TB de dados com RF2
+≈ 20 TB antes de eficiências e overheads
+
+10 TB de dados com RF3
+≈ 30 TB antes de eficiências e overheads
+</code></pre></div></div>
+
+<p>O consumo real pode variar por causa de:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Compressão;</li>
+  <li>Snapshots;</li>
+  <li>Metadados;</li>
+  <li>Erasure coding;</li>
+  <li>Reserva operacional;</li>
+  <li>Dados temporários;</li>
+  <li>Políticas diferentes.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="localidade-dos-dados">Localidade dos dados</h2>
 
-<ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
-</ul>
+<p>A <strong>localidade dos dados</strong> busca manter os dados próximos da VM que os utiliza.</p>
 
-<hr />
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Nó 1
+├── VM A
+├── CVM 1
+└── Dados usados pela VM A
+</code></pre></div></div>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<p>Quando possível, isso reduz acessos remotos pela rede.</p>
+
+<h2 id="leitura-local">Leitura local</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM → CVM local → disco local
+</code></pre></div></div>
+
+<h2 id="leitura-remota">Leitura remota</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM → CVM local → outra CVM → disco remoto
+</code></pre></div></div>
+
+<p>A leitura remota faz parte do funcionamento normal de uma arquitetura distribuída.</p>
+
+<h2 id="falha-de-disco">Falha de disco</h2>
+
+<p>Fluxo conceitual:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. O cluster detecta a falha.
+2. Os metadados identificam os dados afetados.
+3. Outras cópias continuam disponíveis.
+4. O AOS recria a proteção em dispositivos saudáveis.
+5. A resiliência é restaurada.
+</code></pre></div></div>
+
+<h2 id="falha-de-nó">Falha de nó</h2>
+
+<p>Quando um nó falha, existem dois assuntos diferentes:</p>
+
+<h3 id="disponibilidade-das-vms">Disponibilidade das VMs</h3>
+
+<p>As VMs podem ser reiniciadas em outros hosts, desde que existam recursos e condições adequadas.</p>
+
+<h3 id="resiliência-dos-dados">Resiliência dos dados</h3>
+
+<p>As cópias existentes em outros nós mantêm os dados disponíveis dentro dos limites da política configurada.</p>
+
+<h2 id="resumo">Resumo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RF2 = duas cópias
+RF3 = três cópias
+Localidade = dados próximos da carga quando possível
+Reconstrução = restauração automática da proteção
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

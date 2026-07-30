@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="SMB, NFS e Active Directory · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/08-smb-nfs-e-active-directory/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="SMB, NFS e Active Directory · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>SMB, NFS e Active Directory · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,195 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="smb-nfs-e-active-directory">SMB, NFS e Active Directory</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="smb">SMB</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p><strong>SMB</strong>, ou <em>Server Message Block</em>, é muito utilizado em ambientes Windows.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<p>Exemplo:</p>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\\files01\financeiro
+</code></pre></div></div>
 
-<hr />
+<p>O compartilhamento também pode ser mapeado como uma unidade:</p>
 
-<h2 id="conteúdo">Conteúdo</h2>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F:\
+</code></pre></div></div>
 
-<h3 id="fundamentos">Fundamentos</h3>
+<p>O SMB pode utilizar:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Active Directory;</li>
+  <li>Usuários e grupos;</li>
+  <li>ACLs;</li>
+  <li>Kerberos;</li>
+  <li>NTLM, conforme o ambiente;</li>
+  <li>Permissões de compartilhamento;</li>
+  <li>Permissões de arquivos e pastas.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="nfs">NFS</h2>
+
+<p><strong>NFS</strong>, ou <em>Network File System</em>, é muito utilizado em ambientes Linux e Unix.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>files01:/dados
+</code></pre></div></div>
+
+<p>Montagem:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount files01:/dados /mnt/dados
+</code></pre></div></div>
+
+<p>O NFS pode utilizar:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>UID e GID;</li>
+  <li>Permissões POSIX;</li>
+  <li>ACLs;</li>
+  <li>Redes ou clientes autorizados;</li>
+  <li>Kerberos, quando configurado;</li>
+  <li>Opções do export.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="comparação">Comparação</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Característica</th>
+      <th>SMB</th>
+      <th>NFS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ambiente comum</td>
+      <td>Windows</td>
+      <td>Linux e Unix</td>
+    </tr>
+    <tr>
+      <td>Caminho</td>
+      <td><code class="language-plaintext highlighter-rouge">\\servidor\share</code></td>
+      <td><code class="language-plaintext highlighter-rouge">servidor:/export</code></td>
+    </tr>
+    <tr>
+      <td>Nome do recurso</td>
+      <td>Share</td>
+      <td>Export</td>
+    </tr>
+    <tr>
+      <td>Identidade comum</td>
+      <td>Active Directory</td>
+      <td>UID/GID ou Kerberos</td>
+    </tr>
+    <tr>
+      <td>Permissões</td>
+      <td>ACLs Windows</td>
+      <td>POSIX/ACLs</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="active-directory">Active Directory</h2>
+
+<p>O <strong>Active Directory</strong>, ou AD, centraliza identidades e recursos.</p>
+
+<p>Ele pode armazenar:</p>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Usuários;</li>
+  <li>Grupos;</li>
+  <li>Computadores;</li>
+  <li>Servidores;</li>
+  <li>Contas de serviço;</li>
+  <li>Unidades organizacionais;</li>
+  <li>Políticas.</li>
 </ul>
 
-<hr />
+<h2 id="autenticação-e-autorização">Autenticação e autorização</h2>
+
+<h3 id="autenticação">Autenticação</h3>
+
+<p>Responde:</p>
 
 <blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
+  <p>Quem é você?</p>
 </blockquote>
+
+<h3 id="autorização">Autorização</h3>
+
+<p>Responde:</p>
+
+<blockquote>
+  <p>O que você pode fazer?</p>
+</blockquote>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usuário: maria.oliveira
+        ↓ pertence ao grupo
+GG-RH-Alteracao
+        ↓ recebe permissão
+\\files01\rh
+</code></pre></div></div>
+
+<h2 id="integração-do-files-com-o-ad">Integração do Files com o AD</h2>
+
+<p>Em um cenário SMB, o Nutanix Files pode ingressar no domínio.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Active Directory
+      ↓ autentica usuários
+Nutanix Files
+      ↓ aplica permissões
+Compartilhamento SMB
+</code></pre></div></div>
+
+<h2 id="dependências-importantes">Dependências importantes</h2>
+
+<h3 id="dns">DNS</h3>
+
+<p>O Files deve resolver corretamente:</p>
+
+<ul>
+  <li>Nome do domínio;</li>
+  <li>Controladores de domínio;</li>
+  <li>Registros necessários;</li>
+  <li>Nome do próprio serviço.</li>
+</ul>
+
+<h3 id="ntp">NTP</h3>
+
+<p>A sincronização de horário é essencial, principalmente em ambientes Kerberos.</p>
+
+<h3 id="rede">Rede</h3>
+
+<p>As portas necessárias entre Files, DNS e controladores de domínio devem estar liberadas.</p>
+
+<h2 id="diagnóstico-de-acesso-negado">Diagnóstico de acesso negado</h2>
+
+<p>Quando o usuário autentica, mas não acessa a pasta:</p>
+
+<ol>
+  <li>Confirme a conta utilizada.</li>
+  <li>Verifique os grupos do usuário.</li>
+  <li>Confira a permissão do compartilhamento.</li>
+  <li>Confira as ACLs da pasta.</li>
+  <li>Procure negações explícitas.</li>
+  <li>Atualize as credenciais do usuário.</li>
+  <li>Analise os eventos de auditoria.</li>
+</ol>
+
+<h2 id="resumo">Resumo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SMB = compartilhamento comum em Windows
+NFS = export comum em Linux/Unix
+AD = identidades e grupos
+Autenticação = quem é o usuário
+Autorização = o que ele pode fazer
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

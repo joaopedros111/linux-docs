@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Fluxos e diagnóstico inicial · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/09-fluxos-e-diagnostico-inicial/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Fluxos e diagnóstico inicial · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Fluxos e diagnóstico inicial · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,180 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="fluxos-e-diagnóstico-inicial">Fluxos e diagnóstico inicial</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="fluxo-de-gravação-de-uma-vm">Fluxo de gravação de uma VM</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>Uma gravação percorre várias camadas.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Aplicação
+    ↓
+Sistema operacional
+    ↓
+vDisk
+    ↓
+AHV
+    ↓
+CVM e AOS
+    ↓
+Discos do cluster
+</code></pre></div></div>
+
+<p>Fluxo conceitual:</p>
+
+<ol>
+  <li>A aplicação solicita uma gravação.</li>
+  <li>O sistema operacional envia a operação ao disco virtual.</li>
+  <li>O AHV encaminha a operação à camada de armazenamento.</li>
+  <li>A CVM processa a solicitação.</li>
+  <li>O AOS grava e protege os dados.</li>
+  <li>Os metadados registram a localização.</li>
+  <li>A conclusão retorna para a VM.</li>
+</ol>
+
+<h2 id="fluxo-de-leitura">Fluxo de leitura</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM solicita um bloco
+        ↓
+CVM consulta os metadados
+        ↓
+Localiza a melhor cópia
+        ↓
+Lê o dado
+        ↓
+Entrega à VM
+</code></pre></div></div>
+
+<p>A leitura pode ser local ou remota.</p>
+
+<h2 id="fluxo-de-acesso-ao-files">Fluxo de acesso ao Files</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usuário
+   ↓ SMB/NFS
+FSVM
+   ↓
+CVM e AOS
+   ↓
+Discos do cluster
+</code></pre></div></div>
+
+<p>Em SMB com Active Directory:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usuário
+   ↓ autenticação
+Active Directory
+   ↓ identidade e grupos
+Nutanix Files
+   ↓ autorização
+Compartilhamento
+</code></pre></div></div>
+
+<h2 id="diagnóstico-de-lentidão">Diagnóstico de lentidão</h2>
+
+<p>Uma VM lenta ao acessar disco pode envolver:</p>
 
 <ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
+  <li>Aplicação;</li>
+  <li>Sistema operacional;</li>
+  <li>vDisk;</li>
+  <li>AHV;</li>
+  <li>CVM;</li>
+  <li>Rede entre nós;</li>
+  <li>Discos;</li>
+  <li>Capacidade;</li>
+  <li>Reconstrução;</li>
+  <li>Outras cargas concorrentes.</li>
 </ul>
 
-<hr />
+<p>Verificações iniciais:</p>
 
-<h2 id="conteúdo">Conteúdo</h2>
+<ol>
+  <li>Latência observada pela VM;</li>
+  <li>Latência no cluster;</li>
+  <li>CPU e memória da VM;</li>
+  <li>CPU e memória das CVMs;</li>
+  <li>Utilização dos discos;</li>
+  <li>Utilização da rede;</li>
+  <li>Alertas de hardware;</li>
+  <li>Operações de manutenção;</li>
+  <li>Capacidade livre;</li>
+  <li>Picos de carga.</li>
+</ol>
 
-<h3 id="fundamentos">Fundamentos</h3>
+<h2 id="diagnóstico-de-acesso-smb">Diagnóstico de acesso SMB</h2>
+
+<p>Quando um usuário recebe “Acesso negado”:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Confirmar usuário e domínio.
+2. Testar resolução DNS.
+3. Verificar conectividade.
+4. Confirmar associação aos grupos.
+5. Conferir permissão do share.
+6. Conferir ACLs.
+7. Procurar negação explícita.
+8. Verificar eventos de auditoria.
+</code></pre></div></div>
+
+<h2 id="diagnóstico-de-nfs">Diagnóstico de NFS</h2>
+
+<p>Quando uma montagem NFS falha:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Resolver o nome do servidor.
+2. Testar conectividade.
+3. Confirmar o caminho do export.
+4. Verificar clientes ou redes autorizadas.
+5. Conferir opções de montagem.
+6. Validar UID/GID ou Kerberos.
+7. Consultar logs do cliente e do serviço.
+</code></pre></div></div>
+
+<h2 id="diagnóstico-orientado-por-camadas">Diagnóstico orientado por camadas</h2>
+
+<p>Evite concluir rapidamente que “o storage está com problema”.</p>
+
+<p>Analise de cima para baixo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Aplicação
+    ↓
+Sistema operacional
+    ↓
+Protocolo ou vDisk
+    ↓
+Rede
+    ↓
+FSVM ou CVM
+    ↓
+AOS
+    ↓
+Hardware
+</code></pre></div></div>
+
+<h2 id="registro-da-investigação">Registro da investigação</h2>
+
+<p>Uma boa anotação deve conter:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Data e horário;</li>
+  <li>Usuário ou sistema afetado;</li>
+  <li>Sintoma;</li>
+  <li>Escopo;</li>
+  <li>Alterações recentes;</li>
+  <li>Alertas encontrados;</li>
+  <li>Testes executados;</li>
+  <li>Evidências;</li>
+  <li>Ação tomada;</li>
+  <li>Resultado.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="resumo">Resumo</h2>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Investigue por camadas.</li>
+  <li>Separe autenticação de autorização.</li>
+  <li>Diferencie FSVM de CVM.</li>
+  <li>Observe alertas, tarefas e métricas.</li>
+  <li>Registre evidências antes de alterar o ambiente.</li>
 </ul>
-
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
-
-<ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
-</ul>
-
-<hr />
-
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
 
     </main>
     <footer class="site-footer">

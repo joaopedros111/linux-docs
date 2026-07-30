@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Nutanix Files e FSVM · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/07-nutanix-files-e-fsvm/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Nutanix Files e FSVM · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Nutanix Files e FSVM · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,137 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="nutanix-files-e-fsvm">Nutanix Files e FSVM</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="o-que-é-nutanix-files">O que é Nutanix Files?</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>O <strong>Nutanix Files</strong> é o serviço distribuído de armazenamento de arquivos da Nutanix.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
-
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
-
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Ele pode fornecer acesso por:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>SMB;</li>
+  <li>NFS.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<p>Exemplos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SMB:
+\\files01\financeiro
+
+NFS:
+files01:/dados
+</code></pre></div></div>
+
+<h2 id="fsvm">FSVM</h2>
+
+<p>O Files utiliza máquinas virtuais especializadas chamadas <strong>File Server VMs</strong>, ou FSVMs.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Nutanix Files
+├── FSVM 1
+├── FSVM 2
+└── FSVM 3
+</code></pre></div></div>
+
+<p>As FSVMs trabalham em conjunto para prestar o serviço de arquivos.</p>
+
+<h2 id="cvm-versus-fsvm">CVM versus FSVM</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Componente</th>
+      <th>Função</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CVM</td>
+      <td>Serviços de armazenamento e dados do cluster</td>
+    </tr>
+    <tr>
+      <td>FSVM</td>
+      <td>Serviço de arquivos SMB e NFS</td>
+    </tr>
+    <tr>
+      <td>VM comum</td>
+      <td>Aplicação, banco de dados ou outro sistema</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="fluxo-de-acesso">Fluxo de acesso</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usuário ou aplicação
+        ↓ SMB/NFS
+FSVM
+        ↓
+Armazenamento do Files
+        ↓
+CVM e AOS
+        ↓
+Discos do cluster
+</code></pre></div></div>
+
+<h2 id="compartilhamento-smb">Compartilhamento SMB</h2>
+
+<p>Um compartilhamento SMB costuma ser utilizado por clientes Windows.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\\files01.empresa.local\rh
+</code></pre></div></div>
+
+<p>Ele pode integrar-se ao Active Directory para autenticação e autorização.</p>
+
+<h2 id="export-nfs">Export NFS</h2>
+
+<p>Um export NFS costuma ser utilizado por clientes Linux ou Unix.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>files01.empresa.local:/dados
+</code></pre></div></div>
+
+<p>Exemplo de montagem:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount files01.empresa.local:/dados /mnt/dados
+</code></pre></div></div>
+
+<h2 id="alta-disponibilidade">Alta disponibilidade</h2>
+
+<p>Como o serviço utiliza várias FSVMs, a carga pode ser distribuída e o ambiente pode continuar atendendo acessos dentro dos limites de sua configuração quando ocorre uma falha.</p>
+
+<h2 id="relação-com-o-data-lens">Relação com o Data Lens</h2>
+
+<p>O Data Lens utiliza informações e eventos relacionados aos dados não estruturados para oferecer recursos como:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Auditoria;</li>
+  <li>Visibilidade;</li>
+  <li>Identificação de anomalias;</li>
+  <li>Análise de permissões;</li>
+  <li>Investigação de riscos;</li>
+  <li>Proteção contra ransomware.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="pontos-importantes-de-administração">Pontos importantes de administração</h2>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Saúde das FSVMs;</li>
+  <li>DNS;</li>
+  <li>NTP;</li>
+  <li>Integração com Active Directory;</li>
+  <li>Rede de clientes;</li>
+  <li>Capacidade;</li>
+  <li>Desempenho;</li>
+  <li>Eventos de auditoria;</li>
+  <li>Permissões;</li>
+  <li>Alertas.</li>
 </ul>
 
-<hr />
+<h2 id="resumo">Resumo</h2>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Nutanix Files = serviço distribuído de arquivos
+FSVM = máquina virtual que atende SMB/NFS
+CVM = serviços de armazenamento do cluster
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

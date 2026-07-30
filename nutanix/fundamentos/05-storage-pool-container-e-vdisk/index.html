@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Storage Pool, Container e vDisk · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/05-storage-pool-container-e-vdisk/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Storage Pool, Container e vDisk · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Storage Pool, Container e vDisk · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,145 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="storage-pool-container-e-vdisk">Storage Pool, Container e vDisk</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="visão-geral">Visão geral</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>O armazenamento Nutanix é organizado em camadas lógicas.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Discos físicos
+      ↓
+Storage Pool
+      ↓
+Storage Container
+      ↓
+vDisk
+      ↓
+Sistema operacional da VM
+</code></pre></div></div>
+
+<h2 id="storage-pool">Storage Pool</h2>
+
+<p>Um <strong>storage pool</strong> agrupa a capacidade física dos dispositivos de armazenamento do cluster.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Storage Pool
+├── Discos do nó 1
+├── Discos do nó 2
+└── Discos do nó 3
+</code></pre></div></div>
+
+<p>Ele representa a capacidade agregada disponível para o AOS.</p>
+
+<h2 id="storage-container">Storage Container</h2>
+
+<p>Um <strong>storage container</strong> é uma divisão lógica criada sobre o storage pool.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Storage Pool
+├── Container-Produção
+├── Container-Testes
+└── Container-Arquivos
+</code></pre></div></div>
+
+<p>O container pode possuir configurações e políticas próprias.</p>
+
+<p>Ele não representa necessariamente um grupo físico separado de discos.</p>
+
+<h2 id="vdisk">vDisk</h2>
+
+<p>Um <strong>vDisk</strong> é um disco virtual associado a uma máquina virtual.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM: servidor-app
+├── vDisk 1: sistema operacional
+└── vDisk 2: dados
+</code></pre></div></div>
+
+<p>Dentro do sistema operacional, o vDisk aparece como um disco comum.</p>
+
+<p>Exemplos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Windows:
+C:\
+D:\
+
+Linux:
+/dev/sda
+/dev/sdb
+</code></pre></div></div>
+
+<h2 id="comparação">Comparação</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Objeto</th>
+      <th>Representa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Disco físico</td>
+      <td>Dispositivo instalado no nó</td>
+    </tr>
+    <tr>
+      <td>Storage Pool</td>
+      <td>Capacidade física agregada</td>
+    </tr>
+    <tr>
+      <td>Storage Container</td>
+      <td>Organização lógica da capacidade</td>
+    </tr>
+    <tr>
+      <td>vDisk</td>
+      <td>Disco virtual utilizado pela VM</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="exemplo-completo">Exemplo completo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Discos NVMe e SSD dos nós
+          ↓
+Storage Pool 01
+          ↓
+Container-Produção
+          ↓
+vDisk de 500 GB
+          ↓
+VM de aplicação
+</code></pre></div></div>
+
+<h2 id="capacidade-lógica-e-física">Capacidade lógica e física</h2>
+
+<p>Um vDisk pode ter um tamanho lógico definido, mas seu consumo físico depende de fatores como:</p>
 
 <ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
+  <li>Dados realmente gravados;</li>
+  <li>Replicação;</li>
+  <li>Snapshots;</li>
+  <li>Compressão;</li>
+  <li>Deduplicação, quando aplicável;</li>
+  <li>Erasure coding, quando aplicável;</li>
+  <li>Metadados;</li>
+  <li>Reserva operacional.</li>
 </ul>
 
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<h2 id="boas-práticas">Boas práticas</h2>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Acompanhe o crescimento dos containers.</li>
+  <li>Não avalie capacidade apenas pelo tamanho nominal dos vDisks.</li>
+  <li>Considere snapshots e políticas de proteção.</li>
+  <li>Mantenha espaço livre operacional.</li>
+  <li>Investigue crescimento inesperado.</li>
+  <li>Evite criar containers sem necessidade administrativa.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="resumo">Resumo</h2>
 
-<ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
-</ul>
-
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
-
-<ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
-</ul>
-
-<hr />
-
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Pool = capacidade física agregada
+Container = organização lógica
+vDisk = disco virtual de uma VM
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

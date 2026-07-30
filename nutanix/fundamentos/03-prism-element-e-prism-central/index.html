@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Prism Element e Prism Central · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/03-prism-element-e-prism-central/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Prism Element e Prism Central · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Prism Element e Prism Central · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,149 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="prism-element-e-prism-central">Prism Element e Prism Central</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="o-que-é-o-prism">O que é o Prism?</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>O Prism é a interface de gerenciamento da plataforma Nutanix.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
-
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
-
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Por meio dele, o administrador acompanha:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Saúde do cluster;</li>
+  <li>Hosts;</li>
+  <li>Máquinas virtuais;</li>
+  <li>Armazenamento;</li>
+  <li>Redes;</li>
+  <li>Alertas;</li>
+  <li>Eventos;</li>
+  <li>Tarefas;</li>
+  <li>Capacidade;</li>
+  <li>Desempenho.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<h2 id="prism-element">Prism Element</h2>
+
+<p>O <strong>Prism Element</strong>, ou PE, administra um cluster específico.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Prism Element
+      │
+      └── Cluster A
+</code></pre></div></div>
+
+<p>Atividades comuns:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Verificar a saúde dos hosts;</li>
+  <li>Consultar CPU e memória;</li>
+  <li>Administrar VMs;</li>
+  <li>Conferir storage pools e containers;</li>
+  <li>Visualizar alertas locais;</li>
+  <li>Acompanhar tarefas;</li>
+  <li>Consultar métricas de desempenho.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="prism-central">Prism Central</h2>
+
+<p>O <strong>Prism Central</strong>, ou PC, oferece uma visão centralizada de um ou vários clusters.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                 Prism Central
+                /             \
+         Cluster A           Cluster B
+       Prism Element       Prism Element
+</code></pre></div></div>
+
+<p>Atividades comuns:</p>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Acompanhar vários clusters;</li>
+  <li>Administrar recursos centralizados;</li>
+  <li>Aplicar políticas;</li>
+  <li>Pesquisar VMs e entidades;</li>
+  <li>Acessar serviços Nutanix;</li>
+  <li>Consolidar alertas e capacidade;</li>
+  <li>Utilizar automação e governança.</li>
 </ul>
 
-<hr />
+<h2 id="comparação">Comparação</h2>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<table>
+  <thead>
+    <tr>
+      <th>Característica</th>
+      <th>Prism Element</th>
+      <th>Prism Central</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Escopo</td>
+      <td>Um cluster</td>
+      <td>Um ou vários clusters</td>
+    </tr>
+    <tr>
+      <td>Foco</td>
+      <td>Operação local</td>
+      <td>Gestão centralizada</td>
+    </tr>
+    <tr>
+      <td>Uso comum</td>
+      <td>Hosts, VMs e storage local</td>
+      <td>Políticas, serviços e visão global</td>
+    </tr>
+    <tr>
+      <td>Abreviação</td>
+      <td>PE</td>
+      <td>PC</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="navegação-inicial">Navegação inicial</h2>
+
+<p>Ao acessar o Prism, verifique primeiro:</p>
+
+<ol>
+  <li>Estado geral do cluster;</li>
+  <li>Alertas críticos;</li>
+  <li>Tarefas em andamento;</li>
+  <li>Capacidade disponível;</li>
+  <li>Utilização de CPU e memória;</li>
+  <li>Latência de armazenamento;</li>
+  <li>Estado dos hosts e CVMs.</li>
+</ol>
+
+<h2 id="alertas-e-tarefas">Alertas e tarefas</h2>
+
+<p>Um <strong>alerta</strong> indica uma condição que merece atenção.</p>
+
+<p>Uma <strong>tarefa</strong> registra uma operação executada ou em andamento.</p>
+
+<p>Exemplos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Alerta:
+Host sem comunicação
+
+Tarefa:
+Criação de máquina virtual
+</code></pre></div></div>
+
+<h2 id="boas-práticas">Boas práticas</h2>
+
+<ul>
+  <li>Não ignore alertas recorrentes.</li>
+  <li>Leia a causa e o impacto antes de agir.</li>
+  <li>Confirme se existe manutenção em andamento.</li>
+  <li>Registre alterações importantes.</li>
+  <li>Evite executar várias mudanças simultâneas sem necessidade.</li>
+  <li>Consulte a saúde do cluster antes e depois de uma manutenção.</li>
+</ul>
+
+<h2 id="resumo">Resumo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Prism Element = administração de um cluster
+Prism Central = administração centralizada
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

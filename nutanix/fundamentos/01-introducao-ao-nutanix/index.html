@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Introdução ao Nutanix · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/01-introducao-ao-nutanix/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Introdução ao Nutanix · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Introdução ao Nutanix · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,124 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="introdução-ao-nutanix">Introdução ao Nutanix</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="visão-geral">Visão geral</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>Nutanix é uma plataforma de infraestrutura hiperconvergente, conhecida como <strong>HCI</strong> (<em>Hyperconverged Infrastructure</em>). Ela reúne computação, armazenamento, virtualização e gerenciamento em uma arquitetura distribuída.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<p>Em vez de depender de servidores, storages e ferramentas totalmente separados, um ambiente Nutanix utiliza vários nós trabalhando em conjunto como um cluster.</p>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cluster Nutanix
+├── Nó 1: CPU + memória + discos
+├── Nó 2: CPU + memória + discos
+└── Nó 3: CPU + memória + discos
+</code></pre></div></div>
 
-<hr />
+<h2 id="nó-e-cluster">Nó e cluster</h2>
 
-<h2 id="conteúdo">Conteúdo</h2>
+<p>Um <strong>nó</strong> é um servidor físico individual.</p>
 
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Um <strong>cluster</strong> é um conjunto de nós que compartilham recursos e trabalham como uma única plataforma.</p>
 
-<ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
-</ul>
-
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<p>Cada nó normalmente possui:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Processadores;</li>
+  <li>Memória RAM;</li>
+  <li>Discos SSD, NVMe ou HDD;</li>
+  <li>Interfaces de rede;</li>
+  <li>Um hipervisor;</li>
+  <li>Uma Controller Virtual Machine, ou CVM.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="principais-componentes">Principais componentes</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Componente</th>
+      <th>Função</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AHV</td>
+      <td>Hipervisor nativo da Nutanix</td>
+    </tr>
+    <tr>
+      <td>AOS</td>
+      <td>Serviços distribuídos de armazenamento e dados</td>
+    </tr>
+    <tr>
+      <td>CVM</td>
+      <td>Máquina virtual que executa os serviços Nutanix</td>
+    </tr>
+    <tr>
+      <td>Prism Element</td>
+      <td>Administração de um cluster</td>
+    </tr>
+    <tr>
+      <td>Prism Central</td>
+      <td>Administração centralizada de múltiplos clusters e serviços</td>
+    </tr>
+    <tr>
+      <td>Nutanix Files</td>
+      <td>Serviço distribuído de arquivos SMB e NFS</td>
+    </tr>
+    <tr>
+      <td>Nutanix Volumes</td>
+      <td>Serviço de armazenamento em bloco</td>
+    </tr>
+    <tr>
+      <td>Nutanix Objects</td>
+      <td>Serviço de armazenamento de objetos</td>
+    </tr>
+    <tr>
+      <td>Data Lens</td>
+      <td>Visibilidade, segurança e governança de dados não estruturados</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="exemplo-de-uso">Exemplo de uso</h2>
+
+<p>Uma empresa pode executar no mesmo cluster:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cluster Nutanix
+├── Servidores Windows
+├── Servidores Linux
+├── Bancos de dados
+├── Aplicações corporativas
+├── Nutanix Files
+└── Serviços de proteção e análise de dados
+</code></pre></div></div>
+
+<h2 id="relação-com-o-data-lens">Relação com o Data Lens</h2>
+
+<p>Para compreender o Data Lens, é importante conhecer o caminho dos dados:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usuário ou aplicação
+        ↓
+SMB ou NFS
+        ↓
+Nutanix Files
+        ↓
+AOS e armazenamento do cluster
+        ↓
+Eventos e metadados analisados pelo Data Lens
+</code></pre></div></div>
+
+<h2 id="resumo">Resumo</h2>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Nutanix é uma plataforma de infraestrutura hiperconvergente.</li>
+  <li>O cluster é formado por vários nós.</li>
+  <li>O AHV executa máquinas virtuais.</li>
+  <li>O AOS fornece armazenamento distribuído.</li>
+  <li>O Prism administra a plataforma.</li>
+  <li>O Files fornece compartilhamentos SMB e exports NFS.</li>
 </ul>
-
-<hr />
-
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
 
     </main>
     <footer class="site-footer">

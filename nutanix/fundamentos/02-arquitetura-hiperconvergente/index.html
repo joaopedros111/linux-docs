@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Arquitetura hiperconvergente · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/fundamentos/02-arquitetura-hiperconvergente/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Arquitetura hiperconvergente · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Arquitetura hiperconvergente · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,154 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="arquitetura-hiperconvergente">Arquitetura hiperconvergente</h1>
 
-<h2 id="introdução">Introdução</h2>
+<h2 id="infraestrutura-tradicional">Infraestrutura tradicional</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>Em uma arquitetura tradicional, é comum encontrar componentes separados:</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Servidores
+    ↓
+Rede de armazenamento
+    ↓
+Storage centralizado
+</code></pre></div></div>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
-
-<hr />
-
-<h2 id="conteúdo">Conteúdo</h2>
-
-<h3 id="fundamentos">Fundamentos</h3>
+<p>Também podem existir ferramentas distintas para:</p>
 
 <ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
+  <li>Virtualização;</li>
+  <li>Armazenamento;</li>
+  <li>Rede;</li>
+  <li>Monitoramento;</li>
+  <li>Proteção de dados.</li>
 </ul>
 
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
+<p>Essa separação pode aumentar a complexidade operacional.</p>
+
+<h2 id="infraestrutura-hiperconvergente">Infraestrutura hiperconvergente</h2>
+
+<p>Na HCI, cada nó contribui com processamento, memória e armazenamento.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cluster HCI
+├── Nó 1: compute + storage
+├── Nó 2: compute + storage
+└── Nó 3: compute + storage
+</code></pre></div></div>
+
+<p>O software distribui os dados e serviços entre os nós.</p>
+
+<h2 id="arquitetura-distribuída">Arquitetura distribuída</h2>
+
+<p>Um ambiente Nutanix não depende de uma única controladora de storage central. As CVMs dos nós trabalham em conjunto.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CVM 1 ←→ CVM 2 ←→ CVM 3
+</code></pre></div></div>
+
+<p>Essa abordagem oferece:</p>
 
 <ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
+  <li>Escalabilidade horizontal;</li>
+  <li>Distribuição de carga;</li>
+  <li>Tolerância a falhas;</li>
+  <li>Administração centralizada;</li>
+  <li>Expansão por adição de nós.</li>
 </ul>
 
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="escalabilidade-horizontal">Escalabilidade horizontal</h2>
+
+<p>Quando o ambiente precisa de mais recursos, novos nós podem ser adicionados ao cluster.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cluster inicial
+├── Nó 1
+├── Nó 2
+└── Nó 3
+
+Expansão
+├── Nó 1
+├── Nó 2
+├── Nó 3
+└── Nó 4
+</code></pre></div></div>
+
+<p>Dependendo da plataforma e da configuração, a expansão pode aumentar:</p>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>CPU;</li>
+  <li>Memória;</li>
+  <li>Capacidade de armazenamento;</li>
+  <li>Desempenho agregado.</li>
 </ul>
 
-<hr />
+<h2 id="separação-lógica-das-camadas">Separação lógica das camadas</h2>
 
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
+<p>Apesar da integração, as funções continuam distintas:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Camada</th>
+      <th>Responsabilidade</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Hardware</td>
+      <td>CPU, memória, discos e rede</td>
+    </tr>
+    <tr>
+      <td>Hipervisor</td>
+      <td>Execução das máquinas virtuais</td>
+    </tr>
+    <tr>
+      <td>AOS</td>
+      <td>Armazenamento e serviços distribuídos</td>
+    </tr>
+    <tr>
+      <td>Prism</td>
+      <td>Gerenciamento</td>
+    </tr>
+    <tr>
+      <td>Serviços de dados</td>
+      <td>Files, Volumes, Objects e outros</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="benefícios-operacionais">Benefícios operacionais</h2>
+
+<p>A arquitetura hiperconvergente busca simplificar:</p>
+
+<ul>
+  <li>Implantação;</li>
+  <li>Crescimento do ambiente;</li>
+  <li>Monitoramento;</li>
+  <li>Atualizações;</li>
+  <li>Recuperação após falhas;</li>
+  <li>Administração diária.</li>
+</ul>
+
+<h2 id="ponto-de-atenção">Ponto de atenção</h2>
+
+<p>Hiperconvergência não elimina a necessidade de planejamento. O ambiente ainda depende de:</p>
+
+<ul>
+  <li>Capacidade adequada;</li>
+  <li>Rede bem dimensionada;</li>
+  <li>DNS e NTP confiáveis;</li>
+  <li>Políticas de resiliência;</li>
+  <li>Monitoramento;</li>
+  <li>Procedimentos de backup e recuperação.</li>
+</ul>
+
+<h2 id="resumo">Resumo</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tradicional:
+servidor → SAN → storage
+
+Hiperconvergente:
+nós com compute e storage → serviços distribuídos
+</code></pre></div></div>
 
     </main>
     <footer class="site-footer">

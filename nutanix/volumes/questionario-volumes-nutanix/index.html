@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Nutanix · Ninja Linux">
+  <meta property="og:title" content="Questionário Volumes Nutanix · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/">
+  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/nutanix/volumes/questionario-volumes-nutanix/">
   <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nutanix · Ninja Linux">
+  <meta name="twitter:title" content="Questionário Volumes Nutanix · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Nutanix · Ninja Linux</title>
+  <title>Questionário Volumes Nutanix · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -81,57 +81,50 @@
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-nutanix">🥜 Nutanix</h1>
+      <h1 id="questionário-volumes-nutanix">Questionário Volumes Nutanix</h1>
 
 <h2 id="introdução">Introdução</h2>
 
-<p>Nutanix é uma plataforma de infraestrutura hiperconvergente usada para virtualização, armazenamento, segurança de dados e
-orquestração de workloads em ambientes corporativos.</p>
+<p>Este questionário ajuda a revisar conceitos importantes sobre Nutanix Volumes, iSCSI e Volume Groups.</p>
 
-<p>Esta seção foi reorganizada para apresentar:</p>
+<h2 id="perguntas">Perguntas</h2>
 
-<ul>
-  <li>Fundamentos e arquitetura Nutanix;</li>
-  <li>Gestão de armazenamento com Nutanix Volumes;</li>
-  <li>Visibilidade e governança com Nutanix Data Lens.</li>
-</ul>
+<ol>
+  <li>Qual protocolo o Nutanix Volumes utiliza para apresentar discos a hosts externos?</li>
+  <li>O que é um Volume Group?</li>
+  <li>O que é um vDisk?</li>
+  <li>Qual endereço virtual é usado para descoberta iSCSI no Nutanix?</li>
+  <li>Quais portas TCP devem estar liberadas para iSCSI?</li>
+  <li>O que significa thin provisioning?</li>
+  <li>Por que não se deve acessar IPs das CVMs diretamente?</li>
+  <li>Qual é a função do IQN?</li>
+  <li>É possível usar Nutanix Volumes em clusters com VMware ESXi?</li>
+  <li>O que é CHAP e por que ele é usado?</li>
+</ol>
 
-<hr />
+<h2 id="gabarito-rápido">Gabarito rápido</h2>
 
-<h2 id="conteúdo">Conteúdo</h2>
+<ol>
+  <li>iSCSI.</li>
+  <li>Um conjunto de um ou mais discos virtuais apresentados como armazenamento.</li>
+  <li>Um disco virtual utilizado por uma VM ou servidor.</li>
+  <li>iSCSI Data Services IP.</li>
+  <li>TCP 3260 e TCP 3205.</li>
+  <li>Alocação de espaço conforme o consumo.</li>
+  <li>Porque o cluster usa um IP virtual de descoberta e redirecionamento, não sessões diretas por IP de CVM.</li>
+  <li>Identificar iniciadores e destinos iSCSI.</li>
+  <li>Sim.</li>
+  <li>Um protocolo de autenticação iSCSI usado para proteger conexões.</li>
+</ol>
 
-<h3 id="fundamentos">Fundamentos</h3>
-
-<ul>
-  <li><a href="fundamentos/01-introducao-ao-nutanix.md">01 - Introdução ao Nutanix</a></li>
-  <li><a href="fundamentos/02-arquitetura-hiperconvergente.md">02 - Arquitetura hiperconvergente</a></li>
-  <li><a href="fundamentos/03-prism-element-e-prism-central.md">03 - Prism Element e Prism Central</a></li>
-  <li><a href="fundamentos/04-ahv-aos-e-cvm.md">04 - AHV, AOS e CVM</a></li>
-  <li><a href="fundamentos/05-storage-pool-container-e-vdisk.md">05 - Storage Pool, Container e vDisk</a></li>
-  <li><a href="fundamentos/06-resiliencia-rf2-rf3-e-localidade.md">06 - Resiliência, RF2, RF3 e localidade</a></li>
-  <li><a href="fundamentos/07-nutanix-files-e-fsvm.md">07 - Nutanix Files e FSVM</a></li>
-  <li><a href="fundamentos/08-smb-nfs-e-active-directory.md">08 - SMB, NFS e Active Directory</a></li>
-  <li><a href="fundamentos/09-fluxos-e-diagnostico-inicial.md">09 - Fluxos e diagnóstico inicial</a></li>
-</ul>
-
-<h3 id="nutanix-volumes">Nutanix Volumes</h3>
-
-<ul>
-  <li><a href="volumes/configurando-volumes-nutanix.md">Configurando Volumes Nutanix</a></li>
-  <li><a href="volumes/questionario-volumes-nutanix.md">Questionário Volumes Nutanix</a></li>
-</ul>
-
-<h3 id="nutanix-data-lens">Nutanix Data Lens</h3>
+<h2 id="revisão">Revisão</h2>
 
 <ul>
-  <li><a href="data-lens/index.md">Introdução ao Nutanix Data Lens</a></li>
+  <li>Lembre-se de separar Volume Group de vDisk.</li>
+  <li>Use o IP de Serviços de Dados iSCSI para descoberta.</li>
+  <li>Não misture acesso direto às CVMs com a operação normal dos Volumes.</li>
+  <li>O CHAP aumenta a segurança das sessões iSCSI.</li>
 </ul>
-
-<hr />
-
-<blockquote>
-  <p>💡 Esta seção reúne os principais tópicos de Nutanix em um formato organizado e fácil de navegar.</p>
-</blockquote>
 
     </main>
     <footer class="site-footer">
