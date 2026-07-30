@@ -1,12 +1,12 @@
 title: Ninja Linux
 description: Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.
-author: João Santos
+author: Autor Exemplo
 lang: pt-BR
-url: https://joaopedros111.github.io
+url: https://seu-usuario.github.io
 baseurl: /ninja-linux
-github_username: joaopedros111
-twitter_username: joaopedros111
-repository: joaopedros111/ninja-linux
+github_username: seu-usuario
+twitter_username: seu-usuario
+repository: seu-usuario/ninja-linux
 markdown: kramdown
 permalink: pretty
 exclude:

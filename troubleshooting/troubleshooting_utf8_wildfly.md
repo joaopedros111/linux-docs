@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Troubleshooting CITSmart
+title: Troubleshooting Aplicação de Exemplo
 ---
 
 # Troubleshooting – Correção de Caracteres Especiais (UTF-8) em Aplicação WildFly no Kubernetes
 
 ## Problema
 
-A aplicação SGSO apresentava problemas com caracteres especiais (acentuação e cedilha) na interface web.
+A aplicação de exemplo apresentava problemas com caracteres especiais (acentuação e cedilha) na interface web.
 
 Exemplos:
 
@@ -18,9 +18,9 @@ Exemplos:
 
 * Kubernetes RKE2
 * WildFly executando em container
-* Namespace: `sgso`
-* Deployment: `sgso`
-* Imagem: `harbor.infraero.gov.br/library/sgso:f860f`
+* Namespace: `aplicacao-exemplo`
+* Deployment: `aplicacao-exemplo`
+* Imagem: `harbor.corp.example.com/library/aplicacao-exemplo:v1.0.0`
 
 ---
 
@@ -31,7 +31,7 @@ Exemplos:
 Acessado o pod da aplicação:
 
 ```bash
-kubectl exec -it -n sgso <pod> -- sh
+kubectl exec -it -n aplicacao-exemplo <pod> -- sh
 ```
 
 Verificação:
@@ -79,7 +79,7 @@ Foram adicionadas variáveis de ambiente UTF-8 diretamente no Deployment Kuberne
 ### Comando aplicado
 
 ```bash
-kubectl set env deployment/sgso -n sgso \
+kubectl set env deployment/aplicacao-exemplo -n aplicacao-exemplo \
 LANG=en_US.UTF-8 \
 LC_ALL=en_US.UTF-8 \
 LC_CTYPE=en_US.UTF-8
@@ -94,7 +94,7 @@ O Kubernetes realizou automaticamente um rollout do Deployment, criando um novo 
 ### Verificar variáveis de ambiente
 
 ```bash
-kubectl exec -it -n sgso <pod> -- env | grep -E 'LANG|LC_'
+kubectl exec -it -n aplicacao-exemplo <pod> -- env | grep -E 'LANG|LC_'
 ```
 
 Resultado esperado:
@@ -108,7 +108,7 @@ LC_CTYPE=en_US.UTF-8
 ### Verificar encoding da JVM
 
 ```bash
-kubectl exec -it -n sgso <pod> -- \
+kubectl exec -it -n aplicacao-exemplo <pod> -- \
 java -XshowSettings:properties -version 2>&1 | grep -i encoding
 ```
 

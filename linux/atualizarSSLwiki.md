@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Atualização de Certificado SSL da Wiki Infraero
+title: Atualização de Certificado SSL da Wiki da Empresa Exemplo
 ---
 
-# Atualização de Certificado SSL da Wiki Infraero (WikiJS + Docker + Nginx)
+# Atualização de Certificado SSL da Wiki da Empresa Exemplo (WikiJS + Docker + Nginx)
 
 ## Objetivo
 
-Atualizar o certificado SSL utilizado pela Wiki Infraero (`wiki.infraero.gov.br`) hospedada em containers Docker utilizando Nginx como proxy reverso.
+Atualizar o certificado SSL utilizado pela Wiki da Empresa Exemplo (`wiki.corp.example.com`) hospedada em containers Docker utilizando Nginx como proxy reverso.
 
 ---
 
@@ -16,7 +16,7 @@ Atualizar o certificado SSL utilizado pela Wiki Infraero (`wiki.infraero.gov.br`
 Servidor:
 
 ```bash
-s-sesu200.infraero.gov.br
+srv-wiki01.corp.example.com
 ```
 
 Containers:
@@ -55,9 +55,9 @@ docker exec -it wikijs_nginx openssl x509 \
 Exemplo:
 
 ```text
-notBefore=May 9 21:27:04 2025 GMT
-notAfter=Jun 7 18:52:08 2026 GMT
-subject=CN=*.infraero.gov.br
+notBefore=Jan 1 00:00:00 2025 GMT
+notAfter=Dec 31 23:59:59 2025 GMT
+subject=CN=*.corp.example.com
 issuer=GlobalSign RSA OV SSL CA 2018
 ```
 
@@ -76,26 +76,26 @@ Exemplo de diretório recebido da equipe responsável:
 Conteúdo:
 
 ```text
-0_Infraero_OrganizationSSL_2026.cer
+0_Empresa_Exemplo_OrganizationSSL_2026.cer
 cadeia_completa_globalsign.pem
-infraero.gov.br.pem
-infraero_certificado_2026.key
+corp.example.com.pem
+empresa_exemplo_certificado_2026.key
 ```
 
 Verificar validade:
 
 ```bash
 openssl x509 \
--in /tmp/cert2026/infraero.gov.br.pem \
+-in /tmp/cert2026/corp.example.com.pem \
 -noout -dates -subject -issuer
 ```
 
 Exemplo:
 
 ```text
-notBefore=Apr 28 17:54:04 2026 GMT
-notAfter=Nov 13 17:54:04 2026 GMT
-subject=CN=*.infraero.gov.br
+notBefore=Jan 1 00:00:00 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
+subject=CN=*.corp.example.com
 ```
 
 ---
@@ -106,14 +106,14 @@ Verificar hash do certificado:
 
 ```bash
 openssl x509 -noout -modulus \
--in /tmp/cert2026/infraero.gov.br.pem | openssl md5
+-in /tmp/cert2026/corp.example.com.pem | openssl md5
 ```
 
 Verificar hash da chave:
 
 ```bash
 openssl rsa -noout -modulus \
--in /tmp/cert2026/infraero_certificado_2026.key | openssl md5
+-in /tmp/cert2026/empresa_exemplo_certificado_2026.key | openssl md5
 ```
 
 Os hashes devem ser idênticos.
@@ -121,8 +121,8 @@ Os hashes devem ser idênticos.
 Exemplo:
 
 ```text
-MD5(stdin)= 851dbad6e7a519412df992c58f7c01e5
-MD5(stdin)= 851dbad6e7a519412df992c58f7c01e5
+MD5(stdin)= 0123456789abcdef0123456789abcdef
+MD5(stdin)= 0123456789abcdef0123456789abcdef
 ```
 
 ---
@@ -143,10 +143,10 @@ cp wiki.key wiki.key.bkp-$(date +%F)
 Substituir o certificado antigo:
 
 ```bash
-cp /tmp/cert2026/infraero.gov.br.pem \
+cp /tmp/cert2026/corp.example.com.pem \
 /opt/wikijs/certs/wiki.crt
 
-cp /tmp/cert2026/infraero_certificado_2026.key \
+cp /tmp/cert2026/empresa_exemplo_certificado_2026.key \
 /opt/wikijs/certs/wiki.key
 ```
 
@@ -192,7 +192,7 @@ Executar:
 
 ```bash
 openssl s_client \
--connect wiki.infraero.gov.br:443 \
+-connect wiki.corp.example.com:443 \
 </dev/null 2>/dev/null | \
 openssl x509 -noout -dates -subject
 ```
@@ -200,9 +200,9 @@ openssl x509 -noout -dates -subject
 Resultado esperado:
 
 ```text
-notBefore=Apr 28 17:54:04 2026 GMT
-notAfter=Nov 13 17:54:04 2026 GMT
-subject=CN=*.infraero.gov.br
+notBefore=Jan 1 00:00:00 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
+subject=CN=*.corp.example.com
 ```
 
 ---
@@ -213,8 +213,8 @@ Executar:
 
 ```bash
 openssl s_client \
--connect wiki.infraero.gov.br:443 \
--servername wiki.infraero.gov.br
+-connect wiki.corp.example.com:443 \
+-servername wiki.corp.example.com
 ```
 
 Resultado esperado:
@@ -263,7 +263,7 @@ Validar:
 # Evidência de sucesso
 
 ```bash
-curl -kI https://wiki.infraero.gov.br
+curl -kI https://wiki.corp.example.com
 ```
 
 Resultado:
@@ -273,7 +273,7 @@ HTTP/1.1 200 OK
 ```
 
 ```bash
-openssl s_client -connect wiki.infraero.gov.br:443
+openssl s_client -connect wiki.corp.example.com:443
 ```
 
 Resultado:

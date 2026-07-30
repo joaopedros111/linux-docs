@@ -219,7 +219,7 @@ kubectl logs nginx-pod
 Exemplo:
 
 ```text
-10.0.0.1 - GET /
+192.0.2.1 - GET /
 ```
 
 ---

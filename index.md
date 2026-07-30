@@ -123,8 +123,8 @@ description: Ninja Linux é a base de conhecimento prática para Linux, infraest
 <h2>Contato</h2>
 
 <div class="home-actions">
-  <a class="primary-action" href="https://github.com/joaopedros111" target="_blank" rel="noopener">GitHub</a>
-  <a class="secondary-action" href="https://www.linkedin.com/in/jo%C3%A3o-santos-67a17685/" target="_blank" rel="noopener">LinkedIn</a>
+  <a class="primary-action" href="https://github.com/seu-usuario" target="_blank" rel="noopener">GitHub</a>
+  <a class="secondary-action" href="https://www.linkedin.com/in/exemplo/" target="_blank" rel="noopener">LinkedIn</a>
 </div>
 </section>
 

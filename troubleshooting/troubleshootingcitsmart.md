@@ -1,15 +1,15 @@
 ---
 layout: default
-title: Troubleshooting CITSmart
+title: Troubleshooting Aplicação ITSM de Exemplo
 ---
 
-# Troubleshooting – Indisponibilidade do CITSmart
+# Troubleshooting – Indisponibilidade da Aplicação ITSM de Exemplo
 
 ---
 
 ## Solução de Contorno
 
-Reiniciar os serviços do CITSmart.
+Reiniciar os serviços da aplicação ITSM de exemplo.
 
 Observação: a reinicialização restabelece o funcionamento da aplicação, porém não corrige a causa raiz do problema.
 
@@ -17,7 +17,7 @@ Observação: a reinicialização restabelece o funcionamento da aplicação, po
 
 ## Sintoma
 
-Usuários relatam indisponibilidade ou lentidão no acesso ao CITSmart.
+Usuários relatam indisponibilidade ou lentidão no acesso à aplicação ITSM de exemplo.
 
 ---
 
@@ -34,17 +34,17 @@ Verificar se todos os containers do ambiente estão em execução.
 ## Verificar consumo de recursos
 
 ```bash
-docker stats --no-stream runITSM
+docker stats --no-stream itsm-exemplo
 ```
 
-Validar consumo de CPU e memória do container principal do CITSmart.
+Validar consumo de CPU e memória do container principal da aplicação.
 
 ---
 
 ## Verificar erros de memória
 
 ```bash
-docker logs runITSM 2>&1 | grep -i "OutOfMemoryError"
+docker logs itsm-exemplo 2>&1 | grep -i "OutOfMemoryError"
 ```
 
 Caso exista retorno semelhante ao abaixo:
@@ -60,7 +60,7 @@ A aplicação apresentou esgotamento da memória Java (Heap).
 ## Identificar processo Java
 
 ```bash
-docker exec -it runITSM ps -ef | grep java
+docker exec -it itsm-exemplo ps -ef | grep java
 ```
 
 Anotar o PID do processo Java.
@@ -68,7 +68,7 @@ Anotar o PID do processo Java.
 Exemplo:
 
 ```text
-itsm 1101 java ...
+app <PID_JAVA> java ...
 ```
 
 ---
@@ -76,14 +76,14 @@ itsm 1101 java ...
 ## Verificar utilização da Heap
 
 ```bash
-docker exec -it runITSM jcmd 1101 GC.heap_info
+docker exec -it itsm-exemplo jcmd <PID_JAVA> GC.heap_info
 ```
 
 Exemplo:
 
 ```text
-garbage-first heap total 25067520K
-used 1387139K
+garbage-first heap total 8388608K
+used 1048576K
 ```
 
 ---
@@ -91,7 +91,7 @@ used 1387139K
 ## Verificar parâmetros da JVM
 
 ```bash
-docker exec -it runITSM jcmd 1101 VM.flags
+docker exec -it itsm-exemplo jcmd <PID_JAVA> VM.flags
 ```
 
 Verificar principalmente os parâmetros:
@@ -128,13 +128,13 @@ Filtrar pelo horário da indisponibilidade.
 Exemplo:
 
 ```text
-Data Inicial: 12/06/2026 11:40
-Data Final:   12/06/2026 11:50
+Data Inicial: DD/MM/AAAA 11:40
+Data Final:   DD/MM/AAAA 11:50
 ```
 
 ---
 
-## Evidências encontradas no incidente de 12/06/2026
+## Evidências encontradas no incidente de DD/MM/AAAA
 
 Foi identificado:
 
@@ -145,7 +145,7 @@ java.lang.OutOfMemoryError: Java heap space
 A stack trace apontou para:
 
 ```text
-com.citsmart.audit.service.impl.AuditServiceImpl
+com.example.audit.service.impl.AuditServiceImpl
 org.javers.core.JaversCore.compare
 ```
 
@@ -159,4 +159,4 @@ Channel is closed
 
 ## Conclusão Preliminar
 
-Os indícios apontam para falha relacionada ao módulo de auditoria da aplicação, resultando em esgotamento da memória Java (OutOfMemoryError) e consequente degradação dos serviços internos do CITSmart.
+Os indícios apontam para falha relacionada ao módulo de auditoria da aplicação, resultando em esgotamento da memória Java (OutOfMemoryError) e consequente degradação dos serviços internos da aplicação.

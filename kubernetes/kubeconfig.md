@@ -31,17 +31,17 @@ apiVersion: v1
 kind: Config
 
 clusters:
-- name: infraero-hml
+- name: empresa-exemplo-hml
   cluster:
-    server: https://cluster.exemplo.com
+    server: https://cluster.corp.example.com
 
 contexts:
-- name: infraero-hml
+- name: empresa-exemplo-hml
   context:
-    cluster: infraero-hml
-    user: infraero-hml
+    cluster: empresa-exemplo-hml
+    user: empresa-exemplo-hml
 
-current-context: infraero-hml
+current-context: empresa-exemplo-hml
 ```
 
 ---
@@ -53,25 +53,25 @@ current-context: infraero-hml
 #### Desenvolvimento
 
 ```bash
-export KUBECONFIG=/home/operador/infraero-det.yaml
+export KUBECONFIG=/home/operador/empresa-exemplo-dev.yaml
 ```
 
 #### Homologação
 
 ```bash
-export KUBECONFIG=/home/operador/infraero-hml.yaml
+export KUBECONFIG=/home/operador/empresa-exemplo-hml.yaml
 ```
 
 #### Produção
 
 ```bash
-export KUBECONFIG=/home/operador/infraero-prd.yaml
+export KUBECONFIG=/home/operador/empresa-exemplo-prd.yaml
 ```
 
 #### Infraestrutura
 
 ```bash
-export KUBECONFIG=/home/operador/infraero-infra.yaml
+export KUBECONFIG=/home/operador/empresa-exemplo-infra.yaml
 ```
 
 ---
@@ -107,7 +107,7 @@ kubectl config current-context
 Exemplo:
 
 ```text
-infraero-hml
+empresa-exemplo-hml
 ```
 
 ---
@@ -122,9 +122,9 @@ Exemplo:
 
 ```text
 CURRENT   NAME
-*         infraero-hml
-          infraero-prd
-          infraero-det
+*         empresa-exemplo-hml
+          empresa-exemplo-prd
+          empresa-exemplo-dev
 ```
 
 ---

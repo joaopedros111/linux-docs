@@ -11,9 +11,9 @@ Este procedimento apresenta a instalação de um cluster Kubernetes com três m�
 
 | Servidor      | Função        | IP         |
 | ------------- | ------------- | ---------- |
-| k8s-control01 | Control Plane | 10.0.97.21 |
-| k8s-worker01  | Worker        | 10.0.97.17 |
-| k8s-worker02  | Worker        | 10.0.97.20 |
+| k8s-control01 | Control Plane | 192.0.2.21 |
+| k8s-worker01  | Worker        | 192.0.2.17 |
+| k8s-worker02  | Worker        | 192.0.2.20 |
 
 Tecnologias utilizadas:
 
@@ -76,9 +76,9 @@ vi /etc/hosts
 Adicione:
 
 ```text
-10.0.97.21 k8s-control01
-10.0.97.17 k8s-worker01
-10.0.97.20 k8s-worker02
+192.0.2.21 k8s-control01
+192.0.2.17 k8s-worker01
+192.0.2.20 k8s-worker02
 ```
 
 Teste a resolução dos nomes:
@@ -391,14 +391,14 @@ Inicialize o cluster:
 
 ```bash
 kubeadm init \
---apiserver-advertise-address=10.0.97.21 \
+--apiserver-advertise-address=192.0.2.21 \
 --pod-network-cidr=192.168.0.0/16
 ```
 
 Ao final, o kubeadm exibirá um comando semelhante a:
 
 ```bash
-kubeadm join 10.0.97.21:6443 \
+kubeadm join 192.0.2.21:6443 \
 --token TOKEN_GERADO \
 --discovery-token-ca-cert-hash sha256:HASH_GERADO
 ```
@@ -498,7 +498,7 @@ Execute o comando `kubeadm join` nos servidores `k8s-worker01` e `k8s-worker02`.
 Exemplo:
 
 ```bash
-kubeadm join 10.0.97.21:6443 \
+kubeadm join 192.0.2.21:6443 \
 --token TOKEN_GERADO \
 --discovery-token-ca-cert-hash sha256:HASH_GERADO
 ```
@@ -525,9 +525,9 @@ Resultado esperado:
 
 ```text
 NAME            STATUS   ROLES           INTERNAL-IP
-k8s-control01   Ready    control-plane   10.0.97.21
-k8s-worker01    Ready    <none>          10.0.97.17
-k8s-worker02    Ready    <none>          10.0.97.20
+k8s-control01   Ready    control-plane   192.0.2.21
+k8s-worker01    Ready    <none>          192.0.2.17
+k8s-worker02    Ready    <none>          192.0.2.20
 ```
 
 Caso algum nó ainda esteja `NotReady`, aguarde a inicialização do Calico e verifique os pods.
@@ -681,13 +681,13 @@ nginx   NodePort   10.96.x.x      80:30xxx/TCP
 Teste utilizando o IP de um dos nós e a porta NodePort:
 
 ```bash
-curl http://10.0.97.17:PORTA
+curl http://192.0.2.17:PORTA
 ```
 
 Ou:
 
 ```bash
-curl http://10.0.97.20:PORTA
+curl http://192.0.2.20:PORTA
 ```
 
 ---
@@ -847,12 +847,12 @@ No Control Plane:
 
 ```bash
 scp /etc/kubernetes/admin.conf \
-root@10.0.97.17:/root/admin.conf
+root@192.0.2.17:/root/admin.conf
 ```
 
 ```bash
 scp /etc/kubernetes/admin.conf \
-root@10.0.97.20:/root/admin.conf
+root@192.0.2.20:/root/admin.conf
 ```
 
 No worker:

@@ -12,8 +12,8 @@ Este procedimento descreve a instalação do **VMware ESXi 7.0.3** em servidores
 O procedimento foi utilizado nos hosts:
 
 ```text
-s-vmse208
-s-vmse209
+esxi-host01
+esxi-host02
 ```
 
 ---
@@ -45,8 +45,8 @@ https://IP_DO_IDRAC
 Exemplo:
 
 ```text
-https://10.0.239.208
-https://10.0.239.209
+https://192.0.2.208
+https://192.0.2.209
 ```
 
 Faça login com usuário administrativo.
@@ -418,7 +418,7 @@ Recomenda-se utilizar uma senha compatível com teclado **US Default**.
 Exemplo de formato:
 
 ```text
-SenhaForte2026!
+SENHA_FORTE_DE_EXEMPLO!
 ```
 
 Observação: no teclado US, o caractere `!` é digitado com:
@@ -516,7 +516,7 @@ Isso significa que o ESXi tentou obter IP por DHCP e não recebeu endereço vál
 
 ## 9. Configuração de rede
 
-Neste procedimento, o IP fixo do ESXi **não foi configurado**, pois os servidores serão enviados para o Rio de Janeiro e a equipe local configurará os endereços na rede de destino.
+Neste procedimento, o IP fixo do ESXi **não foi configurado**, pois os servidores serão instalados em outra localidade e a equipe local configurará os endereços na rede de destino.
 
 Para configurar IP posteriormente:
 

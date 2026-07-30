@@ -345,7 +345,7 @@ git blame arquivo.md
 Exemplo:
 
 ```text
-a12b34c (João Santos) Linha 15
+a12b34c (Usuário Exemplo) Linha 15
 ```
 
 ---

@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Troubleshooting Wiki Infraero
+title: Troubleshooting Wiki da Empresa Exemplo
 ---
 
-# 📊 Troubleshooting Completo – Wiki Infraero Indisponível (Docker, WikiJS, Nginx e Certificados)
+# 📊 Troubleshooting Completo – Wiki da Empresa Exemplo Indisponível (Docker, WikiJS, Nginx e Certificados)
 
 ## Objetivo
 
-Documentar o processo de análise, diagnóstico e correção da indisponibilidade da Wiki Infraero.
+Documentar o processo de análise, diagnóstico e correção da indisponibilidade da Wiki da Empresa Exemplo.
 
 ---
 
@@ -16,7 +16,7 @@ Documentar o processo de análise, diagnóstico e correção da indisponibilidad
 Servidor:
 
 ```bash
-s-sesu200.infraero.gov.br
+srv-wiki01.corp.example.com
 ```
 
 Aplicação:
@@ -49,13 +49,13 @@ Docker
 Usuários reportaram indisponibilidade da Wiki:
 
 ```text
-https://wiki.infraero.gov.br
+https://wiki.corp.example.com
 ```
 
 Teste realizado:
 
 ```bash
-curl -I https://wiki.infraero.gov.br
+curl -I https://wiki.corp.example.com
 ```
 
 Resultado:
@@ -77,17 +77,17 @@ Connection refused
 Executar:
 
 ```bash
-nslookup wiki.infraero.gov.br
+nslookup wiki.corp.example.com
 ```
 
 Resultado:
 
 ```text
-Servidor: s-sead34.infraero.gov.br
-Address: 10.0.17.34
+Servidor: dns01.corp.example.com
+Address: 192.0.2.53
 
-Nome: wiki.infraero.gov.br
-Address: 10.0.17.200
+Nome: wiki.corp.example.com
+Address: 192.0.2.200
 ```
 
 ### Conclusão
@@ -101,7 +101,7 @@ DNS funcionando corretamente.
 Executar:
 
 ```bash
-curl -I https://wiki.infraero.gov.br
+curl -I https://wiki.corp.example.com
 ```
 
 Resultado:
@@ -113,7 +113,7 @@ curl: (7) Failed to connect
 Executar:
 
 ```bash
-telnet wiki.infraero.gov.br 443
+telnet wiki.corp.example.com 443
 ```
 
 Resultado:
@@ -133,7 +133,7 @@ A porta 443 não estava disponível.
 Conectar ao servidor:
 
 ```bash
-ssh root@s-sesu200
+ssh admin@srv-wiki01
 ```
 
 Verificar acesso local:
@@ -270,7 +270,7 @@ uname -r
 Resultado:
 
 ```text
-5.14.0-611.55.1.el9_7.x86_64
+5.14.0-000.00.0.el9_0.x86_64
 ```
 
 Verificar pacotes:
@@ -426,7 +426,7 @@ HTTP/1.1 200 OK
 Executar:
 
 ```bash
-curl -kI https://wiki.infraero.gov.br
+curl -kI https://wiki.corp.example.com
 ```
 
 Resultado:

@@ -94,7 +94,7 @@ Sem intervenção humana.
 
 ## Exemplo Prático
 
-Fluxo semelhante ao utilizado no ambiente da Infraero:
+Fluxo semelhante ao utilizado em um ambiente corporativo:
 
 ```text
 Azure DevOps

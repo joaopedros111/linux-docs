@@ -164,7 +164,7 @@ http://IP_DO_SERVIDOR
 Exemplo:
 
 ```text
-http://10.0.97.35
+http://192.0.2.35
 ```
 
 ---

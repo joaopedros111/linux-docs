@@ -8,19 +8,19 @@ title: Active Directory
 ## Verificar informações de um usuário
 
 ```powershell
-Get-ADUser t034691811
+Get-ADUser usuario.exemplo
 ```
 
 Exibir propriedades adicionais:
 
 ```powershell
-Get-ADUser t034691811 -Properties *
+Get-ADUser usuario.exemplo -Properties *
 ```
 
 Exibir nome, e-mail e departamento:
 
 ```powershell
-Get-ADUser t034691811 -Properties mail,department |
+Get-ADUser usuario.exemplo -Properties mail,department |
 Select Name,SamAccountName,Mail,Department
 ```
 
@@ -29,20 +29,20 @@ Select Name,SamAccountName,Mail,Department
 ## Verificar grupos de um usuário
 
 ```powershell
-Get-ADPrincipalGroupMembership t034691811
+Get-ADPrincipalGroupMembership usuario.exemplo
 ```
 
 Somente os nomes:
 
 ```powershell
-Get-ADPrincipalGroupMembership t034691811 |
+Get-ADPrincipalGroupMembership usuario.exemplo |
 Select Name
 ```
 
 Ordenado:
 
 ```powershell
-Get-ADPrincipalGroupMembership t034691811 |
+Get-ADPrincipalGroupMembership usuario.exemplo |
 Sort Name |
 Select Name
 ```
@@ -52,21 +52,21 @@ Select Name
 ## Verificar membros de um grupo
 
 ```powershell
-Get-ADGroupMember "ProxySEDEAcessoPadrao"
+Get-ADGroupMember "GrupoAcessoPadrao"
 ```
 
 Exibir apenas logins:
 
 ```powershell
-Get-ADGroupMember "ProxySEDEAcessoPadrao" |
+Get-ADGroupMember "GrupoAcessoPadrao" |
 Select SamAccountName
 ```
 
 Procurar usuário dentro do grupo:
 
 ```powershell
-Get-ADGroupMember "ProxySEDEAcessoPadrao" |
-Where-Object {$_.SamAccountName -eq "t034691811"}
+Get-ADGroupMember "GrupoAcessoPadrao" |
+Where-Object {$_.SamAccountName -eq "usuario.exemplo"}
 ```
 
 ---
@@ -75,8 +75,8 @@ Where-Object {$_.SamAccountName -eq "t034691811"}
 
 ```powershell
 Add-ADGroupMember `
--Identity "ProxySEDEAcessoPadrao" `
--Members "t034691811"
+-Identity "GrupoAcessoPadrao" `
+-Members "usuario.exemplo"
 ```
 
 ---
@@ -85,16 +85,16 @@ Add-ADGroupMember `
 
 ```powershell
 Remove-ADGroupMember `
--Identity "ProxySEDEAcessoPadrao" `
--Members "t034691811"
+-Identity "GrupoAcessoPadrao" `
+-Members "usuario.exemplo"
 ```
 
 Sem confirmação:
 
 ```powershell
 Remove-ADGroupMember `
--Identity "ProxySEDEAcessoPadrao" `
--Members "t034691811" `
+-Identity "GrupoAcessoPadrao" `
+-Members "usuario.exemplo" `
 -Confirm:$false
 ```
 
@@ -103,7 +103,7 @@ Remove-ADGroupMember `
 ## Verificar se usuário está bloqueado
 
 ```powershell
-Get-ADUser t034691811 -Properties LockedOut |
+Get-ADUser usuario.exemplo -Properties LockedOut |
 Select Name,LockedOut
 ```
 
@@ -112,7 +112,7 @@ Select Name,LockedOut
 ## Desbloquear usuário
 
 ```powershell
-Unlock-ADAccount t034691811
+Unlock-ADAccount usuario.exemplo
 ```
 
 ---
@@ -120,7 +120,7 @@ Unlock-ADAccount t034691811
 ## Verificar data da última troca de senha
 
 ```powershell
-Get-ADUser t034691811 -Properties PasswordLastSet |
+Get-ADUser usuario.exemplo -Properties PasswordLastSet |
 Select Name,PasswordLastSet
 ```
 
@@ -130,7 +130,7 @@ Select Name,PasswordLastSet
 
 ```powershell
 Set-ADUser `
--Identity "t034691811" `
+-Identity "usuario.exemplo" `
 -ChangePasswordAtLogon $true
 ```
 
@@ -140,9 +140,9 @@ Set-ADUser `
 
 ```powershell
 Set-ADAccountPassword `
--Identity "t034691811" `
+-Identity "usuario.exemplo" `
 -Reset `
--NewPassword (ConvertTo-SecureString "NovaSenha123" -AsPlainText -Force)
+-NewPassword (ConvertTo-SecureString "SENHA_FORTE_DE_EXEMPLO" -AsPlainText -Force)
 ```
 
 ---
@@ -165,7 +165,7 @@ Select Name
 ## Procurar computador específico
 
 ```powershell
-Get-ADComputer -Identity SE10499779
+Get-ADComputer -Identity PC-EXEMPLO-01
 ```
 
 ---
@@ -173,7 +173,7 @@ Get-ADComputer -Identity SE10499779
 ## Verificar informações do computador
 
 ```powershell
-Get-ADComputer SE10499779 -Properties *
+Get-ADComputer PC-EXEMPLO-01 -Properties *
 ```
 
 ---
@@ -181,7 +181,7 @@ Get-ADComputer SE10499779 -Properties *
 ## Pesquisar usuário por nome
 
 ```powershell
-Get-ADUser -Filter 'Name -like "*Joao*"'
+Get-ADUser -Filter 'Name -like "*Usuario*"'
 ```
 
 ---
@@ -189,7 +189,7 @@ Get-ADUser -Filter 'Name -like "*Joao*"'
 ## Pesquisar computador por nome
 
 ```powershell
-Get-ADComputer -Filter 'Name -like "*SE104*"'
+Get-ADComputer -Filter 'Name -like "*PC-EXEMPLO*"'
 ```
 
 ---
@@ -197,20 +197,20 @@ Get-ADComputer -Filter 'Name -like "*SE104*"'
 ## Descobrir em qual OU está o usuário
 
 ```powershell
-Get-ADUser t034691811 |
+Get-ADUser usuario.exemplo |
 Select DistinguishedName
 ```
 
 Exemplo:
 
 ```text
-CN=Joao Pedro dos Santos,
-OU=TODOS,
+CN=Usuario Exemplo,
+OU=Colaboradores,
 OU=Usuarios,
-OU=SEDE,
-DC=infraero,
-DC=gov,
-DC=br
+OU=Matriz,
+DC=corp,
+DC=example,
+DC=com
 ```
 
 ---
@@ -264,7 +264,7 @@ systeminfo | findstr /B /C:"Domínio"
 ## Verificar controladores de domínio
 
 ```cmd
-nltest /dclist:infraero.gov.br
+nltest /dclist:corp.example.com
 ```
 
 ---
@@ -272,7 +272,7 @@ nltest /dclist:infraero.gov.br
 ## Verificar conectividade com o AD
 
 ```cmd
-nltest /dsgetdc:infraero.gov.br
+nltest /dsgetdc:corp.example.com
 ```
 
 ---

@@ -30,8 +30,8 @@ git version 2.43.5
 Defina seu nome e e-mail:
 
 ```bash
-git config --global user.name "João Santos"
-git config --global user.email "joao@email.com"
+git config --global user.name "Usuário Exemplo"
+git config --global user.email "usuario@example.com"
 ```
 
 Verificar configuração:
@@ -53,7 +53,7 @@ git clone https://github.com/usuario/repositorio.git
 Exemplo:
 
 ```bash
-git clone https://github.com/joaopedros111/linux-docs.git
+git clone https://github.com/seu-usuario/linux-docs.git
 ```
 
 Entrar no diretório:

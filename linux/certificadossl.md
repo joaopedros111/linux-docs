@@ -22,7 +22,7 @@ Realizar a atualização do certificado SSL do Harbor executado em containers Do
 Hostname:
 
 ```text
-harbor.infraero.gov.br
+harbor.corp.example.com
 ```
 
 ---
@@ -40,8 +40,8 @@ Exemplo:
 ```yaml
 https:
   port: 443
-  certificate: /etc/pki/tls/certs/infraero.gov.br.pem
-  private_key: /etc/pki/tls/private/infraero.gov.br.key
+  certificate: /etc/pki/tls/certs/corp.example.com.pem
+  private_key: /etc/pki/tls/private/corp.example.com.key
 ```
 
 ---
@@ -51,10 +51,10 @@ https:
 ```bash
 mkdir -p /root/bkp-cert-harbor-$(date +%F)
 
-cp -p /etc/pki/tls/certs/infraero.gov.br.pem \
+cp -p /etc/pki/tls/certs/corp.example.com.pem \
 /root/bkp-cert-harbor-$(date +%F)/
 
-cp -p /etc/pki/tls/private/infraero.gov.br.key \
+cp -p /etc/pki/tls/private/corp.example.com.key \
 /root/bkp-cert-harbor-$(date +%F)/
 ```
 
@@ -69,9 +69,9 @@ ls -lah /root/bkp-cert-harbor-$(date +%F)/
 ## 3. Arquivos recebidos
 
 ```text
-0_Infraero_OrganizationSSL_2026.cer
+0_Empresa_Exemplo_OrganizationSSL_2026.cer
 cadeia_completa_globalsign.pem
-infraero_certificado_2026.key
+empresa_exemplo_certificado_2026.key
 ```
 
 Copiar para um diretório temporário:
@@ -85,14 +85,14 @@ mkdir -p /tmp/cert2026
 ## 4. Validar o certificado do site
 
 ```bash
-openssl x509 -in 0_Infraero_OrganizationSSL_2026.cer \
+openssl x509 -in 0_Empresa_Exemplo_OrganizationSSL_2026.cer \
 -noout -subject -issuer -dates
 ```
 
 Resultado esperado:
 
 ```text
-subject=C=BR, ST=DISTRITO FEDERAL, L=BRASILIA, O=INFRAERO, CN=*.infraero.gov.br
+subject=C=BR, ST=ESTADO EXEMPLO, L=CIDADE EXEMPLO, O=EMPRESA EXEMPLO, CN=*.corp.example.com
 ```
 
 ---
@@ -103,14 +103,14 @@ Certificado:
 
 ```bash
 openssl x509 -noout -modulus \
--in 0_Infraero_OrganizationSSL_2026.cer | md5sum
+-in 0_Empresa_Exemplo_OrganizationSSL_2026.cer | md5sum
 ```
 
 Chave:
 
 ```bash
 openssl rsa -noout -modulus \
--in infraero_certificado_2026.key | md5sum
+-in empresa_exemplo_certificado_2026.key | md5sum
 ```
 
 Os hashes devem ser idênticos.
@@ -118,8 +118,8 @@ Os hashes devem ser idênticos.
 Exemplo:
 
 ```text
-851dbad6e7a519412df992c58f7c01e5
-851dbad6e7a519412df992c58f7c01e5
+0123456789abcdef0123456789abcdef
+0123456789abcdef0123456789abcdef
 ```
 
 ---
@@ -129,24 +129,24 @@ Exemplo:
 Montar o certificado do site + cadeia da GlobalSign:
 
 ```bash
-cat 0_Infraero_OrganizationSSL_2026.cer > infraero.gov.br.pem
+cat 0_Empresa_Exemplo_OrganizationSSL_2026.cer > corp.example.com.pem
 
-echo "" >> infraero.gov.br.pem
+echo "" >> corp.example.com.pem
 
-cat cadeia_completa_globalsign.pem >> infraero.gov.br.pem
+cat cadeia_completa_globalsign.pem >> corp.example.com.pem
 ```
 
 Validar:
 
 ```bash
-openssl x509 -in infraero.gov.br.pem \
+openssl x509 -in corp.example.com.pem \
 -noout -subject -issuer -dates
 ```
 
 Resultado esperado:
 
 ```text
-CN=*.infraero.gov.br
+CN=*.corp.example.com
 ```
 
 ---
@@ -154,11 +154,11 @@ CN=*.infraero.gov.br
 ## 7. Atualizar os certificados do sistema
 
 ```bash
-cp infraero.gov.br.pem \
-/etc/pki/tls/certs/infraero.gov.br.pem
+cp corp.example.com.pem \
+/etc/pki/tls/certs/corp.example.com.pem
 
-cp infraero_certificado_2026.key \
-/etc/pki/tls/private/infraero.gov.br.key
+cp empresa_exemplo_certificado_2026.key \
+/etc/pki/tls/private/corp.example.com.key
 ```
 
 ---
@@ -166,10 +166,10 @@ cp infraero_certificado_2026.key \
 ## 8. Atualizar certificados utilizados pelo Harbor
 
 ```bash
-cp infraero.gov.br.pem \
+cp corp.example.com.pem \
 /data/secret/cert/server.crt
 
-cp infraero_certificado_2026.key \
+cp empresa_exemplo_certificado_2026.key \
 /data/secret/cert/server.key
 ```
 
@@ -249,8 +249,8 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 ```bash
 openssl s_client \
--connect harbor.infraero.gov.br:443 \
--servername harbor.infraero.gov.br \
+-connect harbor.corp.example.com:443 \
+-servername harbor.corp.example.com \
 </dev/null 2>/dev/null \
 | openssl x509 -noout -subject -issuer -dates
 ```
@@ -258,9 +258,9 @@ openssl s_client \
 Resultado esperado:
 
 ```text
-subject=C=BR, ST=DISTRITO FEDERAL, L=BRASILIA, O=INFRAERO, CN=*.infraero.gov.br
+subject=C=BR, ST=ESTADO EXEMPLO, L=CIDADE EXEMPLO, O=EMPRESA EXEMPLO, CN=*.corp.example.com
 issuer=C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018
-notAfter=Nov 13 17:54:04 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
 ```
 
 ---
@@ -268,7 +268,7 @@ notAfter=Nov 13 17:54:04 2026 GMT
 ## 14. Teste HTTPS
 
 ```bash
-curl -Iv https://harbor.infraero.gov.br
+curl -Iv https://harbor.corp.example.com
 ```
 
 Pontos importantes da saída:
@@ -276,7 +276,7 @@ Pontos importantes da saída:
 ### Certificado apresentado
 
 ```text
-subject: CN=*.infraero.gov.br
+subject: CN=*.corp.example.com
 ```
 
 ### Emissor
@@ -294,7 +294,7 @@ SSL certificate verify ok.
 ### Compatibilidade do host
 
 ```text
-host "harbor.infraero.gov.br" matched cert's "*.infraero.gov.br"
+host "harbor.corp.example.com" matched cert's "*.corp.example.com"
 ```
 
 ### Resposta HTTP

@@ -151,10 +151,10 @@ O site pode ser publicado usando GitHub Pages a partir da branch `main` e a past
 2. Vá em **Pages**.
 3. Selecione a branch `main` e o diretório `/ (root)`.
 4. Salve e aguarde a publicação.
-5. O site ficará disponível em `https://joaopedros111.github.io/ninja-linux/`.
+5. O site ficará disponível em `https://seu-usuario.github.io/ninja-linux/`.
 
 Para verificar o sitemap e o robots.txt após o deploy:
 
-- `https://joaopedros111.github.io/ninja-linux/sitemap.xml`
-- `https://joaopedros111.github.io/ninja-linux/robots.txt`
+- `https://seu-usuario.github.io/ninja-linux/sitemap.xml`
+- `https://seu-usuario.github.io/ninja-linux/robots.txt`
 
