@@ -1,7 +1,5 @@
 # 🥷 Ninja Linux
 
-![Banner do Ninja Linux](images/banner-ninja-linux.png)
-
 Portal de documentação e estudos sobre Linux, DevOps, Kubernetes, redes, segurança e infraestrutura.
 
 O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infraestrutura, servindo como base de consulta rápida para administração de servidores, containers, Kubernetes, redes e ferramentas corporativas.
