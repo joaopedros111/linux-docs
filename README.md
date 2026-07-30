@@ -1,5 +1,7 @@
 # 🥷 Ninja Linux
 
+![Banner do Ninja Linux](images/banner-ninja-linux.png)
+
 Portal de documentação e estudos sobre Linux, DevOps, Kubernetes, redes, segurança e infraestrutura.
 
 O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infraestrutura, servindo como base de consulta rápida para administração de servidores, containers, Kubernetes, redes e ferramentas corporativas.
@@ -8,66 +10,30 @@ O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infr
 
 ## 📚 Conteúdo
 
-### 🐧 Linux
-
-- Administração de sistemas
-- LVM
-- Certificados SSL
-- Procedimentos em servidores
-
-### ☸️ Kubernetes
-
-- Kubeconfig
-- Kubectl
-- Pods
-- Deployments
-- Services
-- Ingress
-- Troubleshooting
-
-### 🐳 Docker
-
-- Containers
-- Imagens
-- Volumes
-- Docker Compose
-
-### ⚙️ DevOps
-
-- CI/CD
-- Jenkins
-- Azure DevOps
-- Harbor
-- Git (integrado à seção DevOps)
-
-### 🌐 Redes e Segurança
-
-- DNS
-- Proxy
-- Squid
-- WatchGuard
-- Troubleshooting de conectividade
-
-### 📊 Monitoramento
-
-- Zabbix
-- Grafana
-
-### 🏢 Infraestrutura
-
-- Nutanix
-- VMware ESXi
-- Windows Server
-- Active Directory
+| Área | Conteúdo principal |
+| --- | --- |
+| [Linux](linux/) | Administração, LVM e certificados SSL |
+| [Kubernetes](kubernetes/) | Instalação, Kubeconfig, kubectl, workloads, rede e troubleshooting |
+| [Docker](docker/) | Containers, imagens, volumes e Docker Compose |
+| [DevOps](devops/) | CI/CD, Azure DevOps, Jenkins, Harbor e Git |
+| [Git](git/) | Fundamentos e fluxo de trabalho |
+| [Redes](redes/) | DNS, conectividade e diagnóstico |
+| [Squid](squid/) | Proxy e administração |
+| [Monitoramento](monitoramento/) | Zabbix e Grafana |
+| [Nutanix](nutanix/) | Fundamentos, volumes, Files e Data Lens |
+| [VMware](vmware/) | ESXi, iDRAC e infraestrutura física |
+| [Windows](windows/) | Windows Server, aplicações e Active Directory |
+| [WatchGuard](watchguard/) | Firewall e segurança de rede |
+| [Troubleshooting](troubleshooting/) | Incidentes, evidências e procedimentos de recuperação |
 
 ---
 
-## 💡 Melhorias aplicadas
+## ✨ Destaques
 
-- Atualizado o layout e a navegação do site.
-- Adicionados metadados Open Graph para melhor compartilhamento.
-- Melhorias de usabilidade em mobile.
-- Organização de conteúdo mais clara para consultas rápidas.
+- Navegação organizada por área técnica.
+- Exemplos práticos e comandos prontos para consulta.
+- Layout responsivo para desktop e dispositivos móveis.
+- Publicação automatizada com GitHub Actions e GitHub Pages.
 
 ---
 
@@ -85,9 +51,46 @@ O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infr
 
 - Markdown
 - Jekyll
+- Ruby e Bundler
 - GitHub Pages
+- GitHub Actions
 - HTML
 - CSS
+
+---
+
+## 💻 Executar localmente
+
+Pré-requisitos:
+
+- Ruby 3.2 ou compatível
+- Bundler
+
+Instale as dependências:
+
+```bash
+bundle install
+```
+
+Inicie o servidor local:
+
+```bash
+bundle exec jekyll serve --livereload
+```
+
+Acesse:
+
+```text
+http://127.0.0.1:4000/ninja-linux/
+```
+
+Para gerar somente os arquivos estáticos:
+
+```bash
+bundle exec jekyll build
+```
+
+O resultado será criado no diretório `_site/`.
 
 ---
 
@@ -95,6 +98,7 @@ O Ninja Linux nasceu para centralizar conhecimentos adquiridos na rotina de infr
 
 ```text
 ninja-linux/
+├── .github/workflows/
 ├── linux/
 ├── kubernetes/
 ├── docker/
@@ -109,8 +113,12 @@ ninja-linux/
 ├── windows/
 ├── troubleshooting/
 ├── assets/
+├── docs/
 ├── images/
-└── _layouts/
+├── _layouts/
+├── _config.yml
+├── Gemfile
+└── index.md
 ```
 
 ---
@@ -137,24 +145,25 @@ Este repositório é uma base viva de conhecimento. Os conteúdos podem evoluir 
 
 ## 🚧 Como contribuir
 
-- Crie uma branch com o nome do tema ou da correção.
-- Adicione conteúdo seguindo o padrão de documentação do repositório.
-- Envie um Pull Request com explicação clara do que foi adicionado.
+1. Crie uma branch com o nome do tema ou da correção.
+2. Adicione o conteúdo seguindo o padrão do repositório.
+3. Valide o site localmente.
+4. Confirme que exemplos não contêm credenciais ou dados sensíveis.
+5. Envie um Pull Request explicando claramente a alteração.
 
 ---
 
 ## 📦 Deploy
 
-O site pode ser publicado usando GitHub Pages a partir da branch `main` e a pasta raiz do projeto. Siga estes passos:
+O deploy é executado automaticamente pelo workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
-1. Acesse as configurações do repositório no GitHub.
-2. Vá em **Pages**.
-3. Selecione a branch `main` e o diretório `/ (root)`.
-4. Salve e aguarde a publicação.
-5. O site ficará disponível em `https://seu-usuario.github.io/ninja-linux/`.
+Ao receber um push na branch `main`, o GitHub Actions:
 
-Para verificar o sitemap e o robots.txt após o deploy:
+1. Prepara o Ruby 3.2.
+2. Instala as dependências com Bundler.
+3. Executa `bundle exec jekyll build`.
+4. Publica o diretório `_site/` na branch `gh-pages`.
 
-- `https://seu-usuario.github.io/ninja-linux/sitemap.xml`
-- `https://seu-usuario.github.io/ninja-linux/robots.txt`
+Antes do primeiro deploy, ajuste em [`_config.yml`](_config.yml) os campos `url`, `baseurl`, `github_username` e `repository`.
 
+Após a publicação, o portal ficará disponível no endereço configurado para o GitHub Pages.
