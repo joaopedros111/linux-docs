@@ -8,8 +8,8 @@
   <meta property="og:title" content="Active Directory · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/windows/activedirectory/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/windows/activedirectory/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Active Directory · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
@@ -75,7 +75,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
@@ -85,17 +85,17 @@
 
 <h2 id="verificar-informações-de-um-usuário">Verificar informações de um usuário</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Exibir propriedades adicionais:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="o">*</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="o">*</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Exibir nome, e-mail e departamento:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">mail</span><span class="p">,</span><span class="nx">department</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">mail</span><span class="p">,</span><span class="nx">department</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">Name</span><span class="p">,</span><span class="nx">SamAccountName</span><span class="p">,</span><span class="nx">Mail</span><span class="p">,</span><span class="nx">Department</span><span class="w">
 </span></code></pre></div></div>
 
@@ -103,18 +103,18 @@
 
 <h2 id="verificar-grupos-de-um-usuário">Verificar grupos de um usuário</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">t034691811</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Somente os nomes:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">Name</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Ordenado:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADPrincipalGroupMembership</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Sort</span><span class="w"> </span><span class="nx">Name</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">Name</span><span class="w">
 </span></code></pre></div></div>
@@ -123,19 +123,19 @@
 
 <h2 id="verificar-membros-de-um-grupo">Verificar membros de um grupo</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Exibir apenas logins:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">SamAccountName</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Procurar usuário dentro do grupo:</p>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span><span class="n">Where-Object</span><span class="w"> </span><span class="p">{</span><span class="bp">$_</span><span class="o">.</span><span class="nf">SamAccountName</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="p">}</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADGroupMember</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="n">Where-Object</span><span class="w"> </span><span class="p">{</span><span class="bp">$_</span><span class="o">.</span><span class="nf">SamAccountName</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
@@ -143,8 +143,8 @@
 <h2 id="adicionar-usuário-a-um-grupo">Adicionar usuário a um grupo</h2>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="w">
+</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
@@ -152,15 +152,15 @@
 <h2 id="remover-usuário-de-um-grupo">Remover usuário de um grupo</h2>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Remove-ADGroupMember</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="w">
+</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Sem confirmação:</p>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Remove-ADGroupMember</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"ProxySEDEAcessoPadrao"</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"GrupoAcessoPadrao"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="w"> </span><span class="se">`
 </span><span class="nt">-Confirm</span><span class="p">:</span><span class="bp">$false</span><span class="w">
 </span></code></pre></div></div>
 
@@ -168,7 +168,7 @@
 
 <h2 id="verificar-se-usuário-está-bloqueado">Verificar se usuário está bloqueado</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">LockedOut</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">LockedOut</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">Name</span><span class="p">,</span><span class="nx">LockedOut</span><span class="w">
 </span></code></pre></div></div>
 
@@ -176,14 +176,14 @@
 
 <h2 id="desbloquear-usuário">Desbloquear usuário</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Unlock-ADAccount</span><span class="w"> </span><span class="nx">t034691811</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Unlock-ADAccount</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
 
 <h2 id="verificar-data-da-última-troca-de-senha">Verificar data da última troca de senha</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">PasswordLastSet</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="nx">PasswordLastSet</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">Name</span><span class="p">,</span><span class="nx">PasswordLastSet</span><span class="w">
 </span></code></pre></div></div>
 
@@ -192,7 +192,7 @@
 <h2 id="forçar-troca-de-senha-no-próximo-logon">Forçar troca de senha no próximo logon</h2>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Set-ADUser</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="w"> </span><span class="se">`
 </span><span class="nt">-ChangePasswordAtLogon</span><span class="w"> </span><span class="bp">$true</span><span class="w">
 </span></code></pre></div></div>
 
@@ -201,9 +201,9 @@
 <h2 id="redefinir-senha">Redefinir senha</h2>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Set-ADAccountPassword</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"t034691811"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"usuario.exemplo"</span><span class="w"> </span><span class="se">`
 </span><span class="nt">-Reset</span><span class="w"> </span><span class="se">`
-</span><span class="nt">-NewPassword</span><span class="w"> </span><span class="p">(</span><span class="n">ConvertTo-SecureString</span><span class="w"> </span><span class="s2">"NovaSenha123"</span><span class="w"> </span><span class="nt">-AsPlainText</span><span class="w"> </span><span class="nt">-Force</span><span class="p">)</span><span class="w">
+</span><span class="nt">-NewPassword</span><span class="w"> </span><span class="p">(</span><span class="n">ConvertTo-SecureString</span><span class="w"> </span><span class="s2">"SENHA_FORTE_DE_EXEMPLO"</span><span class="w"> </span><span class="nt">-AsPlainText</span><span class="w"> </span><span class="nt">-Force</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
@@ -223,47 +223,47 @@
 
 <h2 id="procurar-computador-específico">Procurar computador específico</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="nx">SE10499779</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="nx">PC-EXEMPLO-01</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
 
 <h2 id="verificar-informações-do-computador">Verificar informações do computador</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nx">SE10499779</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="o">*</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nx">PC-EXEMPLO-01</span><span class="w"> </span><span class="nt">-Properties</span><span class="w"> </span><span class="o">*</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
 
 <h2 id="pesquisar-usuário-por-nome">Pesquisar usuário por nome</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nt">-Filter</span><span class="w"> </span><span class="s1">'Name -like "*Joao*"'</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nt">-Filter</span><span class="w"> </span><span class="s1">'Name -like "*Usuario*"'</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
 
 <h2 id="pesquisar-computador-por-nome">Pesquisar computador por nome</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nt">-Filter</span><span class="w"> </span><span class="s1">'Name -like "*SE104*"'</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADComputer</span><span class="w"> </span><span class="nt">-Filter</span><span class="w"> </span><span class="s1">'Name -like "*PC-EXEMPLO*"'</span><span class="w">
 </span></code></pre></div></div>
 
 <hr />
 
 <h2 id="descobrir-em-qual-ou-está-o-usuário">Descobrir em qual OU está o usuário</h2>
 
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">t034691811</span><span class="w"> </span><span class="o">|</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ADUser</span><span class="w"> </span><span class="nx">usuario.exemplo</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="n">Select</span><span class="w"> </span><span class="nx">DistinguishedName</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CN=Joao Pedro dos Santos,
-OU=TODOS,
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CN=Usuario Exemplo,
+OU=Colaboradores,
 OU=Usuarios,
-OU=SEDE,
-DC=infraero,
-DC=gov,
-DC=br
+OU=Matriz,
+DC=corp,
+DC=example,
+DC=com
 </code></pre></div></div>
 
 <hr />
@@ -310,14 +310,14 @@ DC=br
 
 <h2 id="verificar-controladores-de-domínio">Verificar controladores de domínio</h2>
 
-<pre><code class="language-cmd">nltest /dclist:infraero.gov.br
+<pre><code class="language-cmd">nltest /dclist:corp.example.com
 </code></pre>
 
 <hr />
 
 <h2 id="verificar-conectividade-com-o-ad">Verificar conectividade com o AD</h2>
 
-<pre><code class="language-cmd">nltest /dsgetdc:infraero.gov.br
+<pre><code class="language-cmd">nltest /dsgetdc:corp.example.com
 </code></pre>
 
 <hr />

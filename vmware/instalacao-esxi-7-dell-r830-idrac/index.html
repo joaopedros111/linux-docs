@@ -8,8 +8,8 @@
   <meta property="og:title" content="Instalação do VMware ESXi 7.0.3 em Dell PowerEdge R830 via iDRAC · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/vmware/instalacao-esxi-7-dell-r830-idrac/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/vmware/instalacao-esxi-7-dell-r830-idrac/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Instalação do VMware ESXi 7.0.3 em Dell PowerEdge R830 via iDRAC · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
@@ -75,7 +75,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
@@ -89,8 +89,8 @@
 
 <p>O procedimento foi utilizado nos hosts:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s-vmse208
-s-vmse209
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>esxi-host01
+esxi-host02
 </code></pre></div></div>
 
 <hr />
@@ -121,8 +121,8 @@ Confirmação de que os dados dos discos podem ser apagados
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://10.0.239.208
-https://10.0.239.209
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://192.0.2.208
+https://192.0.2.209
 </code></pre></div></div>
 
 <p>Faça login com usuário administrativo.</p>
@@ -449,7 +449,7 @@ Virtual Disk 1: ESXI_RAID1 - RAID1 - 278.875 GB - Ready
 
 <p>Exemplo de formato:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SenhaForte2026!
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SENHA_FORTE_DE_EXEMPLO!
 </code></pre></div></div>
 
 <p>Observação: no teclado US, o caractere <code class="language-plaintext highlighter-rouge">!</code> é digitado com:</p>
@@ -536,7 +536,7 @@ F12 Shut Down/Restart
 
 <h2 id="9-configuração-de-rede">9. Configuração de rede</h2>
 
-<p>Neste procedimento, o IP fixo do ESXi <strong>não foi configurado</strong>, pois os servidores serão enviados para o Rio de Janeiro e a equipe local configurará os endereços na rede de destino.</p>
+<p>Neste procedimento, o IP fixo do ESXi <strong>não foi configurado</strong>, pois os servidores serão instalados em outra localidade e a equipe local configurará os endereços na rede de destino.</p>
 
 <p>Para configurar IP posteriormente:</p>
 

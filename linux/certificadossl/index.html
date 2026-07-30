@@ -8,8 +8,8 @@
   <meta property="og:title" content="Atualização de Certificado SSL no Harbor · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/linux/certificadossl/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/certificadossl/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Atualização de Certificado SSL no Harbor · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
@@ -75,7 +75,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
@@ -101,7 +101,7 @@
 
 <p>Hostname:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>harbor.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>harbor.corp.example.com
 </code></pre></div></div>
 
 <hr />
@@ -117,8 +117,8 @@
 
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">https</span><span class="pi">:</span>
   <span class="na">port</span><span class="pi">:</span> <span class="m">443</span>
-  <span class="na">certificate</span><span class="pi">:</span> <span class="s">/etc/pki/tls/certs/infraero.gov.br.pem</span>
-  <span class="na">private_key</span><span class="pi">:</span> <span class="s">/etc/pki/tls/private/infraero.gov.br.key</span>
+  <span class="na">certificate</span><span class="pi">:</span> <span class="s">/etc/pki/tls/certs/corp.example.com.pem</span>
+  <span class="na">private_key</span><span class="pi">:</span> <span class="s">/etc/pki/tls/private/corp.example.com.key</span>
 </code></pre></div></div>
 
 <hr />
@@ -127,10 +127,10 @@
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /root/bkp-cert-harbor-<span class="si">$(</span><span class="nb">date</span> +%F<span class="si">)</span>
 
-<span class="nb">cp</span> <span class="nt">-p</span> /etc/pki/tls/certs/infraero.gov.br.pem <span class="se">\</span>
+<span class="nb">cp</span> <span class="nt">-p</span> /etc/pki/tls/certs/corp.example.com.pem <span class="se">\</span>
 /root/bkp-cert-harbor-<span class="si">$(</span><span class="nb">date</span> +%F<span class="si">)</span>/
 
-<span class="nb">cp</span> <span class="nt">-p</span> /etc/pki/tls/private/infraero.gov.br.key <span class="se">\</span>
+<span class="nb">cp</span> <span class="nt">-p</span> /etc/pki/tls/private/corp.example.com.key <span class="se">\</span>
 /root/bkp-cert-harbor-<span class="si">$(</span><span class="nb">date</span> +%F<span class="si">)</span>/
 </code></pre></div></div>
 
@@ -143,9 +143,9 @@
 
 <h2 id="3-arquivos-recebidos">3. Arquivos recebidos</h2>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0_Infraero_OrganizationSSL_2026.cer
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0_Empresa_Exemplo_OrganizationSSL_2026.cer
 cadeia_completa_globalsign.pem
-infraero_certificado_2026.key
+empresa_exemplo_certificado_2026.key
 </code></pre></div></div>
 
 <p>Copiar para um diretório temporário:</p>
@@ -157,13 +157,13 @@ infraero_certificado_2026.key
 
 <h2 id="4-validar-o-certificado-do-site">4. Validar o certificado do site</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-in</span> 0_Infraero_OrganizationSSL_2026.cer <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-in</span> 0_Empresa_Exemplo_OrganizationSSL_2026.cer <span class="se">\</span>
 <span class="nt">-noout</span> <span class="nt">-subject</span> <span class="nt">-issuer</span> <span class="nt">-dates</span>
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject=C=BR, ST=DISTRITO FEDERAL, L=BRASILIA, O=INFRAERO, CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject=C=BR, ST=ESTADO EXEMPLO, L=CIDADE EXEMPLO, O=EMPRESA EXEMPLO, CN=*.corp.example.com
 </code></pre></div></div>
 
 <hr />
@@ -173,21 +173,21 @@ infraero_certificado_2026.key
 <p>Certificado:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-noout</span> <span class="nt">-modulus</span> <span class="se">\</span>
-<span class="nt">-in</span> 0_Infraero_OrganizationSSL_2026.cer | <span class="nb">md5sum</span>
+<span class="nt">-in</span> 0_Empresa_Exemplo_OrganizationSSL_2026.cer | <span class="nb">md5sum</span>
 </code></pre></div></div>
 
 <p>Chave:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl rsa <span class="nt">-noout</span> <span class="nt">-modulus</span> <span class="se">\</span>
-<span class="nt">-in</span> infraero_certificado_2026.key | <span class="nb">md5sum</span>
+<span class="nt">-in</span> empresa_exemplo_certificado_2026.key | <span class="nb">md5sum</span>
 </code></pre></div></div>
 
 <p>Os hashes devem ser idênticos.</p>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>851dbad6e7a519412df992c58f7c01e5
-851dbad6e7a519412df992c58f7c01e5
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0123456789abcdef0123456789abcdef
+0123456789abcdef0123456789abcdef
 </code></pre></div></div>
 
 <hr />
@@ -196,43 +196,43 @@ infraero_certificado_2026.key
 
 <p>Montar o certificado do site + cadeia da GlobalSign:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat </span>0_Infraero_OrganizationSSL_2026.cer <span class="o">&gt;</span> infraero.gov.br.pem
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat </span>0_Empresa_Exemplo_OrganizationSSL_2026.cer <span class="o">&gt;</span> corp.example.com.pem
 
-<span class="nb">echo</span> <span class="s2">""</span> <span class="o">&gt;&gt;</span> infraero.gov.br.pem
+<span class="nb">echo</span> <span class="s2">""</span> <span class="o">&gt;&gt;</span> corp.example.com.pem
 
-<span class="nb">cat </span>cadeia_completa_globalsign.pem <span class="o">&gt;&gt;</span> infraero.gov.br.pem
+<span class="nb">cat </span>cadeia_completa_globalsign.pem <span class="o">&gt;&gt;</span> corp.example.com.pem
 </code></pre></div></div>
 
 <p>Validar:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-in</span> infraero.gov.br.pem <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-in</span> corp.example.com.pem <span class="se">\</span>
 <span class="nt">-noout</span> <span class="nt">-subject</span> <span class="nt">-issuer</span> <span class="nt">-dates</span>
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CN=*.corp.example.com
 </code></pre></div></div>
 
 <hr />
 
 <h2 id="7-atualizar-os-certificados-do-sistema">7. Atualizar os certificados do sistema</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>infraero.gov.br.pem <span class="se">\</span>
-/etc/pki/tls/certs/infraero.gov.br.pem
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>corp.example.com.pem <span class="se">\</span>
+/etc/pki/tls/certs/corp.example.com.pem
 
-<span class="nb">cp </span>infraero_certificado_2026.key <span class="se">\</span>
-/etc/pki/tls/private/infraero.gov.br.key
+<span class="nb">cp </span>empresa_exemplo_certificado_2026.key <span class="se">\</span>
+/etc/pki/tls/private/corp.example.com.key
 </code></pre></div></div>
 
 <hr />
 
 <h2 id="8-atualizar-certificados-utilizados-pelo-harbor">8. Atualizar certificados utilizados pelo Harbor</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>infraero.gov.br.pem <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>corp.example.com.pem <span class="se">\</span>
 /data/secret/cert/server.crt
 
-<span class="nb">cp </span>infraero_certificado_2026.key <span class="se">\</span>
+<span class="nb">cp </span>empresa_exemplo_certificado_2026.key <span class="se">\</span>
 /data/secret/cert/server.key
 </code></pre></div></div>
 
@@ -303,31 +303,31 @@ registryctl
 <h2 id="13-validar-o-certificado-publicado">13. Validar o certificado publicado</h2>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl s_client <span class="se">\</span>
-<span class="nt">-connect</span> harbor.infraero.gov.br:443 <span class="se">\</span>
-<span class="nt">-servername</span> harbor.infraero.gov.br <span class="se">\</span>
+<span class="nt">-connect</span> harbor.corp.example.com:443 <span class="se">\</span>
+<span class="nt">-servername</span> harbor.corp.example.com <span class="se">\</span>
 &lt;/dev/null 2&gt;/dev/null <span class="se">\</span>
 | openssl x509 <span class="nt">-noout</span> <span class="nt">-subject</span> <span class="nt">-issuer</span> <span class="nt">-dates</span>
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject=C=BR, ST=DISTRITO FEDERAL, L=BRASILIA, O=INFRAERO, CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject=C=BR, ST=ESTADO EXEMPLO, L=CIDADE EXEMPLO, O=EMPRESA EXEMPLO, CN=*.corp.example.com
 issuer=C=BE, O=GlobalSign nv-sa, CN=GlobalSign RSA OV SSL CA 2018
-notAfter=Nov 13 17:54:04 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
 </code></pre></div></div>
 
 <hr />
 
 <h2 id="14-teste-https">14. Teste HTTPS</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-Iv</span> https://harbor.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-Iv</span> https://harbor.corp.example.com
 </code></pre></div></div>
 
 <p>Pontos importantes da saída:</p>
 
 <h3 id="certificado-apresentado">Certificado apresentado</h3>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject: CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subject: CN=*.corp.example.com
 </code></pre></div></div>
 
 <h3 id="emissor">Emissor</h3>
@@ -342,7 +342,7 @@ notAfter=Nov 13 17:54:04 2026 GMT
 
 <h3 id="compatibilidade-do-host">Compatibilidade do host</h3>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>host "harbor.infraero.gov.br" matched cert's "*.infraero.gov.br"
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>host "harbor.corp.example.com" matched cert's "*.corp.example.com"
 </code></pre></div></div>
 
 <h3 id="resposta-http">Resposta HTTP</h3>

@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Atualização de Certificado SSL da Wiki Infraero · Ninja Linux">
+  <meta property="og:title" content="Atualização de Certificado SSL da Wiki da Empresa Exemplo · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/linux/atualizarSSLwiki/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/atualizarSSLwiki/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Atualização de Certificado SSL da Wiki Infraero · Ninja Linux">
+  <meta name="twitter:title" content="Atualização de Certificado SSL da Wiki da Empresa Exemplo · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Atualização de Certificado SSL da Wiki Infraero · Ninja Linux</title>
+  <title>Atualização de Certificado SSL da Wiki da Empresa Exemplo · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -75,17 +75,17 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="atualização-de-certificado-ssl-da-wiki-infraero-wikijs--docker--nginx">Atualização de Certificado SSL da Wiki Infraero (WikiJS + Docker + Nginx)</h1>
+      <h1 id="atualização-de-certificado-ssl-da-wiki-da-empresa-exemplo-wikijs--docker--nginx">Atualização de Certificado SSL da Wiki da Empresa Exemplo (WikiJS + Docker + Nginx)</h1>
 
 <h2 id="objetivo">Objetivo</h2>
 
-<p>Atualizar o certificado SSL utilizado pela Wiki Infraero (<code class="language-plaintext highlighter-rouge">wiki.infraero.gov.br</code>) hospedada em containers Docker utilizando Nginx como proxy reverso.</p>
+<p>Atualizar o certificado SSL utilizado pela Wiki da Empresa Exemplo (<code class="language-plaintext highlighter-rouge">wiki.corp.example.com</code>) hospedada em containers Docker utilizando Nginx como proxy reverso.</p>
 
 <hr />
 
@@ -93,7 +93,7 @@
 
 <p>Servidor:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s-sesu200.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>srv-wiki01.corp.example.com
 </code></pre></div></div>
 
 <p>Containers:</p>
@@ -127,9 +127,9 @@ wikijs_db
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=May 9 21:27:04 2025 GMT
-notAfter=Jun 7 18:52:08 2026 GMT
-subject=CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=Jan 1 00:00:00 2025 GMT
+notAfter=Dec 31 23:59:59 2025 GMT
+subject=CN=*.corp.example.com
 issuer=GlobalSign RSA OV SSL CA 2018
 </code></pre></div></div>
 
@@ -146,24 +146,24 @@ issuer=GlobalSign RSA OV SSL CA 2018
 
 <p>Conteúdo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0_Infraero_OrganizationSSL_2026.cer
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0_Empresa_Exemplo_OrganizationSSL_2026.cer
 cadeia_completa_globalsign.pem
-infraero.gov.br.pem
-infraero_certificado_2026.key
+corp.example.com.pem
+empresa_exemplo_certificado_2026.key
 </code></pre></div></div>
 
 <p>Verificar validade:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="se">\</span>
-<span class="nt">-in</span> /tmp/cert2026/infraero.gov.br.pem <span class="se">\</span>
+<span class="nt">-in</span> /tmp/cert2026/corp.example.com.pem <span class="se">\</span>
 <span class="nt">-noout</span> <span class="nt">-dates</span> <span class="nt">-subject</span> <span class="nt">-issuer</span>
 </code></pre></div></div>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=Apr 28 17:54:04 2026 GMT
-notAfter=Nov 13 17:54:04 2026 GMT
-subject=CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=Jan 1 00:00:00 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
+subject=CN=*.corp.example.com
 </code></pre></div></div>
 
 <hr />
@@ -173,21 +173,21 @@ subject=CN=*.infraero.gov.br
 <p>Verificar hash do certificado:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-noout</span> <span class="nt">-modulus</span> <span class="se">\</span>
-<span class="nt">-in</span> /tmp/cert2026/infraero.gov.br.pem | openssl md5
+<span class="nt">-in</span> /tmp/cert2026/corp.example.com.pem | openssl md5
 </code></pre></div></div>
 
 <p>Verificar hash da chave:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl rsa <span class="nt">-noout</span> <span class="nt">-modulus</span> <span class="se">\</span>
-<span class="nt">-in</span> /tmp/cert2026/infraero_certificado_2026.key | openssl md5
+<span class="nt">-in</span> /tmp/cert2026/empresa_exemplo_certificado_2026.key | openssl md5
 </code></pre></div></div>
 
 <p>Os hashes devem ser idênticos.</p>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MD5(stdin)= 851dbad6e7a519412df992c58f7c01e5
-MD5(stdin)= 851dbad6e7a519412df992c58f7c01e5
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MD5(stdin)= 0123456789abcdef0123456789abcdef
+MD5(stdin)= 0123456789abcdef0123456789abcdef
 </code></pre></div></div>
 
 <hr />
@@ -206,10 +206,10 @@ MD5(stdin)= 851dbad6e7a519412df992c58f7c01e5
 
 <p>Substituir o certificado antigo:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp</span> /tmp/cert2026/infraero.gov.br.pem <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp</span> /tmp/cert2026/corp.example.com.pem <span class="se">\</span>
 /opt/wikijs/certs/wiki.crt
 
-<span class="nb">cp</span> /tmp/cert2026/infraero_certificado_2026.key <span class="se">\</span>
+<span class="nb">cp</span> /tmp/cert2026/empresa_exemplo_certificado_2026.key <span class="se">\</span>
 /opt/wikijs/certs/wiki.key
 </code></pre></div></div>
 
@@ -250,16 +250,16 @@ test is successful
 <p>Executar:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl s_client <span class="se">\</span>
-<span class="nt">-connect</span> wiki.infraero.gov.br:443 <span class="se">\</span>
+<span class="nt">-connect</span> wiki.corp.example.com:443 <span class="se">\</span>
 &lt;/dev/null 2&gt;/dev/null | <span class="se">\</span>
 openssl x509 <span class="nt">-noout</span> <span class="nt">-dates</span> <span class="nt">-subject</span>
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=Apr 28 17:54:04 2026 GMT
-notAfter=Nov 13 17:54:04 2026 GMT
-subject=CN=*.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>notBefore=Jan 1 00:00:00 2026 GMT
+notAfter=Dec 31 23:59:59 2026 GMT
+subject=CN=*.corp.example.com
 </code></pre></div></div>
 
 <hr />
@@ -269,8 +269,8 @@ subject=CN=*.infraero.gov.br
 <p>Executar:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl s_client <span class="se">\</span>
-<span class="nt">-connect</span> wiki.infraero.gov.br:443 <span class="se">\</span>
-<span class="nt">-servername</span> wiki.infraero.gov.br
+<span class="nt">-connect</span> wiki.corp.example.com:443 <span class="se">\</span>
+<span class="nt">-servername</span> wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
@@ -317,7 +317,7 @@ subject=CN=*.infraero.gov.br
 
 <h1 id="evidência-de-sucesso">Evidência de sucesso</h1>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-kI</span> https://wiki.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-kI</span> https://wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado:</p>
@@ -325,7 +325,7 @@ subject=CN=*.infraero.gov.br
 <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HTTP/1.1 200 OK
 </code></pre></div></div>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl s_client <span class="nt">-connect</span> wiki.infraero.gov.br:443
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl s_client <span class="nt">-connect</span> wiki.corp.example.com:443
 </code></pre></div></div>
 
 <p>Resultado:</p>

@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Troubleshooting CITSmart · Ninja Linux">
+  <meta property="og:title" content="Troubleshooting Aplicação de Exemplo · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/troubleshooting/troubleshooting_utf8_wildfly/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshooting_utf8_wildfly/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Troubleshooting CITSmart · Ninja Linux">
+  <meta name="twitter:title" content="Troubleshooting Aplicação de Exemplo · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Troubleshooting CITSmart · Ninja Linux</title>
+  <title>Troubleshooting Aplicação de Exemplo · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -75,7 +75,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
@@ -85,7 +85,7 @@
 
 <h2 id="problema">Problema</h2>
 
-<p>A aplicação SGSO apresentava problemas com caracteres especiais (acentuação e cedilha) na interface web.</p>
+<p>A aplicação de exemplo apresentava problemas com caracteres especiais (acentuação e cedilha) na interface web.</p>
 
 <p>Exemplos:</p>
 
@@ -99,9 +99,9 @@
 <ul>
   <li>Kubernetes RKE2</li>
   <li>WildFly executando em container</li>
-  <li>Namespace: <code class="language-plaintext highlighter-rouge">sgso</code></li>
-  <li>Deployment: <code class="language-plaintext highlighter-rouge">sgso</code></li>
-  <li>Imagem: <code class="language-plaintext highlighter-rouge">harbor.infraero.gov.br/library/sgso:f860f</code></li>
+  <li>Namespace: <code class="language-plaintext highlighter-rouge">aplicacao-exemplo</code></li>
+  <li>Deployment: <code class="language-plaintext highlighter-rouge">aplicacao-exemplo</code></li>
+  <li>Imagem: <code class="language-plaintext highlighter-rouge">harbor.corp.example.com/library/aplicacao-exemplo:v1.0.0</code></li>
 </ul>
 
 <hr />
@@ -112,7 +112,7 @@
 
 <p>Acessado o pod da aplicação:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> sgso &lt;pod&gt; <span class="nt">--</span> sh
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> aplicacao-exemplo &lt;pod&gt; <span class="nt">--</span> sh
 </code></pre></div></div>
 
 <p>Verificação:</p>
@@ -155,7 +155,7 @@ sun.jnu.encoding = UTF-8
 
 <h3 id="comando-aplicado">Comando aplicado</h3>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">set env </span>deployment/sgso <span class="nt">-n</span> sgso <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">set env </span>deployment/aplicacao-exemplo <span class="nt">-n</span> aplicacao-exemplo <span class="se">\</span>
 <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8 <span class="se">\</span>
 <span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8 <span class="se">\</span>
 <span class="nv">LC_CTYPE</span><span class="o">=</span>en_US.UTF-8
@@ -169,7 +169,7 @@ sun.jnu.encoding = UTF-8
 
 <h3 id="verificar-variáveis-de-ambiente">Verificar variáveis de ambiente</h3>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> sgso &lt;pod&gt; <span class="nt">--</span> <span class="nb">env</span> | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s1">'LANG|LC_'</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> aplicacao-exemplo &lt;pod&gt; <span class="nt">--</span> <span class="nb">env</span> | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s1">'LANG|LC_'</span>
 </code></pre></div></div>
 
 <p>Resultado esperado:</p>
@@ -181,7 +181,7 @@ LC_CTYPE=en_US.UTF-8
 
 <h3 id="verificar-encoding-da-jvm">Verificar encoding da JVM</h3>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> sgso &lt;pod&gt; <span class="nt">--</span> <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> <span class="nt">-n</span> aplicacao-exemplo &lt;pod&gt; <span class="nt">--</span> <span class="se">\</span>
 java <span class="nt">-XshowSettings</span>:properties <span class="nt">-version</span> 2&gt;&amp;1 | <span class="nb">grep</span> <span class="nt">-i</span> encoding
 </code></pre></div></div>
 

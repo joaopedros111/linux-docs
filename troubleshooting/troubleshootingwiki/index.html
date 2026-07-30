@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Troubleshooting Wiki Infraero · Ninja Linux">
+  <meta property="og:title" content="Troubleshooting Wiki da Empresa Exemplo · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/troubleshooting/troubleshootingwiki/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshootingwiki/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Troubleshooting Wiki Infraero · Ninja Linux">
+  <meta name="twitter:title" content="Troubleshooting Wiki da Empresa Exemplo · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Troubleshooting Wiki Infraero · Ninja Linux</title>
+  <title>Troubleshooting Wiki da Empresa Exemplo · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -75,17 +75,17 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="-troubleshooting-completo--wiki-infraero-indisponível-docker-wikijs-nginx-e-certificados">📊 Troubleshooting Completo – Wiki Infraero Indisponível (Docker, WikiJS, Nginx e Certificados)</h1>
+      <h1 id="-troubleshooting-completo--wiki-da-empresa-exemplo-indisponível-docker-wikijs-nginx-e-certificados">📊 Troubleshooting Completo – Wiki da Empresa Exemplo Indisponível (Docker, WikiJS, Nginx e Certificados)</h1>
 
 <h2 id="objetivo">Objetivo</h2>
 
-<p>Documentar o processo de análise, diagnóstico e correção da indisponibilidade da Wiki Infraero.</p>
+<p>Documentar o processo de análise, diagnóstico e correção da indisponibilidade da Wiki da Empresa Exemplo.</p>
 
 <hr />
 
@@ -93,7 +93,7 @@
 
 <p>Servidor:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s-sesu200.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>srv-wiki01.corp.example.com
 </code></pre></div></div>
 
 <p>Aplicação:</p>
@@ -122,12 +122,12 @@ Docker
 
 <p>Usuários reportaram indisponibilidade da Wiki:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://wiki.infraero.gov.br
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Teste realizado:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://wiki.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado:</p>
@@ -146,16 +146,16 @@ Docker
 
 <p>Executar:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nslookup wiki.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nslookup wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Servidor: s-sead34.infraero.gov.br
-Address: 10.0.17.34
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Servidor: dns01.corp.example.com
+Address: 192.0.2.53
 
-Nome: wiki.infraero.gov.br
-Address: 10.0.17.200
+Nome: wiki.corp.example.com
+Address: 192.0.2.200
 </code></pre></div></div>
 
 <h3 id="conclusão">Conclusão</h3>
@@ -168,7 +168,7 @@ Address: 10.0.17.200
 
 <p>Executar:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://wiki.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado:</p>
@@ -178,7 +178,7 @@ Address: 10.0.17.200
 
 <p>Executar:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>telnet wiki.infraero.gov.br 443
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>telnet wiki.corp.example.com 443
 </code></pre></div></div>
 
 <p>Resultado:</p>
@@ -196,7 +196,7 @@ Address: 10.0.17.200
 
 <p>Conectar ao servidor:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh root@s-sesu200
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh admin@srv-wiki01
 </code></pre></div></div>
 
 <p>Verificar acesso local:</p>
@@ -318,7 +318,7 @@ modprobe br_netfilter
 
 <p>Resultado:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5.14.0-611.55.1.el9_7.x86_64
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5.14.0-000.00.0.el9_0.x86_64
 </code></pre></div></div>
 
 <p>Verificar pacotes:</p>
@@ -457,7 +457,7 @@ wikijs_db
 
 <p>Executar:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-kI</span> https://wiki.infraero.gov.br
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-kI</span> https://wiki.corp.example.com
 </code></pre></div></div>
 
 <p>Resultado:</p>

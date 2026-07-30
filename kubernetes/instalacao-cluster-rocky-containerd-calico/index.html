@@ -8,8 +8,8 @@
   <meta property="og:title" content="Instalação de Cluster Kubernetes com Rocky Linux, containerd e Calico · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/kubernetes/instalacao-cluster-rocky-containerd-calico/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/kubernetes/instalacao-cluster-rocky-containerd-calico/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Instalação de Cluster Kubernetes com Rocky Linux, containerd e Calico · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
@@ -75,7 +75,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
@@ -99,17 +99,17 @@
     <tr>
       <td>k8s-control01</td>
       <td>Control Plane</td>
-      <td>10.0.97.21</td>
+      <td>192.0.2.21</td>
     </tr>
     <tr>
       <td>k8s-worker01</td>
       <td>Worker</td>
-      <td>10.0.97.17</td>
+      <td>192.0.2.17</td>
     </tr>
     <tr>
       <td>k8s-worker02</td>
       <td>Worker</td>
-      <td>10.0.97.20</td>
+      <td>192.0.2.20</td>
     </tr>
   </tbody>
 </table>
@@ -168,9 +168,9 @@ Endereço IP estável
 
 <p>Adicione:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.21 k8s-control01
-10.0.97.17 k8s-worker01
-10.0.97.20 k8s-worker02
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>192.0.2.21 k8s-control01
+192.0.2.17 k8s-worker01
+192.0.2.20 k8s-worker02
 </code></pre></div></div>
 
 <p>Teste a resolução dos nomes:</p>
@@ -444,13 +444,13 @@ kubelet <span class="nt">--version</span>
 <p>Inicialize o cluster:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm init <span class="se">\</span>
-<span class="nt">--apiserver-advertise-address</span><span class="o">=</span>10.0.97.21 <span class="se">\</span>
+<span class="nt">--apiserver-advertise-address</span><span class="o">=</span>192.0.2.21 <span class="se">\</span>
 <span class="nt">--pod-network-cidr</span><span class="o">=</span>192.168.0.0/16
 </code></pre></div></div>
 
 <p>Ao final, o kubeadm exibirá um comando semelhante a:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm <span class="nb">join </span>10.0.97.21:6443 <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm <span class="nb">join </span>192.0.2.21:6443 <span class="se">\</span>
 <span class="nt">--token</span> TOKEN_GERADO <span class="se">\</span>
 <span class="nt">--discovery-token-ca-cert-hash</span> sha256:HASH_GERADO
 </code></pre></div></div>
@@ -538,7 +538,7 @@ https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/custom-
 
 <p>Exemplo:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm <span class="nb">join </span>10.0.97.21:6443 <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm <span class="nb">join </span>192.0.2.21:6443 <span class="se">\</span>
 <span class="nt">--token</span> TOKEN_GERADO <span class="se">\</span>
 <span class="nt">--discovery-token-ca-cert-hash</span> sha256:HASH_GERADO
 </code></pre></div></div>
@@ -562,9 +562,9 @@ https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/custom-
 <p>Resultado esperado:</p>
 
 <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME            STATUS   ROLES           INTERNAL-IP
-k8s-control01   Ready    control-plane   10.0.97.21
-k8s-worker01    Ready    &lt;none&gt;          10.0.97.17
-k8s-worker02    Ready    &lt;none&gt;          10.0.97.20
+k8s-control01   Ready    control-plane   192.0.2.21
+k8s-worker01    Ready    &lt;none&gt;          192.0.2.17
+k8s-worker02    Ready    &lt;none&gt;          192.0.2.20
 </code></pre></div></div>
 
 <p>Caso algum nó ainda esteja <code class="language-plaintext highlighter-rouge">NotReady</code>, aguarde a inicialização do Calico e verifique os pods.</p>
@@ -700,12 +700,12 @@ nginx   NodePort   10.96.x.x      80:30xxx/TCP
 
 <p>Teste utilizando o IP de um dos nós e a porta NodePort:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://10.0.97.17:PORTA
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://192.0.2.17:PORTA
 </code></pre></div></div>
 
 <p>Ou:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://10.0.97.20:PORTA
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://192.0.2.20:PORTA
 </code></pre></div></div>
 
 <hr />
@@ -843,11 +843,11 @@ nginx   NodePort   10.96.x.x      80:30xxx/TCP
 <p>No Control Plane:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp /etc/kubernetes/admin.conf <span class="se">\</span>
-root@10.0.97.17:/root/admin.conf
+root@192.0.2.17:/root/admin.conf
 </code></pre></div></div>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp /etc/kubernetes/admin.conf <span class="se">\</span>
-root@10.0.97.20:/root/admin.conf
+root@192.0.2.20:/root/admin.conf
 </code></pre></div></div>
 
 <p>No worker:</p>

@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="Troubleshooting CITSmart · Ninja Linux">
+  <meta property="og:title" content="Troubleshooting Aplicação ITSM de Exemplo · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://joaopedros111.github.io/ninja-linux/troubleshooting/troubleshootingcitsmart/">
-  <meta property="og:image" content="https://joaopedros111.github.io/images/banner-ninja-linux.png">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshootingcitsmart/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Troubleshooting CITSmart · Ninja Linux">
+  <meta name="twitter:title" content="Troubleshooting Aplicação ITSM de Exemplo · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>Troubleshooting CITSmart · Ninja Linux</title>
+  <title>Troubleshooting Aplicação ITSM de Exemplo · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -75,19 +75,19 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="https://github.com/joaopedros111/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
     </div>
   </aside>
 
   <div class="page-shell">
     <main id="conteudo" tabindex="-1">
-      <h1 id="troubleshooting--indisponibilidade-do-citsmart">Troubleshooting – Indisponibilidade do CITSmart</h1>
+      <h1 id="troubleshooting--indisponibilidade-da-aplicação-itsm-de-exemplo">Troubleshooting – Indisponibilidade da Aplicação ITSM de Exemplo</h1>
 
 <hr />
 
 <h2 id="solução-de-contorno">Solução de Contorno</h2>
 
-<p>Reiniciar os serviços do CITSmart.</p>
+<p>Reiniciar os serviços da aplicação ITSM de exemplo.</p>
 
 <p>Observação: a reinicialização restabelece o funcionamento da aplicação, porém não corrige a causa raiz do problema.</p>
 
@@ -95,7 +95,7 @@
 
 <h2 id="sintoma">Sintoma</h2>
 
-<p>Usuários relatam indisponibilidade ou lentidão no acesso ao CITSmart.</p>
+<p>Usuários relatam indisponibilidade ou lentidão no acesso à aplicação ITSM de exemplo.</p>
 
 <hr />
 
@@ -110,16 +110,16 @@
 
 <h2 id="verificar-consumo-de-recursos">Verificar consumo de recursos</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker stats <span class="nt">--no-stream</span> runITSM
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker stats <span class="nt">--no-stream</span> itsm-exemplo
 </code></pre></div></div>
 
-<p>Validar consumo de CPU e memória do container principal do CITSmart.</p>
+<p>Validar consumo de CPU e memória do container principal da aplicação.</p>
 
 <hr />
 
 <h2 id="verificar-erros-de-memória">Verificar erros de memória</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs runITSM 2&gt;&amp;1 | <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"OutOfMemoryError"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs itsm-exemplo 2&gt;&amp;1 | <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"OutOfMemoryError"</span>
 </code></pre></div></div>
 
 <p>Caso exista retorno semelhante ao abaixo:</p>
@@ -133,34 +133,34 @@
 
 <h2 id="identificar-processo-java">Identificar processo Java</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> runITSM ps <span class="nt">-ef</span> | <span class="nb">grep </span>java
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> itsm-exemplo ps <span class="nt">-ef</span> | <span class="nb">grep </span>java
 </code></pre></div></div>
 
 <p>Anotar o PID do processo Java.</p>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>itsm 1101 java ...
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app &lt;PID_JAVA&gt; java ...
 </code></pre></div></div>
 
 <hr />
 
 <h2 id="verificar-utilização-da-heap">Verificar utilização da Heap</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> runITSM jcmd 1101 GC.heap_info
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> itsm-exemplo jcmd &lt;PID_JAVA&gt; GC.heap_info
 </code></pre></div></div>
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>garbage-first heap total 25067520K
-used 1387139K
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>garbage-first heap total 8388608K
+used 1048576K
 </code></pre></div></div>
 
 <hr />
 
 <h2 id="verificar-parâmetros-da-jvm">Verificar parâmetros da JVM</h2>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> runITSM jcmd 1101 VM.flags
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> itsm-exemplo jcmd &lt;PID_JAVA&gt; VM.flags
 </code></pre></div></div>
 
 <p>Verificar principalmente os parâmetros:</p>
@@ -193,13 +193,13 @@ used 1387139K
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Inicial: 12/06/2026 11:40
-Data Final:   12/06/2026 11:50
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Inicial: DD/MM/AAAA 11:40
+Data Final:   DD/MM/AAAA 11:50
 </code></pre></div></div>
 
 <hr />
 
-<h2 id="evidências-encontradas-no-incidente-de-12062026">Evidências encontradas no incidente de 12/06/2026</h2>
+<h2 id="evidências-encontradas-no-incidente-de-ddmmaaaa">Evidências encontradas no incidente de DD/MM/AAAA</h2>
 
 <p>Foi identificado:</p>
 
@@ -208,7 +208,7 @@ Data Final:   12/06/2026 11:50
 
 <p>A stack trace apontou para:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>com.citsmart.audit.service.impl.AuditServiceImpl
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>com.example.audit.service.impl.AuditServiceImpl
 org.javers.core.JaversCore.compare
 </code></pre></div></div>
 
@@ -221,7 +221,7 @@ Channel is closed
 
 <h2 id="conclusão-preliminar">Conclusão Preliminar</h2>
 
-<p>Os indícios apontam para falha relacionada ao módulo de auditoria da aplicação, resultando em esgotamento da memória Java (OutOfMemoryError) e consequente degradação dos serviços internos do CITSmart.</p>
+<p>Os indícios apontam para falha relacionada ao módulo de auditoria da aplicação, resultando em esgotamento da memória Java (OutOfMemoryError) e consequente degradação dos serviços internos da aplicação.</p>
 
     </main>
     <footer class="site-footer">

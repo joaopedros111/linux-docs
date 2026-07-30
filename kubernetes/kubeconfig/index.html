@@ -6,17 +6,17 @@
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Config</span>
 
 <span class="na">clusters</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">infraero-hml</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">empresa-exemplo-hml</span>
   <span class="na">cluster</span><span class="pi">:</span>
-    <span class="na">server</span><span class="pi">:</span> <span class="s">https://cluster.exemplo.com</span>
+    <span class="na">server</span><span class="pi">:</span> <span class="s">https://cluster.corp.example.com</span>
 
 <span class="na">contexts</span><span class="pi">:</span>
-<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">infraero-hml</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">empresa-exemplo-hml</span>
   <span class="na">context</span><span class="pi">:</span>
-    <span class="na">cluster</span><span class="pi">:</span> <span class="s">infraero-hml</span>
-    <span class="na">user</span><span class="pi">:</span> <span class="s">infraero-hml</span>
+    <span class="na">cluster</span><span class="pi">:</span> <span class="s">empresa-exemplo-hml</span>
+    <span class="na">user</span><span class="pi">:</span> <span class="s">empresa-exemplo-hml</span>
 
-<span class="na">current-context</span><span class="pi">:</span> <span class="s">infraero-hml</span>
+<span class="na">current-context</span><span class="pi">:</span> <span class="s">empresa-exemplo-hml</span>
 </code></pre></div></div>
 
 <hr />
@@ -27,22 +27,22 @@
 
 <h4 id="desenvolvimento">Desenvolvimento</h4>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/infraero-det.yaml
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/empresa-exemplo-dev.yaml
 </code></pre></div></div>
 
 <h4 id="homologação">Homologação</h4>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/infraero-hml.yaml
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/empresa-exemplo-hml.yaml
 </code></pre></div></div>
 
 <h4 id="produção">Produção</h4>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/infraero-prd.yaml
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/empresa-exemplo-prd.yaml
 </code></pre></div></div>
 
 <h4 id="infraestrutura">Infraestrutura</h4>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/infraero-infra.yaml
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/home/operador/empresa-exemplo-infra.yaml
 </code></pre></div></div>
 
 <hr />
@@ -73,7 +73,7 @@
 
 <p>Exemplo:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>infraero-hml
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>empresa-exemplo-hml
 </code></pre></div></div>
 
 <hr />
@@ -86,9 +86,9 @@
 <p>Exemplo:</p>
 
 <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CURRENT   NAME
-*         infraero-hml
-          infraero-prd
-          infraero-det
+*         empresa-exemplo-hml
+          empresa-exemplo-prd
+          empresa-exemplo-dev
 </code></pre></div></div>
 
 <hr />
