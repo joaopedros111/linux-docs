@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="WatchGuard_Collection · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/watchguard/watchguardndrcollectionagent/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WatchGuard_Collection · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>WatchGuard_Collection · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="coleta-de-logs-do-watchguard-ndr-collection-agent-linux">Coleta de Logs do WatchGuard NDR Collection Agent (Linux)</h1>
+
+<p>Este procedimento descreve como gerar o pacote oficial de diagnóstico do <strong>WatchGuard NDR Collection Agent</strong> em servidores Linux. O pacote é utilizado pelo suporte da WatchGuard para análise de falhas de comunicação, heartbeat, captura de fluxos e conectividade.</p>
+
+<blockquote>
+  <p><strong>Importante</strong></p>
+
+  <p>O script <strong>não coleta logs de uma data específica</strong>. Ele gera um pacote contendo o estado atual do Collection Agent, incluindo logs existentes, configurações, testes de conectividade e uma captura temporária de rede.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="1-acessar-o-servidor">1. Acessar o servidor</h1>
+
+<p>Conecte-se via SSH ao servidor desejado.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh root@&lt;<span class="nb">hostname</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh root@s-sdsn224.infraero.gov.br
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-confirmar-o-host">2. Confirmar o host</h1>
+
+<p>Verifique se você está conectado ao servidor correto.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">hostname</span> <span class="nt">-f</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s-sdsn224.infraero.gov.br
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="3-gerar-o-pacote-de-diagnóstico">3. Gerar o pacote de diagnóstico</h1>
+
+<p>Execute:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> /opt/collector/scripts/collectorDiagnostics.sh
+</code></pre></div></div>
+
+<p>O script executa automaticamente:</p>
+
+<ul>
+  <li>Verificação do firewall</li>
+  <li>Verificação dos serviços Nfcapd e Sfcapd</li>
+  <li>Teste de conectividade com a WatchGuard</li>
+  <li>Captura temporária de pacotes (<code class="language-plaintext highlighter-rouge">tcpdump</code>)</li>
+  <li>Coleta dos logs do Collection Agent</li>
+  <li>Geração do pacote oficial de diagnóstico</li>
+</ul>
+
+<p>Exemplo de saída:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UFW is disabled
+Nfcapd is running
+Sfcapd is running
+Last upload occurred at Wed Jul 29 04:45:49 PM UTC 2026
+Connectivity test to WatchGuard succeeded
+Starting diagnostic data gathering...
+</code></pre></div></div>
+
+<p>Aguarde até o retorno do prompt antes de continuar.</p>
+
+<hr />
+
+<h1 id="4-localizar-o-pacote-gerado">4. Localizar o pacote gerado</h1>
+
+<p>Liste os arquivos mais recentes:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-lht</span> /opt/collector/staging/ | <span class="nb">head</span>
+</code></pre></div></div>
+
+<p>O primeiro arquivo será semelhante a:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WGC-1-xxxxxxxxxxxxxxxx-s-sdsn224-diagnostics-YYYYMMDDHHMM.lzo
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WGC-1-16b7386a21134870b485-s-sdsn224-diagnostics-202607311843.lzo
+</code></pre></div></div>
+
+<p>Esse é o arquivo que deverá ser enviado ao suporte da WatchGuard.</p>
+
+<hr />
+
+<h1 id="5-baixar-o-arquivo-para-o-computador">5. Baixar o arquivo para o computador</h1>
+
+<p>No PowerShell do Windows execute:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scp</span><span class="w"> </span><span class="nx">root</span><span class="err">@&lt;</span><span class="nx">hostname</span><span class="err">&gt;</span><span class="p">:</span><span class="nx">/opt/collector/staging/</span><span class="err">&lt;</span><span class="nx">arquivo</span><span class="err">&gt;</span><span class="o">.</span><span class="nf">lzo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="s2">\Downloads\"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scp</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">s-sdsn224.infraero.gov.br:/opt/collector/staging/WGC-1-16b7386a21134870b485-s-sdsn224-diagnostics-202607311843.lzo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="s2">\Downloads\"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Após informar a senha, a cópia será iniciada.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100%
+</code></pre></div></div>
+
+<p>O arquivo ficará disponível em:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\&lt;usuario&gt;\Downloads\
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="verificações-opcionais">Verificações opcionais</h1>
+
+<h2 id="verificar-os-processos-do-collection-agent">Verificar os processos do Collection Agent</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps <span class="nt">-ef</span> | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'nfcapd|sfcapd|ndr_'</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nb">grep</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/opt/collector/bin/nfcapd
+/opt/collector/bin/sfcapd
+/opt/collector/bin/ndr_nf_aggregator
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="verificar-o-heartbeat">Verificar o Heartbeat</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tail</span> <span class="nt">-50</span> /opt/collector/logs/ndr_heartbeat.log
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sending Heartbeat
+heartbeat upload status 0
+</code></pre></div></div>
+
+<p>O código <strong>status 0</strong> indica envio realizado com sucesso.</p>
+
+<hr />
+
+<h2 id="procurar-erros-de-heartbeat">Procurar erros de Heartbeat</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-nEi</span> <span class="s1">'status [^0]$|error|fail|timeout|unable|refused'</span> <span class="se">\</span>
+/opt/collector/logs/ndr_heartbeat.log
+</code></pre></div></div>
+
+<p>Caso o comando não retorne nenhuma saída, significa que não foram encontrados erros no log de heartbeat.</p>
+
+<hr />
+
+<h2 id="verificar-os-logs-disponíveis">Verificar os logs disponíveis</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-lht</span> /opt/collector/logs/
+</code></pre></div></div>
+
+<p>Os principais arquivos são:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ndr_heartbeat.log</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ndr_nf_aggregator.log</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ndr_s3upload.log</code></li>
+  <li><code class="language-plaintext highlighter-rouge">collection.log</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ndr_monitor_capture.log</code></li>
+  <li><code class="language-plaintext highlighter-rouge">syslog_cross_check.log</code></li>
+</ul>
+
+<hr />
+
+<h1 id="envio-ao-suporte">Envio ao suporte</h1>
+
+<p>Anexe o arquivo <code class="language-plaintext highlighter-rouge">.lzo</code> gerado ao chamado ou e-mail enviado ao suporte da WatchGuard.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WGC-1-16b7386a21134870b485-s-sdsn224-diagnostics-202607311843.lzo
+</code></pre></div></div>
+
+<p>Cada servidor gera um pacote próprio. Caso mais de um Collection Agent apresente problemas, repita o procedimento em todos os hosts afetados.</p>
+
+<hr />
+
+<h1 id="checklist">Checklist</h1>
+
+<ul class="task-list">
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Conectar via SSH ao servidor.</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Confirmar o hostname.</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Executar <code class="language-plaintext highlighter-rouge">collectorDiagnostics.sh</code>.</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Localizar o arquivo em <code class="language-plaintext highlighter-rouge">/opt/collector/staging/</code>.</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Baixar o arquivo via <code class="language-plaintext highlighter-rouge">scp</code>.</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Anexar o arquivo <code class="language-plaintext highlighter-rouge">.lzo</code> ao chamado da WatchGuard.</li>
+</ul>
+
+<hr />
+
+<h1 id="referências">Referências</h1>
+
+<ul>
+  <li>WatchGuard NDR Collection Agent for Linux</li>
+  <li>WatchGuard Support – Troubleshoot Collection Agent</li>
+  <li>Documentação oficial do WatchGuard NDR</li>
+</ul>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
