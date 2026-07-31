@@ -15,15 +15,13 @@ Esta seção reúne procedimentos, boas práticas e troubleshooting relacionados
 
 ## Temas da seção
 
-* [Coleta de Logs do WatchGuard NDR Collection Agent (Linux)](watchguardndrcollectionagent)
-* políticas de firewall
-* NAT
-* VPN
-* logs de tráfego
-* regras de acesso
-* troubleshooting de conectividade
-* análise de bloqueios
-
+* Instalação do WatchGuard NDR Collection Agent.
+* [Coleta de Logs do Collection Agent](watchguardndrcollectionagent)
+* Troubleshooting de Heartbeat Offline.
+* Troubleshooting de NetFlow e sFlow.
+* Integração com Firebox.
+* Entendendo os logs ndr_nf_aggregator.log.
+* Como interpretar heartbeat upload status.
 ---
 
 ## Checklist de análise
