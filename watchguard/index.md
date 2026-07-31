@@ -15,6 +15,7 @@ Esta seção reúne procedimentos, boas práticas e troubleshooting relacionados
 
 ## Temas da seção
 
+* [Coleta de Logs do WatchGuard NDR Collection Agent (Linux)](watchguardndrcollectionagent)
 * políticas de firewall
 * NAT
 * VPN
