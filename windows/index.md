@@ -19,6 +19,7 @@ Aqui estão documentados processos de instalação de software, permissões, pol
 
 * [Instalação de Apps (.exe)](instalacao-aplicativos-exe.md)
 * [Instalação de Apps via C:\Temp](instalacao-via-temp.md)
+* [Windows como Proxy para VMs Linux usando Cntlm](windowsproxyparalinux.md)
 
 ### Administração
 
