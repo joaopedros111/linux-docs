@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Windows · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/windows/windowsproxyparalinux/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Windows · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Windows · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="-windows-como-proxy-para-vms-linux-usando-cntlm">🪟 Windows como Proxy para VMs Linux usando Cntlm</h1>
+
+<h2 id="objetivo">Objetivo</h2>
+
+<p>Utilizar um computador Windows como <strong>proxy HTTP/HTTPS</strong> para máquinas virtuais Linux que não possuem acesso direto à Internet.</p>
+
+<p>Neste cenário:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                    INTERNET
+                        │
+                        ▼
+              ┌─────────────────┐
+              │     WINDOWS     │
+              │                 │
+              │ Cntlm Proxy     │
+              │ Porta: 3128     │
+              └────────┬────────┘
+                       │
+                       │ Rede da VM
+                       ▼
+              ┌─────────────────┐
+              │    VM LINUX     │
+              │                 │
+              │ HTTP_PROXY      │
+              │ HTTPS_PROXY     │
+              └─────────────────┘
+</code></pre></div></div>
+
+<p>O Windows recebe as requisições da VM Linux e utiliza o Cntlm para acessar a Internet através do proxy corporativo.</p>
+
+<hr />
+
+<h1 id="1-pré-requisitos">1. Pré-requisitos</h1>
+
+<p>No Windows:</p>
+
+<ul>
+  <li>Windows 10/11</li>
+  <li>Cntlm instalado</li>
+  <li>Acesso ao proxy corporativo</li>
+  <li>Firewall permitindo a porta do Cntlm</li>
+  <li>IP do Windows acessível pela VM</li>
+</ul>
+
+<p>Na VM Linux:</p>
+
+<ul>
+  <li>Rocky Linux, RHEL, CentOS, Debian ou distribuição equivalente</li>
+  <li>Rede configurada para alcançar o Windows</li>
+</ul>
+
+<hr />
+
+<h1 id="2-instalação-do-cntlm-no-windows">2. Instalação do Cntlm no Windows</h1>
+
+<p>Extraia o Cntlm, por exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Temp\cntlm-0.92.3-win32\cntlm-0.92.3
+</code></pre></div></div>
+
+<p>Verifique se existem os arquivos:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir</span><span class="w"> </span><span class="nx">C:\Temp\cntlm-0.92.3-win32\cntlm-0.92.3</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Entre no diretório:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cd</span><span class="w"> </span><span class="nx">C:\Temp\cntlm-0.92.3-win32\cntlm-0.92.3</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="3-configuração-do-cntlm">3. Configuração do Cntlm</h1>
+
+<p>Edite o arquivo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cntlm.ini
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Username</span><span class="w">    </span><span class="na">SEU_USUARIO</span><span class="w">
+</span><span class="na">Domain</span><span class="w">      </span><span class="na">SEU_DOMINIO</span><span class="w">
+</span><span class="na">Workstation</span><span class="w"> </span><span class="na">WINDOWS</span><span class="w">
+
+</span><span class="na">Proxy</span><span class="w">       </span><span class="na">IP_DO_PROXY_CORPORATIVO:PORTA</span><span class="w">
+
+</span><span class="na">Listen</span><span class="w">      </span><span class="na">0.0.0.0:3128</span><span class="w">
+
+</span><span class="na">NoProxy</span><span class="w">     </span><span class="na">localhost,</span><span class="w"> </span><span class="na">127.0.0.*,</span><span class="w"> </span><span class="na">10.*,</span><span class="w"> </span><span class="na">172.16.*,</span><span class="w"> </span><span class="na">192.168.*</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Substitua:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SEU_USUARIO
+SEU_DOMINIO
+IP_DO_PROXY_CORPORATIVO
+PORTA
+</code></pre></div></div>
+
+<p>pelos valores utilizados no ambiente.</p>
+
+<blockquote>
+  <p><strong>Importante:</strong> não coloque a senha em texto puro no arquivo.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="4-gerar-o-hash-da-senha">4. Gerar o hash da senha</h1>
+
+<p>No PowerShell, execute:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="n">\cntlm.exe</span><span class="w"> </span><span class="nt">-H</span><span class="w"> </span><span class="nt">-u</span><span class="w"> </span><span class="nx">SEU_USUARIO</span><span class="w"> </span><span class="nt">-d</span><span class="w"> </span><span class="nx">SEU_DOMINIO</span><span class="w">
+</span></code></pre></div></div>
+
+<p>O Cntlm solicitará a senha.</p>
+
+<p>Será retornado algo semelhante a:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PassLM      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PassNT      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PassNTLMv2  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+</code></pre></div></div>
+
+<p>Adicione os valores ao <code class="language-plaintext highlighter-rouge">cntlm.ini</code>:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">PassLM</span><span class="w">      </span><span class="na">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</span><span class="w">
+</span><span class="na">PassNT</span><span class="w">      </span><span class="na">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</span><span class="w">
+</span><span class="na">PassNTLMv2</span><span class="w">  </span><span class="na">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Depois disso, a senha não precisa ficar armazenada em texto puro.</p>
+
+<hr />
+
+<h1 id="5-testar-o-cntlm-manualmente">5. Testar o Cntlm manualmente</h1>
+
+<p>Antes de instalar como serviço, teste o Cntlm manualmente.</p>
+
+<p>Execute:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="n">\cntlm.exe</span><span class="w"> </span><span class="nt">-f</span><span class="w"> </span><span class="nt">-v</span><span class="w">
+</span></code></pre></div></div>
+
+<p>O parâmetro <code class="language-plaintext highlighter-rouge">-f</code> mantém o processo em primeiro plano.</p>
+
+<p>O <code class="language-plaintext highlighter-rouge">-v</code> habilita mensagens detalhadas.</p>
+
+<p>Se estiver funcionando, deverá aparecer algo indicando que o Cntlm está escutando na porta configurada.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Listening on 0.0.0.0:3128
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="6-testar-o-proxy-no-próprio-windows">6. Testar o proxy no próprio Windows</h1>
+
+<p>No PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://127.0.0.1:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://www.google.com</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Ou:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://127.0.0.1:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://registry-1.docker.io</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se retornar HTTP <code class="language-plaintext highlighter-rouge">200</code>, <code class="language-plaintext highlighter-rouge">301</code>, <code class="language-plaintext highlighter-rouge">302</code> ou outro código válido do destino, o proxy está respondendo.</p>
+
+<hr />
+
+<h1 id="7-instalar-o-cntlm-como-serviço-do-windows">7. Instalar o Cntlm como serviço do Windows</h1>
+
+<p>O pacote utilizado possui o:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cygrunsrv.exe
+</code></pre></div></div>
+
+<p>Entre no diretório:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cd</span><span class="w"> </span><span class="nx">C:\Temp\cntlm-0.92.3-win32\cntlm-0.92.3</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Instale o serviço:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="n">\cygrunsrv.exe</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w"> </span><span class="nt">-d</span><span class="w"> </span><span class="s2">"Cntlm Proxy"</span><span class="w"> </span><span class="nt">-p</span><span class="w"> </span><span class="s2">"C:\Temp\cntlm-0.92.3-win32\cntlm-0.92.3\cntlm.exe"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Depois verifique:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Para iniciar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Verifique novamente:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Status   Name   DisplayName
+------   ----   -----------
+Running  Cntlm  Cntlm Proxy
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="8-configurar-o-serviço-para-iniciar-automaticamente">8. Configurar o serviço para iniciar automaticamente</h1>
+
+<p>Execute:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Set-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w"> </span><span class="nt">-StartupType</span><span class="w"> </span><span class="nx">Automatic</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Confirme:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Select-Object</span><span class="w"> </span><span class="nx">Name</span><span class="p">,</span><span class="nx">Status</span><span class="p">,</span><span class="nx">StartType</span><span class="w">
+</span></code></pre></div></div>
+
+<p>O resultado deverá indicar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Name    : Cntlm
+Status  : Running
+StartType : Automatic
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="9-verificar-se-a-porta-3128-está-aberta">9. Verificar se a porta 3128 está aberta</h1>
+
+<p>No Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">netstat</span><span class="w"> </span><span class="nt">-ano</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="p">:</span><span class="nx">3128</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Ou:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-NetTCPConnection</span><span class="w"> </span><span class="nt">-LocalPort</span><span class="w"> </span><span class="nx">3128</span><span class="w">
+</span></code></pre></div></div>
+
+<p>O esperado é algo semelhante a:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.0.0.0:3128
+</code></pre></div></div>
+
+<p>Isso significa que o Cntlm está aceitando conexões em todas as interfaces IPv4.</p>
+
+<hr />
+
+<h1 id="10-liberar-a-porta-no-firewall-do-windows">10. Liberar a porta no Firewall do Windows</h1>
+
+<p>Crie uma regra permitindo a porta TCP 3128:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">New-NetFirewallRule</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-DisplayName</span><span class="w"> </span><span class="s2">"Cntlm Proxy 3128"</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Direction</span><span class="w"> </span><span class="nx">Inbound</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Protocol</span><span class="w"> </span><span class="nx">TCP</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-LocalPort</span><span class="w"> </span><span class="nx">3128</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Action</span><span class="w"> </span><span class="nx">Allow</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-NetFirewallRule</span><span class="w"> </span><span class="nt">-DisplayName</span><span class="w"> </span><span class="s2">"Cntlm Proxy 3128"</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="11-descobrir-o-ip-do-windows">11. Descobrir o IP do Windows</h1>
+
+<p>No Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ipconfig</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Procure o adaptador utilizado pela VM.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ethernet adapter:
+
+IPv4 Address. . . . . . : 192.168.56.1
+</code></pre></div></div>
+
+<p>Nesse exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IP DO WINDOWS = 192.168.56.1
+</code></pre></div></div>
+
+<p>Esse será o endereço utilizado pela VM Linux.</p>
+
+<hr />
+
+<h1 id="12-configurar-a-vm-linux">12. Configurar a VM Linux</h1>
+
+<p>Na VM Linux, configure o proxy apontando para o IP do Windows.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Windows: 192.168.56.1
+Cntlm:   3128
+</code></pre></div></div>
+
+<p>O proxy será:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://192.168.56.1:3128
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="13-configurar-variáveis-de-ambiente">13. Configurar variáveis de ambiente</h1>
+
+<p>Para teste temporário:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+<span class="nb">export </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+<span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+<span class="nb">export </span><span class="nv">https_proxy</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+</code></pre></div></div>
+
+<p>Também é recomendado configurar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">NO_PROXY</span><span class="o">=</span><span class="s2">"localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</span>
+<span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">"</span><span class="nv">$NO_PROXY</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="14-tornar-o-proxy-permanente">14. Tornar o proxy permanente</h1>
+
+<p>No Rocky Linux/RHEL/CentOS:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /etc/profile.d/proxy.sh
+</code></pre></div></div>
+
+<p>Adicione:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+<span class="nb">export </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+
+<span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+<span class="nb">export </span><span class="nv">https_proxy</span><span class="o">=</span><span class="s2">"http://192.168.56.1:3128"</span>
+
+<span class="nb">export </span><span class="nv">NO_PROXY</span><span class="o">=</span><span class="s2">"localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</span>
+<span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">"</span><span class="nv">$NO_PROXY</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>Aplique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> /etc/profile.d/proxy.sh
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">env</span> | <span class="nb">grep</span> <span class="nt">-i</span> proxy
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="15-testar-a-comunicação-entre-linux-e-windows">15. Testar a comunicação entre Linux e Windows</h1>
+
+<p>Na VM:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 4 192.168.56.1
+</code></pre></div></div>
+
+<p>Depois teste a porta:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-vz</span> 192.168.56.1 3128
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Connection to 192.168.56.1 3128 port [tcp/*] succeeded!
+</code></pre></div></div>
+
+<p>Se <code class="language-plaintext highlighter-rouge">nc</code> não estiver instalado, utilize:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-v</span> <span class="nt">-x</span> http://192.168.56.1:3128 https://www.google.com
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="16-testar-acesso-à-internet-através-do-proxy">16. Testar acesso à Internet através do proxy</h1>
+
+<p>Execute:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://www.google.com
+</code></pre></div></div>
+
+<p>Ou explicitamente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-x</span> http://192.168.56.1:3128 <span class="nt">-I</span> https://www.google.com
+</code></pre></div></div>
+
+<p>Também pode testar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://registry-1.docker.io
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="17-configurar-dnfyum">17. Configurar DNF/YUM</h1>
+
+<p>Para o DNF utilizar o proxy:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /etc/dnf/dnf.conf
+</code></pre></div></div>
+
+<p>Adicione:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">proxy</span><span class="p">=</span><span class="s">http://192.168.56.1:3128</span>
+</code></pre></div></div>
+
+<p>Teste:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf clean all
+dnf makecache
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="18-configurar-docker">18. Configurar Docker</h1>
+
+<p>Edite:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /etc/systemd/system/docker.service.d
+</code></pre></div></div>
+
+<p>Crie:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /etc/systemd/system/docker.service.d/http-proxy.conf
+</code></pre></div></div>
+
+<p>Conteúdo:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[Service]</span><span class="w">
+</span><span class="py">Environment</span><span class="p">=</span><span class="s">"HTTP_PROXY=http://192.168.56.1:3128"</span>
+<span class="py">Environment</span><span class="p">=</span><span class="s">"HTTPS_PROXY=http://192.168.56.1:3128"</span>
+<span class="py">Environment</span><span class="p">=</span><span class="s">"NO_PROXY=localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</span>
+</code></pre></div></div>
+
+<p>Recarregue:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl daemon-reload
+systemctl restart docker
+</code></pre></div></div>
+
+<p>Confirme:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl show docker <span class="nt">--property</span><span class="o">=</span>Environment
+</code></pre></div></div>
+
+<p>Teste:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull hello-world
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="19-configurar-git">19. Configurar Git</h1>
+
+<p>Para utilizar o proxy:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> http.proxy http://192.168.56.1:3128
+git config <span class="nt">--global</span> https.proxy http://192.168.56.1:3128
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> <span class="nt">--get</span> http.proxy
+git config <span class="nt">--global</span> <span class="nt">--get</span> https.proxy
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="20-configurar-wget">20. Configurar wget</h1>
+
+<p>O <code class="language-plaintext highlighter-rouge">wget</code> normalmente utilizará as variáveis:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HTTP_PROXY
+HTTPS_PROXY
+</code></pre></div></div>
+
+<p>Teste:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://www.google.com
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="21-configurar-repositórios-e-ferramentas-adicionais">21. Configurar repositórios e ferramentas adicionais</h1>
+
+<p>Qualquer aplicação que utilize as variáveis padrão de proxy poderá utilizar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://IP_DO_WINDOWS:3128
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HTTP Proxy  = http://192.168.56.1:3128
+HTTPS Proxy = http://192.168.56.1:3128
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="22-verificação-completa">22. Verificação completa</h1>
+
+<h3 id="windows">Windows</h3>
+
+<p>Verificar serviço:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Verificar porta:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">netstat</span><span class="w"> </span><span class="nt">-ano</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="p">:</span><span class="nx">3128</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Testar localmente:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://127.0.0.1:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://www.google.com</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="linux">Linux</h3>
+
+<p>Verificar conectividade:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 4 IP_DO_WINDOWS
+</code></pre></div></div>
+
+<p>Verificar porta:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-vz</span> IP_DO_WINDOWS 3128
+</code></pre></div></div>
+
+<p>Verificar proxy:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">env</span> | <span class="nb">grep</span> <span class="nt">-i</span> proxy
+</code></pre></div></div>
+
+<p>Testar Internet:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://www.google.com
+</code></pre></div></div>
+
+<p>Testar Docker:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull hello-world
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="23-utilização-com-clones-da-vm">23. Utilização com clones da VM</h1>
+
+<p>A VM Linux pode ser clonada mantendo a configuração do proxy.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM original
+     │
+     ├── Clone 01
+     ├── Clone 02
+     ├── Clone 03
+     └── Clone 04
+</code></pre></div></div>
+
+<p>Todas podem utilizar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://192.168.56.1:3128
+</code></pre></div></div>
+
+<p>Como o <strong>IP do Windows é fixo</strong>, não é necessário alterar a configuração do proxy em cada clone.</p>
+
+<p>O ponto importante é garantir que:</p>
+
+<ol>
+  <li>O Windows continue utilizando o mesmo IP.</li>
+  <li>O Cntlm continue escutando na porta <code class="language-plaintext highlighter-rouge">3128</code>.</li>
+  <li>O Firewall continue permitindo a porta <code class="language-plaintext highlighter-rouge">3128</code>.</li>
+  <li>As VMs consigam alcançar o IP do Windows.</li>
+  <li>Não haja conflito de IP entre os clones.</li>
+</ol>
+
+<hr />
+
+<h1 id="24-atenção-ao-ip-da-vm">24. Atenção ao IP da VM</h1>
+
+<p>O IP da própria VM <strong>pode mudar</strong> ao criar clones, principalmente se estiver utilizando DHCP.</p>
+
+<p>Isso normalmente <strong>não exige alteração do proxy</strong>.</p>
+
+<p>A configuração aponta para:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IP DO WINDOWS:3128
+</code></pre></div></div>
+
+<p>e não para o IP da VM.</p>
+
+<p>Portanto:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VM 01 → Windows:3128
+VM 02 → Windows:3128
+VM 03 → Windows:3128
+VM 04 → Windows:3128
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="25-solução-de-problemas">25. Solução de problemas</h1>
+
+<h2 id="cntlm-não-inicia">Cntlm não inicia</h2>
+
+<p>Verifique:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Veja os eventos do Windows ou tente executar manualmente:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="n">\cntlm.exe</span><span class="w"> </span><span class="nt">-f</span><span class="w"> </span><span class="nt">-v</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="porta-3128-não-está-aberta">Porta 3128 não está aberta</h2>
+
+<p>Verifique:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">netstat</span><span class="w"> </span><span class="nt">-ano</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="p">:</span><span class="nx">3128</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se não aparecer nada, verifique o <code class="language-plaintext highlighter-rouge">cntlm.ini</code>:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Listen</span><span class="w"> </span><span class="na">0.0.0.0:3128</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="linux-não-consegue-conectar-ao-windows">Linux não consegue conectar ao Windows</h2>
+
+<p>Na VM:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 4 IP_DO_WINDOWS
+</code></pre></div></div>
+
+<p>Depois:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-vz</span> IP_DO_WINDOWS 3128
+</code></pre></div></div>
+
+<p>Se o <code class="language-plaintext highlighter-rouge">ping</code> funcionar mas a porta não:</p>
+
+<ul>
+  <li>verificar o Cntlm;</li>
+  <li>verificar o Firewall do Windows;</li>
+  <li>verificar a configuração <code class="language-plaintext highlighter-rouge">Listen</code>;</li>
+  <li>verificar a rede da VM.</li>
+</ul>
+
+<hr />
+
+<h2 id="cntlm-funciona-no-windows-mas-não-na-vm">Cntlm funciona no Windows, mas não na VM</h2>
+
+<p>Teste primeiro:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://127.0.0.1:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://www.google.com</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Depois:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://IP_DO_WINDOWS:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://www.google.com</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se funcionar no <code class="language-plaintext highlighter-rouge">127.0.0.1</code>, mas não no IP do Windows, provavelmente o problema está no <code class="language-plaintext highlighter-rouge">Listen</code> ou no Firewall.</p>
+
+<hr />
+
+<h1 id="26-comandos-rápidos">26. Comandos rápidos</h1>
+
+<h3 id="windows-1">Windows</h3>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span><span class="n">Start-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span><span class="n">Restart-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w">
+</span><span class="n">Set-Service</span><span class="w"> </span><span class="nx">Cntlm</span><span class="w"> </span><span class="nt">-StartupType</span><span class="w"> </span><span class="nx">Automatic</span><span class="w">
+</span><span class="n">netstat</span><span class="w"> </span><span class="nt">-ano</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="p">:</span><span class="nx">3128</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Teste:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">curl.exe</span><span class="w"> </span><span class="nt">-x</span><span class="w"> </span><span class="nx">http://127.0.0.1:3128</span><span class="w"> </span><span class="nt">-I</span><span class="w"> </span><span class="nx">https://www.google.com</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="linux-1">Linux</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="s2">"http://IP_DO_WINDOWS:3128"</span>
+<span class="nb">export </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="s2">"http://IP_DO_WINDOWS:3128"</span>
+
+<span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">"http://IP_DO_WINDOWS:3128"</span>
+<span class="nb">export </span><span class="nv">https_proxy</span><span class="o">=</span><span class="s2">"http://IP_DO_WINDOWS:3128"</span>
+
+curl <span class="nt">-I</span> https://www.google.com
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="27-resumo-da-arquitetura">27. Resumo da arquitetura</h1>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────┐
+│                    REDE CORPORATIVA                 │
+│                                                     │
+│  ┌───────────────┐                                  │
+│  │ Proxy externo │                                  │
+│  │ corporativo   │                                  │
+│  └───────▲───────┘                                  │
+│          │                                          │
+│          │ autenticação NTLM                       │
+│          │                                          │
+│  ┌───────┴────────┐                                 │
+│  │    WINDOWS     │                                 │
+│  │                │                                 │
+│  │     Cntlm      │                                 │
+│  │    :3128       │                                 │
+│  └───────▲────────┘                                 │
+│          │                                          │
+│          │ HTTP/HTTPS                               │
+│          │                                          │
+│  ┌───────┴────────┐                                 │
+│  │    VM LINUX    │                                 │
+│  │                │                                 │
+│  │ HTTP_PROXY     │                                 │
+│  │ HTTPS_PROXY    │                                 │
+│  └────────────────┘                                 │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<h2 id="configuração-final">Configuração final</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Windows
+  Cntlm
+  └── 0.0.0.0:3128
+
+Linux
+  HTTP_PROXY=http://IP_DO_WINDOWS:3128
+  HTTPS_PROXY=http://IP_DO_WINDOWS:3128
+</code></pre></div></div>
+
+<p><strong>Essa configuração permite utilizar o Windows como gateway de proxy para as VMs Linux, mantendo o Cntlm como intermediário para o proxy corporativo.</strong></p>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
