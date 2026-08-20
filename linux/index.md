@@ -18,6 +18,7 @@ Sua flexibilidade, estabilidade e segurança fazem dele uma das principais plata
 * [LVM](expandir-lvm.md)
 * [Atualizar SSL (Harbor + Docker)](certificadossl.md)
 * [Atualizar SSL (WikiJS + Docker + Nginx)](atualizarSSLwiki.md)
+* [Configurar SSH por chave pública no Linux](ssh_key.md)
 
 ---
 
