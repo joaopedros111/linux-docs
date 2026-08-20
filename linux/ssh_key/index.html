@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Windows · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/ssh_key/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Windows · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Windows · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="configurar-acesso-ssh-por-chave-pública-no-rocky-linux">Configurar acesso SSH por chave pública no Rocky Linux</h1>
+
+<h2 id="objetivo">Objetivo</h2>
+
+<p>Configurar acesso SSH usando uma chave <strong>ED25519</strong>, permitindo que um computador Windows acesse um servidor Rocky Linux sem precisar informar a senha.</p>
+
+<h3 id="ambiente-utilizado">Ambiente utilizado</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Valor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cliente</td>
+      <td>Windows</td>
+    </tr>
+    <tr>
+      <td>Servidor</td>
+      <td>Rocky Linux</td>
+    </tr>
+    <tr>
+      <td>IP do servidor</td>
+      <td><code class="language-plaintext highlighter-rouge">10.0.97.38</code></td>
+    </tr>
+    <tr>
+      <td>Usuário</td>
+      <td><code class="language-plaintext highlighter-rouge">root</code></td>
+    </tr>
+    <tr>
+      <td>Tipo de chave</td>
+      <td><code class="language-plaintext highlighter-rouge">ED25519</code></td>
+    </tr>
+    <tr>
+      <td>Chave pública</td>
+      <td><code class="language-plaintext highlighter-rouge">/root/.ssh/authorized_keys</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="1-verificar-se-existe-uma-chave-no-windows">1. Verificar se existe uma chave no Windows</h2>
+
+<p>No PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Procure pelos arquivos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>id_ed25519
+id_ed25519.pub
+</code></pre></div></div>
+
+<p>A chave pública está em:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\&lt;usuario&gt;\.ssh\id_ed25519.pub
+</code></pre></div></div>
+
+<p>Para visualizar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIo8Hh88LZI6zgWqUhyNKaq3F3msM0C4Hc9MT+28iEDM joaopedros111@gmail.com
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Importante:</strong> nunca compartilhe o arquivo <code class="language-plaintext highlighter-rouge">id_ed25519</code>. Ele é a chave privada.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-criar-uma-chave-ed25519">2. Criar uma chave ED25519</h2>
+
+<p>Caso ainda não exista uma chave:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh-keygen</span><span class="w"> </span><span class="nt">-t</span><span class="w"> </span><span class="nx">ed25519</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Pressione <code class="language-plaintext highlighter-rouge">Enter</code> para aceitar o local padrão:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\&lt;usuario&gt;\.ssh\id_ed25519
+</code></pre></div></div>
+
+<p>Os arquivos criados serão:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>id_ed25519       # Chave privada
+id_ed25519.pub   # Chave pública
+</code></pre></div></div>
+
+<p>É recomendado utilizar uma <strong>passphrase</strong> para proteger a chave privada.</p>
+
+<hr />
+
+<h2 id="3-copiar-a-chave-pública-para-o-rocky-linux">3. Copiar a chave pública para o Rocky Linux</h2>
+
+<p>Caso o acesso por senha esteja funcionando, a chave pode ser copiada diretamente pelo PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ssh</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w"> </span><span class="s2">"mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>No Rocky Linux, ajuste as permissões:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod </span>700 /root/.ssh
+<span class="nb">chmod </span>600 /root/.ssh/authorized_keys
+<span class="nb">chown</span> <span class="nt">-R</span> root:root /root/.ssh
+</code></pre></div></div>
+
+<p>Corrija também o contexto do SELinux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>restorecon <span class="nt">-Rv</span> /root/.ssh
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="4-verificar-a-fingerprint-da-chave">4. Verificar a fingerprint da chave</h2>
+
+<p>No Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh-keygen</span><span class="w"> </span><span class="nt">-lf</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>256 SHA256:d95eYD77DlTxXUznWeojkZgDecbWBGQzOfFQh6tMbQ0 joaopedros111@gmail.com (ED25519)
+</code></pre></div></div>
+
+<p>No Rocky Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh-keygen <span class="nt">-lf</span> /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<p>A fingerprint deve ser a mesma:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>256 SHA256:d95eYD77DlTxUznWeojkZgDecbWBGQzOfFQh6tMbQ0
+</code></pre></div></div>
+
+<p>Isso confirma que a chave pública instalada no servidor corresponde à chave pública do cliente.</p>
+
+<hr />
+
+<h2 id="5-verificar-a-configuração-do-ssh">5. Verificar a configuração do SSH</h2>
+
+<p>No Rocky Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-T</span> | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'pubkeyauthentication|authorizedkeysfile|permitrootlogin|authenticationmethods'</span>
+</code></pre></div></div>
+
+<p>Para permitir autenticação por chave, deve existir:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pubkeyauthentication yes
+authorizedkeysfile .ssh/authorized_keys
+</code></pre></div></div>
+
+<p>Para permitir login de <code class="language-plaintext highlighter-rouge">root</code>:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>permitrootlogin yes
+</code></pre></div></div>
+
+<p>Ou, de forma mais segura:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>permitrootlogin prohibit-password
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="6-verificar-authenticationmethods">6. Verificar <code class="language-plaintext highlighter-rouge">AuthenticationMethods</code></h2>
+
+<p>Um problema comum é encontrar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>authenticationmethods password
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-T</span> | <span class="nb">grep</span> <span class="s1">'^authenticationmethods'</span>
+</code></pre></div></div>
+
+<p>Se aparecer:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>authenticationmethods password
+</code></pre></div></div>
+
+<p>o servidor está <strong>forçando autenticação por senha</strong>.</p>
+
+<p>Nesse caso, mesmo que:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pubkeyauthentication yes
+</code></pre></div></div>
+
+<p>esteja configurado, o servidor continuará oferecendo somente:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authentications that can continue: password
+</code></pre></div></div>
+
+<h3 id="localizar-a-configuração">Localizar a configuração</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-RniE</span> <span class="s1">'AuthenticationMethods|PubkeyAuthentication|PermitRootLogin'</span> <span class="se">\</span>
+/etc/ssh/sshd_config /etc/ssh/sshd_config.d/ 2&gt;/dev/null
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/ssh/sshd_config.d/99-local.conf:2:PubkeyAuthentication yes
+/etc/ssh/sshd_config.d/99-local.conf:3:AuthenticationMethods password
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="7-remover-a-exigência-de-senha">7. Remover a exigência de senha</h2>
+
+<p>Edite o arquivo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /etc/ssh/sshd_config.d/99-local.conf
+</code></pre></div></div>
+
+<p>Remova:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AuthenticationMethods password
+</code></pre></div></div>
+
+<p>Mantendo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PubkeyAuthentication yes
+</code></pre></div></div>
+
+<p>Também é possível remover diretamente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'/^AuthenticationMethods password$/d'</span> <span class="se">\</span>
+/etc/ssh/sshd_config.d/99-local.conf
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="8-validar-a-configuração">8. Validar a configuração</h2>
+
+<p>Antes de recarregar o SSH:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-t</span>
+</code></pre></div></div>
+
+<p>Se não houver nenhuma saída, a configuração está válida.</p>
+
+<p>Verifique novamente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-T</span> | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'^authenticationmethods|^pubkeyauthentication|^passwordauthentication'</span>
+</code></pre></div></div>
+
+<p>O resultado esperado é semelhante a:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pubkeyauthentication yes
+passwordauthentication yes
+</code></pre></div></div>
+
+<p>Não deve existir:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>authenticationmethods password
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="9-recarregar-o-ssh">9. Recarregar o SSH</h2>
+
+<p>Como estamos trabalhando remotamente, prefira <code class="language-plaintext highlighter-rouge">reload</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl reload sshd
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status sshd <span class="nt">--no-pager</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Não feche a sessão SSH atual antes de testar uma nova conexão.</strong></p>
+</blockquote>
+
+<hr />
+
+<h2 id="10-testar-o-acesso-por-chave">10. Testar o acesso por chave</h2>
+
+<p>No PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">IdentitiesOnly</span><span class="o">=</span><span class="n">yes</span><span class="w"> </span><span class="nt">-i</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se estiver tudo correto, o acesso será realizado utilizando a chave privada.</p>
+
+<hr />
+
+<h2 id="11-diagnóstico-detalhado">11. Diagnóstico detalhado</h2>
+
+<p>Caso o SSH ainda solicite senha:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nt">-vvv</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">IdentitiesOnly</span><span class="o">=</span><span class="n">yes</span><span class="w"> </span><span class="nt">-i</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Procure por:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Offering public key
+</code></pre></div></div>
+
+<p>Quando a chave for aceita:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Server accepts key
+</code></pre></div></div>
+
+<p>E finalmente:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authenticated to 10.0.97.38 using "publickey".
+</code></pre></div></div>
+
+<h3 id="se-aparecer">Se aparecer:</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authentications that can continue: password
+</code></pre></div></div>
+
+<p>verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-T</span> | <span class="nb">grep</span> <span class="s1">'^authenticationmethods'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="12-monitorar-o-log-do-ssh">12. Monitorar o log do SSH</h2>
+
+<p>No Rocky Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-f</span> <span class="nt">-u</span> sshd
+</code></pre></div></div>
+
+<p>Enquanto o comando estiver sendo executado, faça uma nova tentativa de conexão a partir do Windows.</p>
+
+<p>Também é possível consultar os últimos eventos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-u</span> sshd <span class="nt">--since</span> <span class="s2">"10 minutes ago"</span>
+</code></pre></div></div>
+
+<p>Ou filtrar eventos de autenticação:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-u</span> sshd | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'publickey|failed|accepted|authentication'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="13-verificar-o-selinux">13. Verificar o SELinux</h2>
+
+<p>Verifique o status:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getenforce
+</code></pre></div></div>
+
+<p>Normalmente:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Enforcing
+</code></pre></div></div>
+
+<p>Verifique os contextos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-Zd</span> /root /root/.ssh /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<p>Corrija os contextos, se necessário:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>restorecon <span class="nt">-Rv</span> /root/.ssh
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="14-verificar-permissões">14. Verificar permissões</h2>
+
+<p>As permissões recomendadas são:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod </span>700 /root/.ssh
+<span class="nb">chmod </span>600 /root/.ssh/authorized_keys
+<span class="nb">chown</span> <span class="nt">-R</span> root:root /root/.ssh
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-ld</span> /root/.ssh
+<span class="nb">ls</span> <span class="nt">-l</span> /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>drwx------ root root /root/.ssh
+-rw------- root root /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="15-configuração-mais-segura">15. Configuração mais segura</h2>
+
+<p>Depois de confirmar que o acesso por chave funciona, é possível desabilitar o login de <code class="language-plaintext highlighter-rouge">root</code> por senha.</p>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+PasswordAuthentication no
+</code></pre></div></div>
+
+<p>Outra opção é exigir explicitamente chave pública:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AuthenticationMethods publickey
+</code></pre></div></div>
+
+<h3 id="atenção">Atenção</h3>
+
+<p><strong>Não desabilite a autenticação por senha antes de testar o acesso por chave em uma segunda sessão.</strong></p>
+
+<p>Mantenha a sessão atual aberta e abra outro PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">IdentitiesOnly</span><span class="o">=</span><span class="n">yes</span><span class="w"> </span><span class="nt">-i</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Somente depois que a segunda sessão funcionar feche a primeira.</p>
+
+<hr />
+
+<h2 id="16-fluxo-de-diagnóstico">16. Fluxo de diagnóstico</h2>
+
+<p>Quando o acesso SSH por chave não funcionar, verifique nesta ordem:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. A chave privada existe no cliente?
+       ↓
+2. A chave pública está no authorized_keys?
+       ↓
+3. As fingerprints são iguais?
+       ↓
+4. PubkeyAuthentication está habilitado?
+       ↓
+5. AuthenticationMethods está bloqueando publickey?
+       ↓
+6. As permissões de ~/.ssh estão corretas?
+       ↓
+7. O contexto SELinux está correto?
+       ↓
+8. O sshd está funcionando?
+       ↓
+9. O journal do sshd mostra a tentativa?
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="17-comandos-essenciais">17. Comandos essenciais</h2>
+
+<h3 id="windows">Windows</h3>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh-keygen</span><span class="w"> </span><span class="nt">-lf</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nt">-vvv</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">IdentitiesOnly</span><span class="o">=</span><span class="n">yes</span><span class="w"> </span><span class="nt">-i</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="rocky-linux">Rocky Linux</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh-keygen <span class="nt">-lf</span> /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-T</span> | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'pubkeyauthentication|authorizedkeysfile|permitrootlogin|authenticationmethods'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshd <span class="nt">-t</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-f</span> <span class="nt">-u</span> sshd
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>restorecon <span class="nt">-Rv</span> /root/.ssh
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod </span>700 /root/.ssh
+<span class="nb">chmod </span>600 /root/.ssh/authorized_keys
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="resultado-esperado">Resultado esperado</h2>
+
+<p>Ao final, o acesso deverá funcionar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Ou especificando explicitamente a chave:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="nt">-i</span><span class="w"> </span><span class="nx">C:\Users\</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="nx">\.ssh\id_ed25519</span><span class="w"> </span><span class="nx">root</span><span class="err">@</span><span class="nx">10.0.97.38</span><span class="w">
+</span></code></pre></div></div>
+
+<p>No log do cliente deverá aparecer:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authenticated to 10.0.97.38 using "publickey".
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Boa prática:</strong> em ambientes de produção, prefira utilizar um usuário administrativo normal com <code class="language-plaintext highlighter-rouge">sudo</code> em vez de permitir login SSH direto como <code class="language-plaintext highlighter-rouge">root</code>.</p>
+</blockquote>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
