@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Servidor NFS no Rocky Linux 9 · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/servidor-nfs-rocky-linux-9/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Servidor NFS no Rocky Linux 9 · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Servidor NFS no Rocky Linux 9 · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="servidor-nfs-no-rocky-linux-9">Servidor NFS no Rocky Linux 9</h1>
+
+<blockquote>
+  <p>Tutorial para instalação e configuração de um servidor NFS no Rocky Linux 9.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="objetivo">Objetivo</h1>
+
+<p>Ao final deste tutorial o servidor será capaz de compartilhar um diretório via NFS para clientes Linux e Windows.</p>
+
+<p>Neste guia será configurado:</p>
+
+<ul>
+  <li>Servidor Rocky Linux</li>
+  <li>Compartilhamento <code class="language-plaintext highlighter-rouge">/dados</code></li>
+  <li>Rede <code class="language-plaintext highlighter-rouge">10.0.97.0/24</code></li>
+  <li>Permissão de leitura e escrita para os clientes</li>
+</ul>
+
+<blockquote>
+  <p>A configuração dos clientes será apresentada em tutoriais separados.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="cenário">Cenário</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Equipamento</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Servidor NFS</td>
+      <td><code class="language-plaintext highlighter-rouge">10.0.97.16</code></td>
+    </tr>
+    <tr>
+      <td>Rede permitida</td>
+      <td><code class="language-plaintext highlighter-rouge">10.0.97.0/24</code></td>
+    </tr>
+    <tr>
+      <td>Diretório compartilhado</td>
+      <td><code class="language-plaintext highlighter-rouge">/dados</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="instalar-o-servidor-nfs">Instalar o servidor NFS</h1>
+
+<p>Atualize o sistema:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf update <span class="nt">-y</span>
+</code></pre></div></div>
+
+<p>Instale o servidor NFS:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install</span> <span class="nt">-y</span> nfs-utils
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="habilitar-os-serviços">Habilitar os serviços</h1>
+
+<p>Habilite os serviços para iniciarem junto com o sistema:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nb">enable</span> <span class="nt">--now</span> rpcbind
+systemctl <span class="nb">enable</span> <span class="nt">--now</span> nfs-server
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status nfs-server
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Active: active (running)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="criar-o-diretório-compartilhado">Criar o diretório compartilhado</h1>
+
+<p>Crie o diretório que será exportado:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="criar-arquivos-de-teste">Criar arquivos de teste</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"Arquivo 1"</span> <span class="o">&gt;</span> /dados/arquivo1.txt
+<span class="nb">echo</span> <span class="s2">"Arquivo 2"</span> <span class="o">&gt;</span> /dados/arquivo2.txt
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-l</span> /dados
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>arquivo1.txt
+arquivo2.txt
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="configurar-o-compartilhamento">Configurar o compartilhamento</h1>
+
+<p>Edite o arquivo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim /etc/exports
+</code></pre></div></div>
+
+<p>Adicione:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dados 10.0.97.0/24(rw,sync,no_subtree_check)
+</code></pre></div></div>
+
+<p>Descrição das opções:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Opção</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>rw</td>
+      <td>Leitura e escrita</td>
+    </tr>
+    <tr>
+      <td>sync</td>
+      <td>Escrita síncrona</td>
+    </tr>
+    <tr>
+      <td>no_subtree_check</td>
+      <td>Desabilita verificação de subtree</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="exportar-o-compartilhamento">Exportar o compartilhamento</h1>
+
+<p>Execute:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-rav</span>
+</code></pre></div></div>
+
+<p>Saída esperada:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exporting 10.0.97.0/24:/dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="verificar-os-compartilhamentos">Verificar os compartilhamentos</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dados 10.0.97.0/24(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="configurar-o-firewall">Configurar o Firewall</h1>
+
+<p>Permita o serviço NFS:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>nfs
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>mountd
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>rpc-bind
+
+firewall-cmd <span class="nt">--reload</span>
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firewall-cmd <span class="nt">--list-services</span>
+</code></pre></div></div>
+
+<p>Deve conter:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nfs
+mountd
+rpc-bind
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="configurar-selinux">Configurar SELinux</h1>
+
+<p>Caso o SELinux esteja habilitado:</p>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getenforce
+</code></pre></div></div>
+
+<p>Caso esteja em <strong>Enforcing</strong>, execute:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>setsebool <span class="nt">-P</span> nfs_export_all_rw on
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="verificar-os-serviços">Verificar os serviços</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status rpcbind
+systemctl status nfs-server
+</code></pre></div></div>
+
+<p>Todos devem estar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>active (running)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="verificar-portas-abertas">Verificar portas abertas</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ss <span class="nt">-tulpn</span> | <span class="nb">grep </span>rpc
+</code></pre></div></div>
+
+<p>ou</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcinfo <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100003    4   tcp   2049  nfs
+100005    3   tcp  20048  mountd
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="testar-localmente">Testar localmente</h1>
+
+<p>Liste os compartilhamentos do próprio servidor:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>showmount <span class="nt">-e</span> localhost
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Export list for localhost:
+/dados 10.0.97.0/24
+</code></pre></div></div>
+
+<p>Também é possível consultar utilizando o IP do servidor:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>showmount <span class="nt">-e</span> 10.0.97.16
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="estrutura-criada">Estrutura criada</h1>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Servidor Rocky Linux
+        │
+        ├── nfs-utils
+        ├── rpcbind
+        ├── nfs-server
+        │
+        └── /dados
+              ├── arquivo1.txt
+              └── arquivo2.txt
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="comandos-úteis">Comandos úteis</h1>
+
+<p>Listar compartilhamentos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p>Reexportar configurações:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-rav</span>
+</code></pre></div></div>
+
+<p>Parar o serviço:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl stop nfs-server
+</code></pre></div></div>
+
+<p>Iniciar o serviço:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl start nfs-server
+</code></pre></div></div>
+
+<p>Reiniciar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl restart nfs-server
+</code></pre></div></div>
+
+<p>Verificar compartilhamentos ativos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>showmount <span class="nt">-e</span> localhost
+</code></pre></div></div>
+
+<p>Verificar portas RPC:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcinfo <span class="nt">-p</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="arquivos-importantes">Arquivos importantes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Arquivo</th>
+      <th>Finalidade</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">/etc/exports</code></td>
+      <td>Compartilhamentos NFS</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">/etc/nfs.conf</code></td>
+      <td>Configuração do servidor NFS</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="próximos-passos">Próximos passos</h1>
+
+<p>Após concluir este tutorial, prossiga para:</p>
+
+<ol>
+  <li>Configuração do cliente NFS no Rocky Linux</li>
+  <li>Configuração do cliente NFS no Windows</li>
+  <li>Testes de leitura, escrita e permissões</li>
+  <li>Estudo de UID/GID, <code class="language-plaintext highlighter-rouge">root_squash</code>, <code class="language-plaintext highlighter-rouge">anonuid</code>, <code class="language-plaintext highlighter-rouge">anongid</code> e Identity Mapping</li>
+</ol>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>

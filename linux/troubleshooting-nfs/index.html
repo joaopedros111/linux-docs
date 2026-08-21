@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Troubleshooting NFS (Rocky Linux e Windows) · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/troubleshooting-nfs/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Troubleshooting NFS (Rocky Linux e Windows) · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Troubleshooting NFS (Rocky Linux e Windows) · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="troubleshooting-nfs-rocky-linux-e-windows">Troubleshooting NFS (Rocky Linux e Windows)</h1>
+
+<blockquote>
+  <p>Guia de diagnóstico para resolver os problemas mais comuns encontrados em ambientes NFS.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="objetivo">Objetivo</h1>
+
+<p>Este guia apresenta os principais comandos para diagnosticar problemas entre:</p>
+
+<ul>
+  <li>Servidor NFS (Rocky Linux)</li>
+  <li>Cliente Rocky Linux</li>
+  <li>Cliente Windows</li>
+</ul>
+
+<p>A ideia é seguir as verificações em ordem, eliminando uma possível causa por vez.</p>
+
+<hr />
+
+<h1 id="cenário">Cenário</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Equipamento</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Servidor NFS</td>
+      <td>10.0.97.16</td>
+    </tr>
+    <tr>
+      <td>Cliente Linux</td>
+      <td>10.0.97.24</td>
+    </tr>
+    <tr>
+      <td>Cliente Windows</td>
+      <td>10.0.97.57</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Compartilhamento:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="1-verificar-conectividade">1. Verificar conectividade</h1>
+
+<h2 id="linux">Linux</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 4 10.0.97.16
+</code></pre></div></div>
+
+<h2 id="windows">Windows</h2>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ping</span><span class="w"> </span><span class="nx">10.0.97.16</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="2-verificar-porta-2049">2. Verificar porta 2049</h1>
+
+<h2 id="linux-1">Linux</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-zv</span> 10.0.97.16 2049
+</code></pre></div></div>
+
+<p>Caso não exista o comando:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install</span> <span class="nt">-y</span> nmap-ncat
+</code></pre></div></div>
+
+<h2 id="windows-1">Windows</h2>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Test-NetConnection</span><span class="w"> </span><span class="nx">10.0.97.16</span><span class="w"> </span><span class="nt">-Port</span><span class="w"> </span><span class="nx">2049</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TcpTestSucceeded : True
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="3-verificar-serviços-no-servidor">3. Verificar serviços no servidor</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status rpcbind
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status nfs-server
+</code></pre></div></div>
+
+<p>Ambos devem retornar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>active (running)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="4-reiniciar-serviços">4. Reiniciar serviços</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl restart rpcbind
+systemctl restart nfs-server
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="5-conferir-compartilhamentos-exportados">5. Conferir compartilhamentos exportados</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dados 10.0.97.0/24(rw,sync,no_subtree_check)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="6-recarregar-exportações">6. Recarregar exportações</h1>
+
+<p>Após alterar <code class="language-plaintext highlighter-rouge">/etc/exports</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-rav</span>
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exporting 10.0.97.0/24:/dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="7-consultar-compartilhamentos-disponíveis">7. Consultar compartilhamentos disponíveis</h1>
+
+<h2 id="linux-2">Linux</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>showmount <span class="nt">-e</span> 10.0.97.16
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Export list for 10.0.97.16
+
+/dados 10.0.97.0/24
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="erro">Erro</h1>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>clnt_create: RPC: Unable to receive
+</code></pre></div></div>
+
+<p>Possíveis causas:</p>
+
+<ul>
+  <li>Firewall</li>
+  <li>Serviço parado</li>
+  <li>Rede</li>
+  <li>IP incorreto</li>
+</ul>
+
+<hr />
+
+<h1 id="8-verificar-firewall">8. Verificar firewall</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firewall-cmd <span class="nt">--list-services</span>
+</code></pre></div></div>
+
+<p>Deve conter:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nfs
+mountd
+rpc-bind
+</code></pre></div></div>
+
+<p>Adicionar serviços:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>nfs
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>mountd
+firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>rpc-bind
+
+firewall-cmd <span class="nt">--reload</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="9-verificar-selinux">9. Verificar SELinux</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getenforce
+</code></pre></div></div>
+
+<p>Caso esteja em:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Enforcing
+</code></pre></div></div>
+
+<p>Habilite exportação:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>setsebool <span class="nt">-P</span> nfs_export_all_rw on
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="10-verificar-portas-rpc">10. Verificar portas RPC</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcinfo <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100003    4   tcp   2049
+100005    3   tcp  20048
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="11-confirmar-montagem-no-cliente-linux">11. Confirmar montagem no cliente Linux</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount | <span class="nb">grep </span>nfs
+</code></pre></div></div>
+
+<p>ou</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="12-confirmar-montagem-no-windows">12. Confirmar montagem no Windows</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-PSDrive</span><span class="w"> </span><span class="nx">Z</span><span class="w">
+</span></code></pre></div></div>
+
+<p>ou</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nx">Z:\</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="13-erro-permission-denied">13. Erro: Permission denied</h1>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Permission denied
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-ld</span> /dados
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>drwxr-xr-x
+</code></pre></div></div>
+
+<p>Verifique também:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-ln</span> /dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="14-verificar-acl">14. Verificar ACL</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getfacl /dados
+</code></pre></div></div>
+
+<p>Caso não exista:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install</span> <span class="nt">-y</span> acl
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="15-verificar-proprietário">15. Verificar proprietário</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-ldn</span> /dados
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>drwxr-xr-x 1001 1001
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="16-verificar-usuários">16. Verificar usuários</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">id</span>
+</code></pre></div></div>
+
+<p>ou</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">id </span>nfsuser
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="17-testar-escrita">17. Testar escrita</h1>
+
+<p>Cliente Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"Teste NFS"</span> <span class="o">&gt;</span> /mnt/dados/teste.txt
+</code></pre></div></div>
+
+<p>Cliente Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Teste"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Out-File</span><span class="w"> </span><span class="nx">Z:\teste.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="18-verificar-montagem">18. Verificar montagem</h1>
+
+<p>Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nfsstat <span class="nt">-m</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="19-confirmar-arquivo-criado">19. Confirmar arquivo criado</h1>
+
+<p>Servidor:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-l</span> /dados
+</code></pre></div></div>
+
+<p>ou</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-ln</span> /dados
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="20-verificar-etcexports">20. Verificar <code class="language-plaintext highlighter-rouge">/etc/exports</code></h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/exports
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dados 10.0.97.0/24(rw,sync,no_subtree_check)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="21-conferir-configuração-aplicada">21. Conferir configuração aplicada</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exportfs <span class="nt">-v</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="22-desmontar-compartilhamento">22. Desmontar compartilhamento</h1>
+
+<p>Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>umount /mnt/dados
+</code></pre></div></div>
+
+<p>Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">umount.exe</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="23-montar-novamente">23. Montar novamente</h1>
+
+<p>Linux:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount <span class="nt">-t</span> nfs 10.0.97.16:/dados /mnt/dados
+</code></pre></div></div>
+
+<p>Windows:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mount.exe</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">anon</span><span class="w"> </span><span class="nx">\\\10.0.97.16\dados</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="24-verificar-serviço-nfs-no-windows">24. Verificar serviço NFS no Windows</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Running
+</code></pre></div></div>
+
+<p>Iniciar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="25-confirmar-instalação-do-cliente-nfs">25. Confirmar instalação do cliente NFS</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-WindowsOptionalFeature</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-FeatureName</span><span class="w"> </span><span class="nx">ServicesForNFS-ClientOnly</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>State : Enabled
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="26-consultar-eventos-do-windows">26. Consultar eventos do Windows</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-WinEvent</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-LogName</span><span class="w"> </span><span class="s2">"Microsoft-Windows-ServicesForNFS-Client/Operational"</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-MaxEvents</span><span class="w"> </span><span class="nx">20</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="27-verificar-identity-mapping">27. Verificar Identity Mapping</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nfsadmin</span><span class="w"> </span><span class="nx">mapping</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="28-verificar-configuração-do-cliente">28. Verificar configuração do cliente</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nfsadmin</span><span class="w"> </span><span class="nx">client</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="29-verificar-o-registro-uidgid-anônimo">29. Verificar o registro (UID/GID anônimo)</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ItemProperty</span><span class="w"> </span><span class="se">`
+</span><span class="nt">-Path</span><span class="w"> </span><span class="s2">"HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default"</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="30-fluxo-recomendado-de-diagnóstico">30. Fluxo recomendado de diagnóstico</h1>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Conectividade
+        │
+        ▼
+Porta 2049
+        │
+        ▼
+Serviços
+        │
+        ▼
+Firewall
+        │
+        ▼
+SELinux
+        │
+        ▼
+/etc/exports
+        │
+        ▼
+exportfs
+        │
+        ▼
+showmount
+        │
+        ▼
+Montagem
+        │
+        ▼
+Permissões
+        │
+        ▼
+UID/GID
+        │
+        ▼
+Leitura
+        │
+        ▼
+Escrita
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="comandos-mais-utilizados">Comandos mais utilizados</h1>
+
+<h2 id="servidor">Servidor</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status nfs-server
+systemctl restart nfs-server
+exportfs <span class="nt">-v</span>
+exportfs <span class="nt">-rav</span>
+showmount <span class="nt">-e</span> localhost
+rpcinfo <span class="nt">-p</span>
+</code></pre></div></div>
+
+<h2 id="cliente-linux">Cliente Linux</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>showmount <span class="nt">-e</span> 10.0.97.16
+mount
+<span class="nb">df</span> <span class="nt">-h</span>
+nfsstat <span class="nt">-m</span>
+</code></pre></div></div>
+
+<h2 id="cliente-windows">Cliente Windows</h2>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span><span class="n">mount.exe</span><span class="w">
+</span><span class="nx">umount.exe</span><span class="w">
+</span><span class="n">Get-PSDrive</span><span class="w">
+</span><span class="nx">nfsadmin</span><span class="w"> </span><span class="nx">client</span><span class="w">
+</span><span class="n">nfsadmin</span><span class="w"> </span><span class="nx">mapping</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="boas-práticas">Boas práticas</h1>
+
+<ul>
+  <li>Utilize IPs fixos para o servidor NFS.</li>
+  <li>Restrinja os clientes autorizados no <code class="language-plaintext highlighter-rouge">/etc/exports</code>.</li>
+  <li>Evite permissões <code class="language-plaintext highlighter-rouge">777</code> em ambientes de produção.</li>
+  <li>Utilize <code class="language-plaintext highlighter-rouge">exportfs -rav</code> após alterar o arquivo <code class="language-plaintext highlighter-rouge">/etc/exports</code>.</li>
+  <li>Teste primeiro a leitura e, em seguida, a escrita.</li>
+  <li>Verifique UID/GID e permissões antes de alterar a configuração do servidor.</li>
+  <li>Consulte os logs do Windows e do Linux antes de modificar parâmetros do NFS.</li>
+</ul>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>

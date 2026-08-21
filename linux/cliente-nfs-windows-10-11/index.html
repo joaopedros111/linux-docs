@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Cliente NFS no Windows 10/11 · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/cliente-nfs-windows-10-11/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cliente NFS no Windows 10/11 · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Cliente NFS no Windows 10/11 · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="cliente-nfs-no-windows-1011">Cliente NFS no Windows 10/11</h1>
+
+<blockquote>
+  <p>Tutorial para instalação e configuração de um cliente NFS no Windows 10 e Windows 11.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="objetivo">Objetivo</h1>
+
+<p>Ao final deste tutorial, o Windows será capaz de acessar um compartilhamento NFS exportado por um servidor Rocky Linux.</p>
+
+<p>Neste guia será configurado:</p>
+
+<ul>
+  <li>Cliente NFS do Windows</li>
+  <li>Montagem manual do compartilhamento</li>
+  <li>Testes de leitura e escrita</li>
+  <li>Desmontagem do compartilhamento</li>
+</ul>
+
+<blockquote>
+  <p>Este tutorial pressupõe que o servidor NFS já esteja configurado.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="cenário">Cenário</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Equipamento</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Servidor NFS</td>
+      <td><code class="language-plaintext highlighter-rouge">10.0.97.16</code></td>
+    </tr>
+    <tr>
+      <td>Cliente Windows</td>
+      <td><code class="language-plaintext highlighter-rouge">10.0.97.57</code></td>
+    </tr>
+    <tr>
+      <td>Compartilhamento</td>
+      <td><code class="language-plaintext highlighter-rouge">/dados</code></td>
+    </tr>
+    <tr>
+      <td>Unidade de rede</td>
+      <td><code class="language-plaintext highlighter-rouge">Z:</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1 id="pré-requisitos">Pré-requisitos</h1>
+
+<ul>
+  <li>Windows 10 Pro, Enterprise ou Education</li>
+  <li>Windows 11 Pro, Enterprise ou Education</li>
+  <li>Acesso administrativo ao computador</li>
+  <li>Conectividade com o servidor NFS</li>
+</ul>
+
+<hr />
+
+<h1 id="verificar-conectividade">Verificar conectividade</h1>
+
+<p>Abra o PowerShell e teste a comunicação com o servidor:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Test-NetConnection</span><span class="w"> </span><span class="nx">10.0.97.16</span><span class="w"> </span><span class="nt">-Port</span><span class="w"> </span><span class="nx">2049</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TcpTestSucceeded : True
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="instalar-o-cliente-nfs">Instalar o Cliente NFS</h1>
+
+<p>Abra o <strong>PowerShell como Administrador</strong>.</p>
+
+<p>Instale o recurso:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Enable-WindowsOptionalFeature</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-FeatureName</span><span class="w"> </span><span class="nx">ServicesForNFS-ClientOnly</span><span class="w"> </span><span class="nt">-All</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Também é possível instalar pela interface gráfica:</p>
+
+<ol>
+  <li>Painel de Controle</li>
+  <li>Programas e Recursos</li>
+  <li>Ativar ou desativar recursos do Windows</li>
+  <li>Marque <strong>Serviços para NFS</strong></li>
+  <li>Clique em <strong>OK</strong></li>
+</ol>
+
+<hr />
+
+<h1 id="reiniciar-o-windows">Reiniciar o Windows</h1>
+
+<p>Após a instalação, reinicie o computador.</p>
+
+<hr />
+
+<h1 id="confirmar-a-instalação">Confirmar a instalação</h1>
+
+<p>No PowerShell:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-WindowsOptionalFeature</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-FeatureName</span><span class="w"> </span><span class="nx">ServicesForNFS-ClientOnly</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>State : Enabled
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="verificar-o-serviço">Verificar o serviço</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Status : Running
+</code></pre></div></div>
+
+<p>Caso esteja parado:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="montar-o-compartilhamento">Montar o compartilhamento</h1>
+
+<p>Abra um PowerShell (não precisa ser administrador).</p>
+
+<p>Monte o compartilhamento:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mount.exe</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">anon</span><span class="w"> </span><span class="nx">\\10.0.97.16\dados</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Z: agora está conectado a \\\10.0.97.16\dados
+
+O comando foi concluído com êxito.
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="confirmar-a-montagem">Confirmar a montagem</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-PSDrive</span><span class="w"> </span><span class="nx">Z</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Name Used (GB) Free (GB) Provider
+---- --------- --------- --------
+Z      ...       ...     FileSystem
+</code></pre></div></div>
+
+<p>Também é possível listar o conteúdo:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nx">Z:\</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>arquivo1.txt
+arquivo2.txt
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="ler-arquivos">Ler arquivos</h1>
+
+<p>Visualizar um arquivo:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="nx">Z:\arquivo1.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Arquivo 1
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="criar-um-arquivo">Criar um arquivo</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Arquivo criado pelo Windows"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Out-File</span><span class="w"> </span><span class="nx">Z:\windows.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Depois confira:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="nx">Z:\windows.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>Caso ocorra <strong>Access Denied</strong>, verifique as permissões configuradas no servidor NFS.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="criar-um-diretório">Criar um diretório</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">New-Item</span><span class="w"> </span><span class="nx">Z:\NovaPasta</span><span class="w"> </span><span class="nt">-ItemType</span><span class="w"> </span><span class="nx">Directory</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="remover-um-arquivo">Remover um arquivo</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Remove-Item</span><span class="w"> </span><span class="nx">Z:\windows.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="desmontar-o-compartilhamento">Desmontar o compartilhamento</h1>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">umount.exe</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Desconectando Z:
+</code></pre></div></div>
+
+<p>Confirme:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-PSDrive</span><span class="w"> </span><span class="nx">Z</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Não deverá retornar nenhuma unidade.</p>
+
+<hr />
+
+<h1 id="comandos-úteis">Comandos úteis</h1>
+
+<p>Montar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mount.exe</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">anon</span><span class="w"> </span><span class="nx">\\\10.0.97.16\dados</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Desmontar:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">umount.exe</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Verificar unidade:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-PSDrive</span><span class="w"> </span><span class="nx">Z</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Listar arquivos:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nx">Z:\</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Ler arquivo:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="nx">Z:\arquivo1.txt</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="solução-de-problemas">Solução de problemas</h1>
+
+<h2 id="a-porta-do-nfs-não-responde">A porta do NFS não responde</h2>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Test-NetConnection</span><span class="w"> </span><span class="nx">10.0.97.16</span><span class="w"> </span><span class="nt">-Port</span><span class="w"> </span><span class="nx">2049</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se retornar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TcpTestSucceeded : False
+</code></pre></div></div>
+
+<p>Verifique:</p>
+
+<ul>
+  <li>Firewall do servidor</li>
+  <li>Serviço <code class="language-plaintext highlighter-rouge">nfs-server</code></li>
+  <li>Conectividade de rede</li>
+</ul>
+
+<hr />
+
+<h2 id="erro">Erro:</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount.exe não é reconhecido
+</code></pre></div></div>
+
+<p>Verifique se o recurso <strong>Serviços para NFS</strong> está instalado:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-WindowsOptionalFeature</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-FeatureName</span><span class="w"> </span><span class="nx">ServicesForNFS-ClientOnly</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="erro-1">Erro:</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Client for NFS não inicia
+</code></pre></div></div>
+
+<p>Confira:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Se necessário:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Start-Service</span><span class="w"> </span><span class="nx">NfsClnt</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Caso continue falhando, reinicie o Windows.</p>
+
+<hr />
+
+<h2 id="erro-2">Erro:</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access is denied
+</code></pre></div></div>
+
+<p>Verifique no servidor:</p>
+
+<ul>
+  <li>Permissões do diretório exportado</li>
+  <li>UID/GID</li>
+  <li><code class="language-plaintext highlighter-rouge">root_squash</code></li>
+  <li><code class="language-plaintext highlighter-rouge">anonuid</code></li>
+  <li><code class="language-plaintext highlighter-rouge">anongid</code></li>
+</ul>
+
+<hr />
+
+<h2 id="unidade-z-não-existe">Unidade Z: não existe</h2>
+
+<p>Monte novamente:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mount.exe</span><span class="w"> </span><span class="nt">-o</span><span class="w"> </span><span class="nx">anon</span><span class="w"> </span><span class="nx">\\\10.0.97.16\dados</span><span class="w"> </span><span class="nx">Z:</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h1 id="estrutura-final">Estrutura final</h1>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Servidor Rocky Linux
+10.0.97.16
+        │
+        │ NFS
+        ▼
+Windows 10/11
+        │
+        ▼
+Unidade Z:
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="próximos-passos">Próximos passos</h1>
+
+<p>Após concluir este tutorial, recomenda-se estudar:</p>
+
+<ol>
+  <li>Permissões POSIX</li>
+  <li>UID e GID</li>
+  <li><code class="language-plaintext highlighter-rouge">root_squash</code></li>
+  <li><code class="language-plaintext highlighter-rouge">no_root_squash</code></li>
+  <li><code class="language-plaintext highlighter-rouge">anonuid</code></li>
+  <li><code class="language-plaintext highlighter-rouge">anongid</code></li>
+  <li>Identity Mapping</li>
+  <li>NFSv3 x NFSv4</li>
+  <li>Segurança em ambientes NFS</li>
+</ol>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
