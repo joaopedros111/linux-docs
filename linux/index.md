@@ -15,9 +15,9 @@ Sua flexibilidade, estabilidade e segurança fazem dele uma das principais plata
 
 ## Conteúdo
 
-* [Adicionar novo LVM no linux](expandir-lvm.md)
-* [Atualizar SSL (Harbor + Docker)](certificadossl.md)
-* [Atualizar SSL (WikiJS + Docker + Nginx)](atualizarSSLwiki.md)
+* [LVM - Adicinar novo disco](expandir-lvm.md)
+* [Certificado SSL - Atualização (Harbor + Docker)](certificadossl.md)
+* [Certificado SSL - Atualização (WikiJS + Docker + Nginx)](atualizarSSLwiki.md)
 * [SSH - Configurar chave pública no Linux](ssh_key.md)
 * [NFS - Instalação Servidor (Rocky Linux 9)](servidor-nfs-rocky-linux-9.md)
 * [NFS - Cliente (Rocky Linux 9)](cliente-nfs-rocky-linux-9.md)
