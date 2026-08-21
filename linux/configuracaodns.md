@@ -1070,5 +1070,3 @@ Ao final, o servidor `dns-server` funciona como um **DNS central do laboratório
              v
        10.0.97.x
 ```
-
-Essa configuração é adequada para o laboratório porque as VMs não precisam consultar diretamente `8.8.8.8` ou `1.1.1.1`. Elas utilizam o DNS interno `10.0.97.22`, que conhece os nomes do laboratório e encaminha as consultas externas pelos DNS corporativos.
