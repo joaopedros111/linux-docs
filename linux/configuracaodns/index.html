@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Configuração DNS · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/configuracaodns/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Configuração DNS · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Configuração DNS · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="configuração-de-dns-com-bind-forwarders-corporativos-e-zona-interna-no-rocky-linux">Configuração de DNS com BIND, Forwarders Corporativos e Zona Interna no Rocky Linux</h1>
+
+<p>Este tutorial documenta a configuração de um servidor <strong>BIND (named)</strong> no Rocky Linux para funcionar como:</p>
+
+<ul>
+  <li>DNS interno da rede <code class="language-plaintext highlighter-rouge">10.0.97.0/24</code></li>
+  <li>DNS autoritativo para <code class="language-plaintext highlighter-rouge">lab.local</code></li>
+  <li>Resolver/cache DNS para nomes externos</li>
+  <li>Forwarder para os DNS corporativos <code class="language-plaintext highlighter-rouge">10.0.17.34</code>, <code class="language-plaintext highlighter-rouge">10.0.17.23</code> e <code class="language-plaintext highlighter-rouge">10.0.17.3</code></li>
+  <li>DNS utilizado pelas VMs do laboratório</li>
+  <li>Base para ambientes Kubernetes, containerd e outros serviços</li>
+</ul>
+
+<hr />
+
+<h2 id="1-cenário">1. Cenário</h2>
+
+<h3 id="servidores">Servidores</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th style="text-align: right">IP</th>
+      <th>Função</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">dns-server</code></td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.97.22</code></td>
+      <td>BIND DNS</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rocky-lab</code></td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.97.24</code></td>
+      <td>VM cliente</td>
+    </tr>
+    <tr>
+      <td>Gateway</td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.97.254</code></td>
+      <td>Gateway da rede</td>
+    </tr>
+    <tr>
+      <td>DNS corporativo 1</td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.17.34</code></td>
+      <td>Forwarder</td>
+    </tr>
+    <tr>
+      <td>DNS corporativo 2</td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.17.23</code></td>
+      <td>Forwarder</td>
+    </tr>
+    <tr>
+      <td>DNS corporativo 3</td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.17.3</code></td>
+      <td>Forwarder</td>
+    </tr>
+    <tr>
+      <td>Proxy/Squid</td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">10.0.97.57:3128</code></td>
+      <td>Proxy HTTP/HTTPS</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Topologia:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                         INTERNET
+                            |
+                     Rede corporativa
+                            |
+              +-------------+-------------+
+              |                           |
+      DNS corporativo              Proxy Squid
+  10.0.17.34/.23/.3              10.0.97.57:3128
+              ^
+              |
+        forward only
+              |
+      +-------+-------+
+      |               |
+10.0.97.22       10.0.97.24
+ dns-server       rocky-lab
+   BIND              VM
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-objetivo">2. Objetivo</h1>
+
+<p>Fazer com que as VMs utilizem:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22
+</code></pre></div></div>
+
+<p>como DNS.</p>
+
+<p>Para nomes internos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dns-server.lab.local
+rocky-lab.lab.local
+</code></pre></div></div>
+
+<p>o BIND responde diretamente.</p>
+
+<p>Para nomes externos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>google.com
+github.com
+registry-1.docker.io
+</code></pre></div></div>
+
+<p>o BIND encaminha as consultas para os DNS corporativos:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.17.34
+10.0.17.23
+10.0.17.3
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="3-instalar-o-bind">3. Instalar o BIND</h1>
+
+<p>No servidor DNS:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install</span> <span class="nt">-y</span> <span class="nb">bind </span>bind-utils
+</code></pre></div></div>
+
+<p>Verificar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpm <span class="nt">-qa</span> | <span class="nb">grep</span> <span class="s1">'^bind'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="4-verificar-o-serviço">4. Verificar o serviço</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status named
+</code></pre></div></div>
+
+<p>Habilitar no boot:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nb">enable </span>named
+</code></pre></div></div>
+
+<p>Iniciar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl start named
+</code></pre></div></div>
+
+<p>Ou:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nb">enable</span> <span class="nt">--now</span> named
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="5-verificar-a-conectividade-de-rede">5. Verificar a conectividade de rede</h1>
+
+<p>Confirmar IP:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip addr show
+</code></pre></div></div>
+
+<p>Confirmar rota:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip route
+</code></pre></div></div>
+
+<p>Verificar a rota para os DNS corporativos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip route get 10.0.17.34
+ip route get 10.0.17.23
+ip route get 10.0.17.3
+</code></pre></div></div>
+
+<p>Verificar gateway:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip route get 8.8.8.8
+</code></pre></div></div>
+
+<p>Resultado esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>8.8.8.8 via 10.0.97.254 dev enp0s3 src 10.0.97.22
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="6-testar-os-dns-corporativos">6. Testar os DNS corporativos</h1>
+
+<p>Antes de configurar o BIND, confirme que o servidor consegue consultar os DNS corporativos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.17.34 google.com
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.17.23 google.com
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.17.3 google.com
+</code></pre></div></div>
+
+<p>Todos devem retornar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>status: NOERROR
+</code></pre></div></div>
+
+<p>Teste resumido:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>dns <span class="k">in </span>10.0.17.34 10.0.17.23 10.0.17.3<span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"===== </span><span class="nv">$dns</span><span class="s2"> ====="</span>
+    dig @<span class="s2">"</span><span class="nv">$dns</span><span class="s2">"</span> google.com +short
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>===== 10.0.17.34 =====
+142.251.129.238
+
+===== 10.0.17.23 =====
+142.251.129.238
+
+===== 10.0.17.3 =====
+142.250.78.206
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="7-importante-dns-público-direto-pode-estar-bloqueado">7. Importante: DNS público direto pode estar bloqueado</h1>
+
+<p>Teste:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @8.8.8.8 google.com +time<span class="o">=</span>3 +tries<span class="o">=</span>1
+</code></pre></div></div>
+
+<p>Se retornar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>connection timed out
+</code></pre></div></div>
+
+<p>isso não significa necessariamente que o BIND está com problema.</p>
+
+<p>Em redes corporativas é comum bloquear:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UDP/53
+TCP/53
+</code></pre></div></div>
+
+<p>para servidores DNS públicos.</p>
+
+<p>Por exemplo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @1.1.1.1 google.com
+</code></pre></div></div>
+
+<p>também pode falhar.</p>
+
+<p>Nesse cenário, utilize os DNS corporativos como <code class="language-plaintext highlighter-rouge">forwarders</code>.</p>
+
+<hr />
+
+<h1 id="8-configurar-o-bind">8. Configurar o BIND</h1>
+
+<p>Arquivo principal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim /etc/named.conf
+</code></pre></div></div>
+
+<p>Configuração utilizada:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">options</span> {
+        <span class="n">listen</span>-<span class="n">on</span> <span class="n">port</span> <span class="m">53</span> { <span class="m">127</span>.<span class="m">0</span>.<span class="m">0</span>.<span class="m">1</span>; <span class="m">10</span>.<span class="m">0</span>.<span class="m">97</span>.<span class="m">22</span>; };
+        <span class="n">listen</span>-<span class="n">on</span>-<span class="n">v6</span> <span class="n">port</span> <span class="m">53</span> { ::<span class="m">1</span>; };
+
+        <span class="n">directory</span> <span class="s2">"/var/named"</span>;
+
+        <span class="n">dump</span>-<span class="n">file</span> <span class="s2">"/var/named/data/cache_dump.db"</span>;
+        <span class="n">statistics</span>-<span class="n">file</span> <span class="s2">"/var/named/data/named_stats.txt"</span>;
+        <span class="n">memstatistics</span>-<span class="n">file</span> <span class="s2">"/var/named/data/named_mem_stats.txt"</span>;
+        <span class="n">secroots</span>-<span class="n">file</span> <span class="s2">"/var/named/data/named.secroots"</span>;
+        <span class="n">recursing</span>-<span class="n">file</span> <span class="s2">"/var/named/data/named.recursing"</span>;
+
+        <span class="n">allow</span>-<span class="n">query</span> {
+                <span class="n">localhost</span>;
+                <span class="m">10</span>.<span class="m">0</span>.<span class="m">97</span>.<span class="m">0</span>/<span class="m">24</span>;
+        };
+
+        <span class="n">forwarders</span> {
+                <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">34</span>;
+                <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">23</span>;
+                <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">3</span>;
+        };
+
+        <span class="n">forward</span> <span class="n">only</span>;
+
+        <span class="n">recursion</span> <span class="n">yes</span>;
+
+        <span class="n">dnssec</span>-<span class="n">validation</span> <span class="n">no</span>;
+
+        <span class="n">managed</span>-<span class="n">keys</span>-<span class="n">directory</span> <span class="s2">"/var/named/dynamic"</span>;
+        <span class="n">geoip</span>-<span class="n">directory</span> <span class="s2">"/usr/share/GeoIP"</span>;
+
+        <span class="n">pid</span>-<span class="n">file</span> <span class="s2">"/run/named/named.pid"</span>;
+        <span class="n">session</span>-<span class="n">keyfile</span> <span class="s2">"/run/named/session.key"</span>;
+
+        <span class="n">include</span> <span class="s2">"/etc/crypto-policies/back-ends/bind.config"</span>;
+};
+
+<span class="n">logging</span> {
+        <span class="n">channel</span> <span class="n">default_debug</span> {
+                <span class="n">file</span> <span class="s2">"data/named.run"</span>;
+                <span class="n">severity</span> <span class="n">dynamic</span>;
+        };
+};
+
+<span class="n">zone</span> <span class="s2">"."</span> <span class="n">IN</span> {
+        <span class="n">type</span> <span class="n">hint</span>;
+        <span class="n">file</span> <span class="s2">"named.ca"</span>;
+};
+
+<span class="n">zone</span> <span class="s2">"lab.local"</span> <span class="n">IN</span> {
+        <span class="n">type</span> <span class="n">master</span>;
+        <span class="n">file</span> <span class="s2">"lab.local.zone"</span>;
+
+        <span class="n">allow</span>-<span class="n">query</span> {
+                <span class="n">localhost</span>;
+                <span class="m">10</span>.<span class="m">0</span>.<span class="m">97</span>.<span class="m">0</span>/<span class="m">24</span>;
+        };
+};
+
+<span class="n">include</span> <span class="s2">"/etc/named.rfc1912.zones"</span>;
+<span class="n">include</span> <span class="s2">"/etc/named.root.key"</span>;
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="9-entendendo-os-principais-parâmetros">9. Entendendo os principais parâmetros</h1>
+
+<h2 id="listen-on"><code class="language-plaintext highlighter-rouge">listen-on</code></h2>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">listen</span>-<span class="n">on</span> <span class="n">port</span> <span class="m">53</span> {
+    <span class="m">127</span>.<span class="m">0</span>.<span class="m">0</span>.<span class="m">1</span>;
+    <span class="m">10</span>.<span class="m">0</span>.<span class="m">97</span>.<span class="m">22</span>;
+};
+</code></pre></div></div>
+
+<p>Faz o BIND escutar DNS em:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1:53
+10.0.97.22:53
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="allow-query"><code class="language-plaintext highlighter-rouge">allow-query</code></h2>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">allow</span>-<span class="n">query</span> {
+    <span class="n">localhost</span>;
+    <span class="m">10</span>.<span class="m">0</span>.<span class="m">97</span>.<span class="m">0</span>/<span class="m">24</span>;
+};
+</code></pre></div></div>
+
+<p>Permite consultas apenas:</p>
+
+<ul>
+  <li>localmente</li>
+  <li>pela rede <code class="language-plaintext highlighter-rouge">10.0.97.0/24</code></li>
+</ul>
+
+<p>Isso evita transformar o servidor em um resolver DNS aberto.</p>
+
+<hr />
+
+<h2 id="forwarders"><code class="language-plaintext highlighter-rouge">forwarders</code></h2>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">forwarders</span> {
+    <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">34</span>;
+    <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">23</span>;
+    <span class="m">10</span>.<span class="m">0</span>.<span class="m">17</span>.<span class="m">3</span>;
+};
+</code></pre></div></div>
+
+<p>Define os DNS que receberão as consultas externas.</p>
+
+<hr />
+
+<h2 id="forward-only"><code class="language-plaintext highlighter-rouge">forward only</code></h2>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">forward</span> <span class="n">only</span>;
+</code></pre></div></div>
+
+<p>Este parâmetro é importante no ambiente corporativo.</p>
+
+<p>Ele determina que o BIND deve encaminhar consultas para os <code class="language-plaintext highlighter-rouge">forwarders</code>.</p>
+
+<p>Ele <strong>não deve tentar resolver diretamente pela Internet</strong> caso os forwarders não respondam.</p>
+
+<p>Isso evita situações como:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BIND
+ |
+ +---&gt; 10.0.17.34
+ |
+ +---&gt; 10.0.17.23
+ |
+ +---&gt; 10.0.17.3
+</code></pre></div></div>
+
+<p>em vez de:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BIND
+ |
+ +---&gt; DNS corporativo
+ |
+ +---&gt; Internet diretamente
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="10-criar-a-zona-interna">10. Criar a zona interna</h1>
+
+<p>Criar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim /var/named/lab.local.zone
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<pre><code class="language-dns">$TTL 86400
+
+@       IN      SOA     dns-server.lab.local. root.lab.local. (
+                        2026082101
+                        3600
+                        900
+                        604800
+                        86400
+)
+
+        IN      NS      dns-server.lab.local.
+
+dns-server      IN      A       10.0.97.22
+rocky-lab       IN      A       10.0.97.24
+</code></pre>
+
+<hr />
+
+<h1 id="11-verificar-permissões-da-zona">11. Verificar permissões da zona</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-l</span> /var/named/lab.local.zone
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-rw-r-----. 1 root named ... lab.local.zone
+</code></pre></div></div>
+
+<p>Isso é aceitável.</p>
+
+<p>Caso necessário:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chown </span>root:named /var/named/lab.local.zone
+<span class="nb">chmod </span>640 /var/named/lab.local.zone
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="12-validar-a-configuração">12. Validar a configuração</h1>
+
+<p>Antes de reiniciar o BIND:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>named-checkconf
+</code></pre></div></div>
+
+<p>Se não aparecer nenhuma mensagem:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OK
+</code></pre></div></div>
+
+<p>isso significa que a sintaxe do <code class="language-plaintext highlighter-rouge">named.conf</code> está correta.</p>
+
+<p>Também é recomendado verificar as zonas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>named-checkconf <span class="nt">-z</span> /etc/named.conf
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="13-reiniciar-o-bind">13. Reiniciar o BIND</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl restart named
+</code></pre></div></div>
+
+<p>Verificar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status named
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Active: active (running)
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="14-verificar-se-o-bind-está-escutando-na-porta-53">14. Verificar se o BIND está escutando na porta 53</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ss <span class="nt">-lntup</span> | <span class="nb">grep</span> <span class="s1">':53'</span>
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>udp   UNCONN ... 10.0.97.22:53
+tcp   LISTEN ... 10.0.97.22:53
+</code></pre></div></div>
+
+<p>Também pode aparecer:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1:53
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="15-testar-a-zona-interna">15. Testar a zona interna</h1>
+
+<p>Testar o próprio DNS:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 dns-server.lab.local
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>status: NOERROR
+</code></pre></div></div>
+
+<p>E:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ANSWER SECTION:
+
+dns-server.lab.local. 86400 IN A 10.0.97.22
+</code></pre></div></div>
+
+<p>Teste resumido:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 dns-server.lab.local +short
+</code></pre></div></div>
+
+<p>Resultado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22
+</code></pre></div></div>
+
+<p>Testar o <code class="language-plaintext highlighter-rouge">rocky-lab</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 rocky-lab.lab.local +short
+</code></pre></div></div>
+
+<p>Resultado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.24
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="16-configurar-o-próprio-servidor-para-usar-o-bind">16. Configurar o próprio servidor para usar o BIND</h1>
+
+<p>No <code class="language-plaintext highlighter-rouge">dns-server</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/resolv.conf
+</code></pre></div></div>
+
+<p>O ideal é:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Generated by NetworkManager
+nameserver 10.0.97.22
+</code></pre></div></div>
+
+<p>Assim:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Aplicação
+   |
+   v
+/etc/resolv.conf
+   |
+   v
+10.0.97.22
+   |
+   v
+BIND
+   |
+   v
+DNS corporativo
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="17-testar-resolução-externa">17. Testar resolução externa</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 google.com
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>status: NOERROR
+</code></pre></div></div>
+
+<p>Teste simplificado:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 google.com +short
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>142.251.129.238
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="18-testar-através-do-resolver-do-sistema">18. Testar através do resolver do sistema</h1>
+
+<p>Depois de configurar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nameserver 10.0.97.22
+</code></pre></div></div>
+
+<p>execute:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getent hosts google.com
+</code></pre></div></div>
+
+<p>Exemplo:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>142.251.129.238 google.com
+</code></pre></div></div>
+
+<p>Também:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 2 google.com
+</code></pre></div></div>
+
+<p>Se aparecer:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PING google.com (142.251.129.238)
+</code></pre></div></div>
+
+<p>a resolução DNS está funcionando.</p>
+
+<hr />
+
+<h1 id="19-testar-a-partir-de-outra-vm">19. Testar a partir de outra VM</h1>
+
+<p>No <code class="language-plaintext highlighter-rouge">rocky-lab</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/resolv.conf
+</code></pre></div></div>
+
+<p>Configurar:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nameserver 10.0.97.22
+</code></pre></div></div>
+
+<p>Depois:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig google.com +short
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getent hosts google.com
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 2 google.com
+</code></pre></div></div>
+
+<p>Testar também a zona interna:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig dns-server.lab.local +short
+</code></pre></div></div>
+
+<p>Resultado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22
+</code></pre></div></div>
+
+<p>E:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig rocky-lab.lab.local +short
+</code></pre></div></div>
+
+<p>Resultado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.24
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="20-diagnóstico-com-tcpdump">20. Diagnóstico com <code class="language-plaintext highlighter-rouge">tcpdump</code></h1>
+
+<p>Para verificar se o BIND realmente está encaminhando consultas:</p>
+
+<p>No <code class="language-plaintext highlighter-rouge">dns-server</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tcpdump <span class="nt">-ni</span> enp0s3 <span class="s1">'port 53'</span>
+</code></pre></div></div>
+
+<p>Em outro terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 google.com
+</code></pre></div></div>
+
+<p>Você deverá observar tráfego semelhante a:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22.xxxxx &gt; 10.0.17.34.53
+</code></pre></div></div>
+
+<p>ou:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22.xxxxx &gt; 10.0.17.23.53
+</code></pre></div></div>
+
+<p>ou:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22.xxxxx &gt; 10.0.17.3.53
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="21-diagnóstico-do-bind">21. Diagnóstico do BIND</h1>
+
+<p>Verificar logs:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-u</span> named <span class="nt">--since</span> <span class="s2">"10 minutes ago"</span> <span class="nt">--no-pager</span>
+</code></pre></div></div>
+
+<p>Em tempo real:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-u</span> named <span class="nt">-f</span>
+</code></pre></div></div>
+
+<p>Verificar erros:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>journalctl <span class="nt">-u</span> named <span class="nt">--no-pager</span> | <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="se">\</span>
+<span class="s1">'error|fail|denied|timeout|servfail|unreachable'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="22-diagnóstico-de-dns-em-uma-única-sequência">22. Diagnóstico de DNS em uma única sequência</h1>
+
+<p>Pode utilizar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"===== INTERFACE ====="</span>
+ip <span class="nt">-br</span> addr
+
+<span class="nb">echo</span> <span class="s2">"===== ROUTES ====="</span>
+ip route
+
+<span class="nb">echo</span> <span class="s2">"===== RESOLV.CONF ====="</span>
+<span class="nb">cat</span> /etc/resolv.conf
+
+<span class="nb">echo</span> <span class="s2">"===== BIND ====="</span>
+systemctl is-active named
+
+<span class="nb">echo</span> <span class="s2">"===== LISTEN ====="</span>
+ss <span class="nt">-lntup</span> | <span class="nb">grep</span> <span class="s1">':53'</span>
+
+<span class="nb">echo</span> <span class="s2">"===== INTERNAL DNS ====="</span>
+dig @10.0.97.22 dns-server.lab.local +short
+dig @10.0.97.22 rocky-lab.lab.local +short
+
+<span class="nb">echo</span> <span class="s2">"===== EXTERNAL DNS ====="</span>
+dig @10.0.97.22 google.com +short
+
+<span class="nb">echo</span> <span class="s2">"===== SYSTEM RESOLUTION ====="</span>
+getent hosts google.com
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="23-problema-encontrado-durante-a-configuração">23. Problema encontrado durante a configuração</h1>
+
+<p>Inicialmente foi utilizado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/resolv.conf
+
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+</code></pre></div></div>
+
+<p>Porém:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @8.8.8.8 google.com
+</code></pre></div></div>
+
+<p>retornava:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>connection timed out
+</code></pre></div></div>
+
+<p>E:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @1.1.1.1 google.com
+</code></pre></div></div>
+
+<p>também:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>connection timed out
+</code></pre></div></div>
+
+<p>Isso indicou que o acesso direto aos DNS públicos estava bloqueado pela rede.</p>
+
+<hr />
+
+<h1 id="24-proxy-http-não-é-proxy-dns">24. Proxy HTTP não é Proxy DNS</h1>
+
+<p>O servidor possui:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HTTP_PROXY=http://10.0.97.57:3128
+HTTPS_PROXY=http://10.0.97.57:3128
+</code></pre></div></div>
+
+<p>Isso permite que aplicações compatíveis com proxy, como <code class="language-plaintext highlighter-rouge">curl</code>, acessem a Internet através do Squid.</p>
+
+<p>Por exemplo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://www.google.com
+</code></pre></div></div>
+
+<p>pode funcionar.</p>
+
+<p>Isso <strong>não significa</strong> que:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DNS UDP/53
+</code></pre></div></div>
+
+<p>esteja liberado.</p>
+
+<p>O <code class="language-plaintext highlighter-rouge">dig</code> não utiliza o proxy HTTP:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig
+ |
+ +---- X HTTP_PROXY
+ |
+ +----&gt; UDP/TCP 53
+</code></pre></div></div>
+
+<p>Enquanto:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl
+ |
+ +----&gt; Squid 10.0.97.57:3128
+ |
+ +----&gt; Internet
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="25-configuração-final">25. Configuração final</h1>
+
+<p>A arquitetura final fica:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                     INTERNET
+                        |
+                REDE CORPORATIVA
+                        |
+          +-------------+-------------+
+          |             |             |
+    10.0.17.34     10.0.17.23    10.0.17.3
+       DNS             DNS           DNS
+          \             |             /
+           \            |            /
+            +-----------+-----------+
+                        ^
+                        |
+                  forwarders
+                        |
+                  forward only
+                        |
+                +---------------+
+                |  BIND/named   |
+                | 10.0.97.22:53 |
+                +-------+-------+
+                        |
+              +---------+---------+
+              |                   |
+        10.0.97.22          10.0.97.24
+        dns-server            rocky-lab
+              |                   |
+              +------ DNS --------+
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="26-checklist-final">26. Checklist final</h1>
+
+<h2 id="bind">BIND</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl is-active named
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>active
+</code></pre></div></div>
+
+<h2 id="configuração">Configuração</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>named-checkconf
+</code></pre></div></div>
+
+<p>Sem saída = OK.</p>
+
+<h2 id="zona">Zona</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>named-checkconf <span class="nt">-z</span> /etc/named.conf
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zone lab.local/IN: loaded serial ...
+</code></pre></div></div>
+
+<h2 id="porta-53">Porta 53</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ss <span class="nt">-lntup</span> | <span class="nb">grep</span> <span class="s1">':53'</span>
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22:53
+</code></pre></div></div>
+
+<h2 id="dns-interno">DNS interno</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 dns-server.lab.local +short
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.22
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 rocky-lab.lab.local +short
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.0.97.24
+</code></pre></div></div>
+
+<h2 id="dns-externo">DNS externo</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dig @10.0.97.22 google.com +short
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IP do Google
+</code></pre></div></div>
+
+<h2 id="resolver-do-sistema">Resolver do sistema</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getent hosts google.com
+</code></pre></div></div>
+
+<p>Deve retornar um endereço.</p>
+
+<h2 id="internet">Internet</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping <span class="nt">-c</span> 2 google.com
+</code></pre></div></div>
+
+<p>Deve resolver o nome e responder, quando ICMP estiver permitido.</p>
+
+<hr />
+
+<h1 id="27-resultado">27. Resultado</h1>
+
+<p>Ao final, o servidor <code class="language-plaintext highlighter-rouge">dns-server</code> funciona como um <strong>DNS central do laboratório</strong>:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                 VM / Kubernetes
+                       |
+                       v
+                10.0.97.22:53
+                       |
+             +---------+---------+
+             |                   |
+             v                   v
+        lab.local             Internet
+        zona local                |
+             |                    v
+             |             DNS corporativo
+             |          10.0.17.34/.23/.3
+             |
+             v
+       10.0.97.x
+</code></pre></div></div>
+
+<p>Essa configuração é adequada para o laboratório porque as VMs não precisam consultar diretamente <code class="language-plaintext highlighter-rouge">8.8.8.8</code> ou <code class="language-plaintext highlighter-rouge">1.1.1.1</code>. Elas utilizam o DNS interno <code class="language-plaintext highlighter-rouge">10.0.97.22</code>, que conhece os nomes do laboratório e encaminha as consultas externas pelos DNS corporativos.</p>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
