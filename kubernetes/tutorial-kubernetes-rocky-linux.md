@@ -1,3 +1,8 @@
+---
+layout: default
+title: Instalação do Kubernetes
+---
+
 # Tutorial: Instalação do Kubernetes (kubeadm) no Rocky Linux
 
 Cenário: 2 VMs no VirtualBox
