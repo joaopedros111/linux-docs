@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="Instalação do Kubernetes · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/kubernetes/tutorial-kubernetes-rocky-linux/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Instalação do Kubernetes · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>Instalação do Kubernetes · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="tutorial-instalação-do-kubernetes-kubeadm-no-rocky-linux">Tutorial: Instalação do Kubernetes (kubeadm) no Rocky Linux</h1>
+
+<p>Cenário: 2 VMs no VirtualBox</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">vm-01</code> (control-plane) — 10.0.97.55</li>
+  <li><code class="language-plaintext highlighter-rouge">vm-02</code> (worker) — 10.0.97.33</li>
+</ul>
+
+<blockquote>
+  <p>Passos marcados <strong>[AMBAS]</strong> rodam em vm-01 e vm-02. Passos marcados <strong>[vm-01]</strong> ou <strong>[vm-02]</strong> rodam só naquela VM.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-preparar-o-etchosts-ambas">1. Preparar o /etc/hosts <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> &gt;&gt; /etc/hosts
+10.0.97.55 vm-01
+10.0.97.33 vm-02
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<p>Teste com <code class="language-plaintext highlighter-rouge">ping -c1 vm-01</code> e <code class="language-plaintext highlighter-rouge">ping -c1 vm-02</code> de cada máquina.</p>
+
+<hr />
+
+<h2 id="2-atualizar-o-sistema-ambas">2. Atualizar o sistema <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf update <span class="nt">-y</span>
+dnf <span class="nb">install</span> <span class="nt">-y</span> curl wget vim git <span class="nb">tar</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="3-desabilitar-swap-ambas">3. Desabilitar swap <strong>[AMBAS]</strong></h2>
+
+<p>O kubelet exige swap desligado.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>swapoff <span class="nt">-a</span>
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'/ swap / s/^/#/'</span> /etc/fstab
+</code></pre></div></div>
+
+<p>Confirme com <code class="language-plaintext highlighter-rouge">free -h</code> (coluna Swap deve ficar zerada).</p>
+
+<hr />
+
+<h2 id="4-ajustar-selinux-ambas">4. Ajustar SELinux <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>setenforce 0
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/^SELINUX=enforcing/SELINUX=permissive/'</span> /etc/selinux/config
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="5-configurar-firewall-ambas">5. Configurar firewall <strong>[AMBAS]</strong></h2>
+
+<p>Mais simples em laboratório é desativar o firewalld (em produção você liberaria portas específicas):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl disable <span class="nt">--now</span> firewalld
+</code></pre></div></div>
+
+<p>Se preferir manter o firewall ativo, portas mínimas:</p>
+<ul>
+  <li>Control plane: 6443, 2379-2380, 10250, 10259, 10257</li>
+  <li>Worker: 10250, 30000-32767</li>
+</ul>
+
+<hr />
+
+<h2 id="6-módulos-de-kernel-e-parâmetros-de-rede-ambas">6. Módulos de kernel e parâmetros de rede <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+</span><span class="no">EOF
+
+</span>modprobe overlay
+modprobe br_netfilter
+
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+</span><span class="no">EOF
+
+</span>sysctl <span class="nt">--system</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="7-instalar-containerd-runtime-de-containers-ambas">7. Instalar containerd (runtime de containers) <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install</span> <span class="nt">-y</span> dnf-plugins-core
+dnf config-manager <span class="nt">--add-repo</span> https://download.docker.com/linux/centos/docker-ce.repo
+dnf <span class="nb">install</span> <span class="nt">-y</span> containerd.io
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> /etc/containerd
+containerd config default | <span class="nb">tee</span> /etc/containerd/config.toml
+</code></pre></div></div>
+
+<p>Editar <code class="language-plaintext highlighter-rouge">/etc/containerd/config.toml</code> e trocar <code class="language-plaintext highlighter-rouge">SystemdCgroup = false</code> para <code class="language-plaintext highlighter-rouge">true</code> (o kubelet espera cgroup driver systemd):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/SystemdCgroup = false/SystemdCgroup = true/'</span> /etc/containerd/config.toml
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nb">enable</span> <span class="nt">--now</span> containerd
+systemctl restart containerd
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="8-instalar-kubeadm-kubelet-e-kubectl-ambas">8. Instalar kubeadm, kubelet e kubectl <strong>[AMBAS]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+</span><span class="no">EOF
+
+</span>dnf <span class="nb">install</span> <span class="nt">-y</span> kubelet kubeadm kubectl <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes
+
+systemctl <span class="nb">enable</span> <span class="nt">--now</span> kubelet
+</code></pre></div></div>
+
+<blockquote>
+  <p>Ajuste <code class="language-plaintext highlighter-rouge">v1.31</code> para a versão estável que quiser usar (confira em https://kubernetes.io/releases/).</p>
+</blockquote>
+
+<hr />
+
+<h2 id="9-inicializar-o-control-plane-vm-01">9. Inicializar o control plane <strong>[vm-01]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm init <span class="se">\</span>
+  <span class="nt">--apiserver-advertise-address</span><span class="o">=</span>10.0.97.55 <span class="se">\</span>
+  <span class="nt">--pod-network-cidr</span><span class="o">=</span>192.168.0.0/16
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">--apiserver-advertise-address</code>: IP da vm-01.</li>
+  <li><code class="language-plaintext highlighter-rouge">--pod-network-cidr</code>: precisa bater com o CNI escolhido (aqui uso Calico, que usa <code class="language-plaintext highlighter-rouge">192.168.0.0/16</code> por padrão).</li>
+</ul>
+
+<p>Ao final, o comando mostra duas coisas importantes — <strong>guarde-as</strong>:</p>
+
+<ol>
+  <li>Comandos para configurar o kubectl:</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$HOME</span>/.kube
+<span class="nb">cp</span> <span class="nt">-i</span> /etc/kubernetes/admin.conf <span class="nv">$HOME</span>/.kube/config
+<span class="nb">chown</span> <span class="si">$(</span><span class="nb">id</span> <span class="nt">-u</span><span class="si">)</span>:<span class="si">$(</span><span class="nb">id</span> <span class="nt">-g</span><span class="si">)</span> <span class="nv">$HOME</span>/.kube/config
+</code></pre></div></div>
+
+<ol>
+  <li>O comando <code class="language-plaintext highlighter-rouge">kubeadm join ...</code> com o token — você vai usar na vm-02.</li>
+</ol>
+
+<p>Se perder o token, gere de novo depois com:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm token create <span class="nt">--print-join-command</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="10-instalar-o-cni-rede-de-pods-vm-01">10. Instalar o CNI (rede de pods) <strong>[vm-01]</strong></h2>
+
+<p>Sem CNI os pods do CoreDNS ficam em <code class="language-plaintext highlighter-rouge">Pending</code>. Exemplo com Calico:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+</code></pre></div></div>
+
+<p>Aguarde os pods ficarem <code class="language-plaintext highlighter-rouge">Running</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get pods <span class="nt">-n</span> kube-system <span class="nt">-w</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="11-adicionar-o-worker-ao-cluster-vm-02">11. Adicionar o worker ao cluster <strong>[vm-02]</strong></h2>
+
+<p>Rode o comando que o <code class="language-plaintext highlighter-rouge">kubeadm init</code> te deu na vm-01, algo assim:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm <span class="nb">join </span>10.0.97.55:6443 <span class="nt">--token</span> &lt;token&gt; <span class="se">\</span>
+  <span class="nt">--discovery-token-ca-cert-hash</span> sha256:&lt;<span class="nb">hash</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="12-validar-o-cluster-vm-01">12. Validar o cluster <strong>[vm-01]</strong></h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get nodes
+</code></pre></div></div>
+
+<p>Esperado:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME     STATUS   ROLES           AGE   VERSION
+vm-01    Ready    control-plane   5m    v1.31.x
+vm-02    Ready    &lt;none&gt;          1m    v1.31.x
+</code></pre></div></div>
+
+<p>Se o STATUS ficar <code class="language-plaintext highlighter-rouge">NotReady</code>, geralmente é o CNI ainda subindo — aguarde um pouco e confira <code class="language-plaintext highlighter-rouge">kubectl get pods -n kube-system</code>.</p>
+
+<hr />
+
+<h2 id="problemas-comuns">Problemas comuns</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sintoma</th>
+      <th>Causa provável</th>
+      <th>Solução</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">kubeadm init</code> trava em “waiting for kubelet”</td>
+      <td>containerd com cgroup driver errado</td>
+      <td>conferir <code class="language-plaintext highlighter-rouge">SystemdCgroup = true</code> no config.toml e reiniciar containerd</td>
+    </tr>
+    <tr>
+      <td>Node fica <code class="language-plaintext highlighter-rouge">NotReady</code></td>
+      <td>CNI não instalado/quebrado</td>
+      <td>reaplicar manifesto do Calico/Flannel</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">kubeadm join</code> falha com erro de conexão</td>
+      <td>firewall ou porta 6443 fechada</td>
+      <td>checar <code class="language-plaintext highlighter-rouge">firewalld</code> ou grupo de rede do VirtualBox</td>
+    </tr>
+    <tr>
+      <td>Swap voltando após reboot</td>
+      <td>fstab não editado</td>
+      <td>conferir <code class="language-plaintext highlighter-rouge">/etc/fstab</code>, linha da swap comentada</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="dica-para-o-virtualbox">Dica para o VirtualBox</h2>
+
+<p>Garanta que as duas VMs estão na mesma rede (Host-Only ou Bridged, não NAT isolado), senão vm-01 e vm-02 não vão se enxergar. Como você já validou os IPs com <code class="language-plaintext highlighter-rouge">hostname -I</code> e o SSH entre elas funciona, a rede já está OK.</p>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>
