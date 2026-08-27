@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f0d">
   <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <meta property="og:title" content="SSH-acesso-por-novo · Ninja Linux">
+  <meta property="og:title" content="Acessando VMs VirtualBox por nome · Ninja Linux">
   <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/ssh-acesso-via-nome/">
   <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SSH-acesso-por-novo · Ninja Linux">
+  <meta name="twitter:title" content="Acessando VMs VirtualBox por nome · Ninja Linux">
   <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
-  <title>SSH-acesso-por-novo · Ninja Linux</title>
+  <title>Acessando VMs VirtualBox por nome · Ninja Linux</title>
   <link rel="icon" href="/ninja-linux/images/favicon.png">
   <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
 </head>
@@ -84,6 +84,14 @@
       <h1 id="acessando-vms-do-virtualbox-via-ssh-por-nome-em-vez-de-ip">Acessando VMs do VirtualBox via SSH por nome (em vez de IP)</h1>
 
 <p>Este tutorial mostra como configurar suas VMs (Rocky/RHEL/CentOS/Fedora) para serem acessadas via SSH usando um nome amigável (<code class="language-plaintext highlighter-rouge">vm-01.local</code>) em vez do IP, usando <strong>mDNS/Avahi</strong>. Também cobre uma alternativa via <code class="language-plaintext highlighter-rouge">~/.ssh/config</code> e um roteiro de troubleshooting para quando o mDNS não funciona.</p>
+
+<hr />
+
+<h2 id="o-que-é-o-avahi">O que é o Avahi?</h2>
+
+<p>O <strong>Avahi</strong> é uma implementação open source do protocolo <strong>mDNS/DNS-SD</strong> (também conhecido como <em>Zeroconf</em> ou <em>Bonjour</em>, nome da versão da Apple) para Linux. Ele permite que uma máquina anuncie seu próprio nome e serviços na rede local automaticamente, sem precisar de um servidor DNS central — daí o nome “zero configuration networking”.</p>
+
+<p>Na prática, é o que permite que uma VM Linux seja acessada por um nome como <code class="language-plaintext highlighter-rouge">vm-01.local</code> em vez do IP, mesmo em redes onde não existe um DNS interno configurado. O Avahi escuta requisições multicast na porta <code class="language-plaintext highlighter-rouge">5353/UDP</code> e responde com o IP correspondente ao hostname, de forma parecida com o Bonjour no macOS ou o LLMNR no Windows.</p>
 
 <hr />
 
