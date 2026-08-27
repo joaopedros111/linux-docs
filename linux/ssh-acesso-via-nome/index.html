@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:title" content="SSH-acesso-por-novo · Ninja Linux">
+  <meta property="og:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-usuario.github.io/ninja-linux/linux/ssh-acesso-via-nome/">
+  <meta property="og:image" content="https://seu-usuario.github.io/images/banner-ninja-linux.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SSH-acesso-por-novo · Ninja Linux">
+  <meta name="twitter:description" content="Documentação prática sobre Linux, DevOps, Kubernetes, redes, monitoramento e infraestrutura.">
+  <title>SSH-acesso-por-novo · Ninja Linux</title>
+  <link rel="icon" href="/ninja-linux/images/favicon.png">
+  <link rel="stylesheet" href="/ninja-linux/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <button class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰ <span>Menu</span></button>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/ninja-linux/">
+      <span class="brand-mark">NL</span>
+      <span><strong>Ninja Linux</strong></span>
+    </a>
+
+    <div class="search-box">
+      <label for="sidebarSearchInput">Buscar no menu</label>
+      <input id="sidebarSearchInput" type="search" placeholder="Ex.: Kubernetes, LVM..." autocomplete="off">
+    </div>
+
+    <nav class="sidebar-menu" aria-label="Navegação principal">
+      
+      
+        
+        <a href="/ninja-linux/linux/">◉ Linux</a>
+      
+        
+        <a href="/ninja-linux/devops/">⚙ DevOps (incl. Git)</a>
+      
+        
+        <a href="/ninja-linux/kubernetes/">☸ Kubernetes</a>
+      
+        
+        <a href="/ninja-linux/docker/">⬢ Docker</a>
+      
+        
+        <a href="/ninja-linux/redes/">◎ Redes</a>
+      
+        
+        <a href="/ninja-linux/squid/">◉ Squid</a>
+      
+        
+        <a href="/ninja-linux/monitoramento/">▥ Monitoramento</a>
+      
+        
+        <a href="/ninja-linux/nutanix/">◇ Nutanix</a>
+      
+        
+        <a href="/ninja-linux/vmware/">▣ VMware</a>
+      
+        
+        <a href="/ninja-linux/watchguard/">◈ WatchGuard</a>
+      
+        
+        <a href="/ninja-linux/windows/">⊞ Windows</a>
+      
+        
+        <a href="/ninja-linux/troubleshooting/">◆ Troubleshooting</a>
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://github.com/seu-usuario/ninja-linux" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+    </div>
+  </aside>
+
+  <div class="page-shell">
+    <main id="conteudo" tabindex="-1">
+      <h1 id="acessando-vms-do-virtualbox-via-ssh-por-nome-em-vez-de-ip">Acessando VMs do VirtualBox via SSH por nome (em vez de IP)</h1>
+
+<p>Este tutorial mostra como configurar suas VMs (Rocky/RHEL/CentOS/Fedora) para serem acessadas via SSH usando um nome amigável (<code class="language-plaintext highlighter-rouge">vm-01.local</code>) em vez do IP, usando <strong>mDNS/Avahi</strong>. Também cobre uma alternativa via <code class="language-plaintext highlighter-rouge">~/.ssh/config</code> e um roteiro de troubleshooting para quando o mDNS não funciona.</p>
+
+<hr />
+
+<h2 id="pré-requisitos">Pré-requisitos</h2>
+
+<ul>
+  <li>VM com rede em modo <strong>Bridged Adapter</strong> no VirtualBox (a VM precisa receber IP direto da rede local — mDNS não atravessa NAT).</li>
+  <li>Acesso root/sudo na VM.</li>
+  <li>Windows/Mac/Linux como host.</li>
+</ul>
+
+<blockquote>
+  <p>Se sua VM estiver em modo <strong>NAT</strong>, pule para a <a href="#alternativa-ssh-config-funciona-com-qualquer-modo-de-rede">Alternativa: SSH Config</a>.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-instalar-o-avahi-na-vm">1. Instalar o Avahi na VM</h2>
+
+<h3 id="debianubuntu">Debian/Ubuntu</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>avahi-daemon
+</code></pre></div></div>
+
+<h3 id="rhel--centos--rocky--alma--fedora">RHEL / CentOS / Rocky / Alma / Fedora</h3>
+<p>No mundo RHEL o pacote se chama apenas <code class="language-plaintext highlighter-rouge">avahi</code> (não <code class="language-plaintext highlighter-rouge">avahi-daemon</code>):</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf <span class="nb">install </span>avahi avahi-tools
+</code></pre></div></div>
+
+<p>Se der erro de pacote não encontrado, confirme o nome disponível no repositório:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf search avahi
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="2-habilitar-e-iniciar-o-serviço">2. Habilitar e iniciar o serviço</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nb">enable</span> <span class="nt">--now</span> avahi-daemon
+</code></pre></div></div>
+
+<p>Verifique se subiu corretamente:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl status avahi-daemon
+</code></pre></div></div>
+<p>Deve aparecer <code class="language-plaintext highlighter-rouge">Active: active (running)</code> e, no log, uma linha como:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Server startup complete. Host name is vm-01.local.
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="3-definirchecar-o-hostname">3. Definir/checar o hostname</h2>
+
+<p>O nome publicado via mDNS é <code class="language-plaintext highlighter-rouge">&lt;hostname&gt;.local</code>.</p>
+
+<p>Verificar o hostname atual:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">hostname</span>
+</code></pre></div></div>
+
+<p>Para trocar por um nome mais amigável:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hostnamectl set-hostname minhavm
+systemctl restart avahi-daemon
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="4-firewall-se-aplicável">4. Firewall (se aplicável)</h2>
+
+<p>Se o <code class="language-plaintext highlighter-rouge">firewalld</code> estiver ativo na VM, libere a porta mDNS (5353/udp):</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firewall-cmd <span class="nt">--add-service</span><span class="o">=</span>mdns <span class="nt">--permanent</span>
+firewall-cmd <span class="nt">--reload</span>
+</code></pre></div></div>
+
+<p>Se o <code class="language-plaintext highlighter-rouge">firewalld</code> não estiver rodando (<code class="language-plaintext highlighter-rouge">FirewallD is not running</code>), não há nada a fazer aqui.</p>
+
+<hr />
+
+<h2 id="5-acessar-a-partir-do-host">5. Acessar a partir do host</h2>
+
+<h3 id="testar-resolução-de-nome">Testar resolução de nome</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping vm-01.local
+</code></pre></div></div>
+
+<h3 id="conectar-via-ssh">Conectar via SSH</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh usuario@vm-01.local
+</code></pre></div></div>
+
+<h3 id="observações-por-sistema-operacional-do-host">Observações por sistema operacional do host</h3>
+<ul>
+  <li><strong>Linux/Mac</strong>: suporte a mDNS nativo, geralmente funciona sem instalar nada.</li>
+  <li><strong>Windows</strong>: <strong>não</strong> tem mDNS nativo. É necessário ter o <strong>Bonjour</strong> instalado (vem junto com o iTunes, ou pode ser instalado separadamente como “Bonjour Print Services”). Sempre inclua o sufixo <code class="language-plaintext highlighter-rouge">.local</code> no comando — no Windows, <code class="language-plaintext highlighter-rouge">ping vm-01</code> (sem <code class="language-plaintext highlighter-rouge">.local</code>) não funciona.</li>
+</ul>
+
+<hr />
+
+<h2 id="alternativa-ssh-config-funciona-com-qualquer-modo-de-rede">Alternativa: SSH Config (funciona com qualquer modo de rede)</h2>
+
+<p>Se a VM estiver em modo <strong>NAT</strong>, ou se você só quer um atalho sem depender de mDNS, crie um alias no arquivo <code class="language-plaintext highlighter-rouge">~/.ssh/config</code> do seu <strong>host</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host minhavm
+    HostName 192.168.1.50
+    User usuario
+    Port 22
+</code></pre></div></div>
+
+<p>Depois conecte com:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh minhavm
+</code></pre></div></div>
+
+<blockquote>
+  <p>Isso não é resolução de nome de verdade — é um atalho local. Se o IP da VM mudar, você precisa atualizar essa linha no arquivo.</p>
+</blockquote>
+
+<h3 id="se-a-vm-estiver-em-modo-nat">Se a VM estiver em modo NAT</h3>
+<p>Configure port forwarding no VirtualBox:
+<code class="language-plaintext highlighter-rouge">Configurações da VM → Rede → Avançado → Encaminhamento de Portas</code></p>
+
+<p>Redirecione, por exemplo, a porta <code class="language-plaintext highlighter-rouge">2222</code> do host para a <code class="language-plaintext highlighter-rouge">22</code> da VM. No <code class="language-plaintext highlighter-rouge">~/.ssh/config</code>:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host minhavm
+    HostName 127.0.0.1
+    Port 2222
+    User usuario
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="troubleshooting-mdns-funciona-em-uma-vm-mas-não-em-outra">Troubleshooting: mDNS funciona em uma VM mas não em outra</h2>
+
+<p>Se <code class="language-plaintext highlighter-rouge">ping vm-01.local</code> funciona mas <code class="language-plaintext highlighter-rouge">ping vm-02.local</code> não, siga esta ordem:</p>
+
+<h3 id="1-confirme-que-incluiu-o-local">1. Confirme que incluiu o <code class="language-plaintext highlighter-rouge">.local</code></h3>
+<p>No Windows, <code class="language-plaintext highlighter-rouge">ping vm-02</code> (sem sufixo) sempre falha, mesmo com tudo certo. Use sempre <code class="language-plaintext highlighter-rouge">ping vm-02.local</code>.</p>
+
+<h3 id="2-teste-a-conectividade-básica-por-ip">2. Teste a conectividade básica por IP</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping 10.0.97.33
+</code></pre></div></div>
+<p>Se isso <strong>não</strong> responder, o problema não é mDNS — é roteamento/rede entre o host e a VM (VLAN diferente, firewall de rede, etc). Compare a faixa de IP da VM que funciona com a que não funciona.</p>
+
+<h3 id="3-teste-a-resolução-localmente-dentro-da-própria-vm">3. Teste a resolução localmente, dentro da própria VM</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>avahi-resolve <span class="nt">-n</span> vm-02.local
+</code></pre></div></div>
+<p>Se retornar o próprio IP, o avahi está funcionando corretamente do lado da VM — o problema está na propagação do multicast pela rede (switches gerenciados costumam bloquear ou não repassar tráfego multicast entre certas portas/VLANs, o que explica funcionar numa VM e não em outra mesmo com o avahi configurado de forma idêntica).</p>
+
+<h3 id="4-restrinja-o-avahi-à-interface-de-rede-correta">4. Restrinja o Avahi à interface de rede correta</h3>
+<p>Em VMs com múltiplas interfaces (por exemplo, VMs que também são nós de cluster Kubernetes, com interfaces <code class="language-plaintext highlighter-rouge">cali*</code>, <code class="language-plaintext highlighter-rouge">tunl0</code>, etc.), o Avahi pode se confundir tentando publicar em interfaces erradas. Edite:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/avahi/avahi-daemon.conf
+</code></pre></div></div>
+<p>Na seção <code class="language-plaintext highlighter-rouge">[server]</code>, adicione:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>allow-interfaces=enp0s3
+</code></pre></div></div>
+<p>(substitua <code class="language-plaintext highlighter-rouge">enp0s3</code> pelo nome da interface de rede física/bridged real, visto no <code class="language-plaintext highlighter-rouge">ip a</code>)</p>
+
+<p>Depois reinicie:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl restart avahi-daemon
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="resumo-rápido">Resumo rápido</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Situação</th>
+      <th>Solução</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VM em modo Bridged</td>
+      <td>mDNS/Avahi (<code class="language-plaintext highlighter-rouge">vm.local</code>)</td>
+    </tr>
+    <tr>
+      <td>VM em modo NAT</td>
+      <td><code class="language-plaintext highlighter-rouge">~/.ssh/config</code> + port forwarding</td>
+    </tr>
+    <tr>
+      <td>Ping por nome falha no Windows</td>
+      <td>Verificar sufixo <code class="language-plaintext highlighter-rouge">.local</code> e instalação do Bonjour</td>
+    </tr>
+    <tr>
+      <td>Ping por nome falha, mas por IP funciona</td>
+      <td>Multicast bloqueado na rede — restringir interface do Avahi</td>
+    </tr>
+    <tr>
+      <td>Ping por IP também falha</td>
+      <td>Problema de roteamento/rede, não é mDNS</td>
+    </tr>
+  </tbody>
+</table>
+
+    </main>
+    <footer class="site-footer">
+      <span>🥷 Ninja Linux</span>
+      <span>Conhecimento técnico, direto ao ponto.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const toggle = document.getElementById('menuToggle');
+      const backdrop = document.getElementById('backdrop');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.hidden = true;
+      };
+      toggle.addEventListener('click', () => {
+        const open = !body.classList.contains('menu-open');
+        body.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+        backdrop.hidden = !open;
+      });
+      backdrop.addEventListener('click', closeMenu);
+
+      const current = location.pathname.replace(/index\.html$/, '');
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        const path = new URL(link.href).pathname.replace(/index\.html$/, '');
+        if (path === current) link.classList.add('active');
+      });
+
+      const search = document.getElementById('sidebarSearchInput');
+      search.addEventListener('input', () => {
+        const term = search.value.trim().toLocaleLowerCase('pt-BR');
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+          link.hidden = term && !link.textContent.toLocaleLowerCase('pt-BR').includes(term);
+        });
+      });
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (body.classList.contains('menu-open')) {
+            closeMenu();
+          }
+        });
+      });
+
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.type = 'button';
+        button.textContent = 'Copiar';
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+            button.textContent = 'Copiado ✓';
+          } catch (_) {
+            button.textContent = 'Selecione e copie';
+          }
+          setTimeout(() => button.textContent = 'Copiar', 1800);
+        });
+        pre.appendChild(button);
+      });
+    });
+  </script>
+</body>
+</html>

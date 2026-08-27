@@ -6,7 +6,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/01-introducao-ao-nutanix/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -14,7 +14,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/02-arquitetura-hiperconvergente/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -22,7 +22,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/03-prism-element-e-prism-central/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -30,7 +30,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/04-ahv-aos-e-cvm/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -38,7 +38,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/05-storage-pool-container-e-vdisk/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -46,7 +46,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/06-resiliencia-rf2-rf3-e-localidade/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -54,7 +54,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/07-nutanix-files-e-fsvm/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -62,7 +62,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/08-smb-nfs-e-active-directory/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -70,7 +70,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/fundamentos/09-fluxos-e-diagnostico-inicial/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -78,7 +78,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/windows/activedirectory/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -86,7 +86,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/atualizarSSLwiki/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -94,7 +94,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/certificadossl/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -102,7 +102,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/devops/cicd/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -110,7 +110,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/cliente-nfs-rocky-linux-9/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -118,7 +118,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/cliente-nfs-windows-10-11/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -126,7 +126,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/configuracaodns/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -134,7 +134,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/volumes/configurando-volumes-nutanix/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -142,7 +142,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/deployments/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -150,7 +150,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/expandir-lvm/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -158,7 +158,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/devops/git/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -166,7 +166,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/devops/gitintermediario/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -174,7 +174,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/monitoramento/grafana/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -182,7 +182,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/devops/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -190,7 +190,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/data-lens/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -198,7 +198,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -206,7 +206,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/docker/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -214,7 +214,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/watchguard/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -222,7 +222,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/vmware/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -230,7 +230,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/monitoramento/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -238,7 +238,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/redes/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -246,7 +246,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -254,7 +254,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/troubleshooting/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -262,7 +262,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -270,7 +270,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/windows/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -278,7 +278,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/git/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -286,7 +286,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/squid/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -294,7 +294,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -302,7 +302,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/ingress/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -310,7 +310,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/windows/instalacao-aplicativos-exe/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -318,7 +318,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/instalacao-cluster-rocky-containerd-calico/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -326,7 +326,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/vmware/instalacao-esxi-7-dell-r830-idrac/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -334,7 +334,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/windows/instalacao-via-temp/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -342,7 +342,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/monitoramento/instalacao-zabbix-server/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -350,7 +350,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/kubeconfig/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -358,7 +358,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/kubectl/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -366,7 +366,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/pods/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -374,7 +374,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/nutanix/volumes/questionario-volumes-nutanix/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -382,7 +382,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/services/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -390,7 +390,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/servidor-nfs-rocky-linux-9/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -399,8 +399,16 @@
     
     
     <url>
+      <loc>https://seu-usuario.github.io/ninja-linux/linux/ssh-acesso-via-nome/</loc>
+      <lastmod>2026-08-27</lastmod>
+      <changefreq>monthly</changefreq>
+    </url>
+  
+    
+    
+    <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/ssh_key/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -408,7 +416,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/linux/troubleshooting-nfs/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -416,7 +424,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/troubleshooting/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -424,7 +432,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshooting_utf8_wildfly/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -432,7 +440,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshootingcitsmart/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -440,7 +448,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/troubleshooting/troubleshootingwiki/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -448,7 +456,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/kubernetes/tutorial-kubernetes-rocky-linux/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -456,7 +464,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/watchguard/watchguardndrcollectionagent/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
@@ -464,7 +472,7 @@
     
     <url>
       <loc>https://seu-usuario.github.io/ninja-linux/windows/windowsproxyparalinux/</loc>
-      <lastmod>2026-08-26</lastmod>
+      <lastmod>2026-08-27</lastmod>
       <changefreq>monthly</changefreq>
     </url>
   
