@@ -1,11 +1,19 @@
 ---
 layout: default
-title: SSH-acesso-por-novo
+title: Acessando VMs VirtualBox por nome
 ---
 
 # Acessando VMs do VirtualBox via SSH por nome (em vez de IP)
 
 Este tutorial mostra como configurar suas VMs (Rocky/RHEL/CentOS/Fedora) para serem acessadas via SSH usando um nome amigável (`vm-01.local`) em vez do IP, usando **mDNS/Avahi**. Também cobre uma alternativa via `~/.ssh/config` e um roteiro de troubleshooting para quando o mDNS não funciona.
+
+---
+
+## O que é o Avahi?
+
+O **Avahi** é uma implementação open source do protocolo **mDNS/DNS-SD** (também conhecido como *Zeroconf* ou *Bonjour*, nome da versão da Apple) para Linux. Ele permite que uma máquina anuncie seu próprio nome e serviços na rede local automaticamente, sem precisar de um servidor DNS central — daí o nome "zero configuration networking".
+
+Na prática, é o que permite que uma VM Linux seja acessada por um nome como `vm-01.local` em vez do IP, mesmo em redes onde não existe um DNS interno configurado. O Avahi escuta requisições multicast na porta `5353/UDP` e responde com o IP correspondente ao hostname, de forma parecida com o Bonjour no macOS ou o LLMNR no Windows.
 
 ---
 
