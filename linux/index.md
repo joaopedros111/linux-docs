@@ -16,6 +16,7 @@ Sua flexibilidade, estabilidade e segurança fazem dele uma das principais plata
 ## Conteúdo
 
 * [DNS - Configurar DNS com BIND, Forwarders Corporativos e Zona Interna](configuracaodns.md)
+* [DNS - Acessando VMs do VirtualBox por nome (em vez de IP)](ssh-acesso-via-nome.md)
 * [NFS - Instalação Servidor (Rocky Linux 9)](servidor-nfs-rocky-linux-9.md)
 * [NFS - Cliente (Rocky Linux 9)](cliente-nfs-rocky-linux-9.md)
 * [NFS - Cliente (Windows 10/11)](cliente-nfs-windows-10-11.md)
@@ -24,7 +25,6 @@ Sua flexibilidade, estabilidade e segurança fazem dele uma das principais plata
 * [Certificado SSL - Atualização (Harbor + Docker)](certificadossl.md)
 * [Certificado SSL - Atualização (WikiJS + Docker + Nginx)](atualizarSSLwiki.md)
 * [SSH - Configurar chave pública no Linux](ssh_key.md)
-* [SSH - Acessando VMs do VirtualBox por nome (em vez de IP)](ssh-acesso-via-nome.md)
 
 ---
 
