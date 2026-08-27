@@ -24,6 +24,7 @@ Sua flexibilidade, estabilidade e segurança fazem dele uma das principais plata
 * [Certificado SSL - Atualização (Harbor + Docker)](certificadossl.md)
 * [Certificado SSL - Atualização (WikiJS + Docker + Nginx)](atualizarSSLwiki.md)
 * [SSH - Configurar chave pública no Linux](ssh_key.md)
+* [SSH - Acessando VMs do VirtualBox por nome (em vez de IP)](ssh-acesso-via-nome.md)
 
 ---
 
